@@ -376,6 +376,32 @@
   <!-- LEFT PANEL -->
   <div style="display:flex;flex-direction:column;gap:1.25rem;">
 
+    <!-- API Key -->
+    <div class="card" id="apiKeyCard">
+      <div class="card-header">
+        <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>OpenRouter API Key</h2>
+        <div id="apiKeyStatus" style="font-size:0.7rem;font-family:Montserrat,sans-serif;font-weight:600;"></div>
+      </div>
+      <div class="card-body">
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Your OpenRouter API Key</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div style="position:relative;flex:1;">
+              <input type="password" id="apiKeyInput" placeholder="sk-or-v1-..." oninput="onApiKeyInput()" style="padding-right:2.5rem;" />
+              <button onclick="toggleApiKeyVisibility()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:2px;" title="Show/hide key">
+                <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <button class="btn btn-orange btn-sm" onclick="saveApiKey()" id="saveKeyBtn" style="white-space:nowrap;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save
+            </button>
+          </div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:5px;line-height:1.5;">Get a free key at <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--sla-orange);">openrouter.ai/keys</a>. Saved in your browser only — never sent to any server.</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Model Selection -->
     <div class="card">
       <div class="card-header">
@@ -687,8 +713,9 @@
 // ═══════════════════════════════════════════════════════════
 //  CONFIG
 // ═══════════════════════════════════════════════════════════
-const API_KEY = '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';
+// API key is stored in localStorage — never hardcoded
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+function getApiKey() { return localStorage.getItem('sla_openrouter_key') || ''; }
 const FALLBACK_MODELS = [
   'arcee-ai/trinity-large-preview:free','google/gemma-3-4b-it:free','google/gemma-3n-e4b-it:free',
   'google/gemma-3n-e2b-it:free','google/gemma-3-12b-it:free','google/gemma-3-27b-it:free',
@@ -870,6 +897,55 @@ async function ghSavePrompts(commitMsg) {
 }
 
 // ═══════════════════════════════════════════════════════════
+//  API KEY MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+function loadApiKeyUI() {
+  const key = getApiKey();
+  const input = document.getElementById('apiKeyInput');
+  const status = document.getElementById('apiKeyStatus');
+  if (key) {
+    input.value = key;
+    status.innerHTML = '<span style="color:#27ae60;">&#10003; Key saved</span>';
+    document.getElementById('apiKeyCard').style.borderColor = 'rgba(39,174,96,0.3)';
+  } else {
+    status.innerHTML = '<span style="color:#e74c3c;">&#9888; Key required</span>';
+    document.getElementById('apiKeyCard').style.borderColor = 'rgba(231,76,60,0.4)';
+  }
+  updateGenerateButton();
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { alert('Please enter your OpenRouter API key.'); return; }
+  if (!key.startsWith('sk-or-')) { alert('This does not look like a valid OpenRouter key (should start with sk-or-).'); return; }
+  localStorage.setItem('sla_openrouter_key', key);
+  loadApiKeyUI();
+  const btn = document.getElementById('saveKeyBtn');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polyline points="20 6 9 17 4 12"/></svg> Saved!';
+  btn.style.background = '#27ae60';
+  setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2000);
+}
+
+function onApiKeyInput() {
+  const status = document.getElementById('apiKeyStatus');
+  status.innerHTML = '<span style="color:var(--text-muted);">Unsaved</span>';
+  document.getElementById('apiKeyCard').style.borderColor = '';
+}
+
+function toggleApiKeyVisibility() {
+  const input = document.getElementById('apiKeyInput');
+  const icon = document.getElementById('eyeIcon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    input.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
@@ -877,6 +953,7 @@ window.addEventListener('DOMContentLoaded', () => {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   }
   document.getElementById('promptTextarea').value = DEFAULT_PROMPT;
+  loadApiKeyUI();
 
   const zone = document.getElementById('uploadZone');
   zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
@@ -1093,11 +1170,12 @@ function togglePromptEditor() {
 //  GENERATION
 // ═══════════════════════════════════════════════════════════
 function updateGenerateButton() {
-  document.getElementById('generateBtn').disabled = !extractedText.trim() || isGenerating;
+  document.getElementById('generateBtn').disabled = !extractedText.trim() || isGenerating || !getApiKey();
 }
 
 async function generateReview() {
   if (isGenerating) return;
+  if (!getApiKey()) { showAlert('generateAlert', 'Please enter and save your OpenRouter API key first.', 'error'); document.getElementById('apiKeyInput').focus(); return; }
   if (!extractedText) { showAlert('generateAlert', 'Please upload a clinical paper first.', 'error'); return; }
   isGenerating = true;
   updateGenerateButton();
@@ -1167,7 +1245,7 @@ async function attemptGeneration(model, systemPrompt) {
   const truncatedText = extractedText.length > 60000 ? extractedText.substring(0, 60000) + '\n\n[Text truncated due to length]' : extractedText;
   const response = await fetch(API_URL, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'SLA Health Clinical Review Generator' },
+    headers: { 'Authorization': `Bearer ${getApiKey()}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'SLA Health Clinical Review Generator' },
     body: JSON.stringify({ model, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Please write a Curated Clinical Review based on the following clinical paper text:\n\n---\n${truncatedText}\n---` }], stream: true, max_tokens: 3000, temperature: 0.3 })
   });
   if (!response.ok) {
@@ -1512,7 +1590,7 @@ Be objective, specific, and cite examples from the actual review text where poss
 async function attemptAnalysis(model, systemPrompt, reviewsText) {
   const response = await fetch(API_URL, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'SLA Health Review Comparison' },
+    headers: { 'Authorization': `Bearer ${getApiKey()}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'SLA Health Review Comparison' },
     body: JSON.stringify({ model, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Please analyse and compare the following ${reviewsText.split('=== REVIEW').length - 1} Curated Clinical Reviews:\n\n${reviewsText}` }], stream: true, max_tokens: 2500, temperature: 0.2 })
   });
   if (!response.ok) {
