@@ -446,6 +446,130 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .report-reviews-list { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; color: var(--text-muted); margin-bottom: 8px; }
 
 /* ══════════════════════════════════════════════════
+   PUBLISHING QUEUE PANEL
+══════════════════════════════════════════════════ */
+.queue-panel {
+  position: fixed; top: 58px; right: 0; width: 360px; height: calc(100vh - 58px);
+  background: var(--sla-navy); border-left: 3px solid var(--sla-orange);
+  z-index: 300; display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform 0.25s ease;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.25);
+}
+.queue-panel.open { transform: translateX(0); }
+.queue-panel-header {
+  padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.queue-panel-title {
+  font-family: 'Montserrat', sans-serif; font-size: 0.8rem; font-weight: 800;
+  color: #fff; letter-spacing: 0.3px; display: flex; align-items: center; gap: 8px;
+}
+.queue-panel-title svg { color: var(--sla-orange); }
+.queue-count-badge {
+  background: var(--sla-orange); color: #fff; font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 99px;
+}
+.queue-close-btn {
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7); border-radius: 6px; cursor: pointer;
+  padding: 4px 8px; font-size: 0.7rem; font-family: 'Montserrat', sans-serif;
+}
+.queue-close-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.queue-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.queue-empty {
+  text-align: center; padding: 40px 20px;
+  font-family: 'Montserrat', sans-serif; font-size: 0.75rem; color: rgba(255,255,255,0.35);
+  line-height: 1.6;
+}
+.queue-item {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 10px 12px; border-left: 3px solid var(--sla-orange);
+}
+.queue-item-title {
+  font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700;
+  color: #fff; margin-bottom: 4px; line-height: 1.3;
+}
+.queue-item-meta {
+  font-family: 'Montserrat', sans-serif; font-size: 0.6rem; color: rgba(255,255,255,0.45);
+  margin-bottom: 8px;
+}
+.queue-item-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.queue-item-actions .btn { font-size: 0.62rem; padding: 3px 8px; }
+.queue-btn-header {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px; cursor: pointer; font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem; font-weight: 700; color: rgba(255,255,255,0.7);
+  white-space: nowrap; transition: all 0.15s; position: relative;
+}
+.queue-btn-header:hover { background: rgba(255,255,255,0.13); color: #fff; }
+.queue-btn-header .queue-header-count {
+  position: absolute; top: -5px; right: -5px;
+  background: var(--sla-orange); color: #fff;
+  font-size: 0.55rem; font-weight: 800; padding: 1px 5px; border-radius: 99px;
+  display: none;
+}
+.queue-btn-header.has-items .queue-header-count { display: inline; }
+
+/* ── Approved badge on archive cards ── */
+.approved-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(39,174,96,0.12); border: 1px solid rgba(39,174,96,0.3);
+  color: var(--success); font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+  letter-spacing: 0.3px;
+}
+.queued-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(244,121,32,0.12); border: 1px solid rgba(244,121,32,0.3);
+  color: var(--sla-orange); font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+  letter-spacing: 0.3px;
+}
+
+/* ── Send For Review modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: #fff; border-radius: 12px; width: 440px; max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden;
+  transform: scale(0.95); transition: transform 0.2s;
+}
+.modal-overlay.open .modal-box { transform: scale(1); }
+.modal-header {
+  background: var(--sla-navy); padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 {
+  color: #fff; font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem; font-weight: 800;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-header h3 svg { color: var(--sla-orange); }
+.modal-close {
+  background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7);
+  border-radius: 5px; cursor: pointer; padding: 4px 8px; font-size: 1rem; line-height: 1;
+}
+.modal-close:hover { background: rgba(255,255,255,0.2); color: #fff; }
+.modal-body { padding: 20px 18px; }
+.modal-body .form-group { margin-bottom: 14px; }
+.modal-body .form-group:last-child { margin-bottom: 0; }
+.modal-article-title {
+  font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700;
+  color: var(--sla-navy); background: var(--bg); border-radius: 6px;
+  padding: 8px 10px; border: 1px solid var(--border); margin-bottom: 14px;
+  line-height: 1.4;
+}
+.modal-footer {
+  padding: 12px 18px; border-top: 1px solid var(--border);
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+
+/* ══════════════════════════════════════════════════
    SYNC STATUS
 ══════════════════════════════════════════════════ */
 #syncStatus { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(255,255,255,0.07); border-radius: 6px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 0.62rem; font-weight: 600; color: rgba(255,255,255,0.6); white-space: nowrap; }
@@ -492,7 +616,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
       </button>
       <button class="header-tab" onclick="switchTab('archive')" id="tab-archive">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;display:inline;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        Archive <span id="archiveTabCount" style="margin-left:4px;background:rgba(255,255,255,0.2);padding:1px 6px;border-radius:99px;font-size:0.65rem;"></span>
+        Storage <span id="archiveTabCount" style="margin-left:4px;background:rgba(255,255,255,0.2);padding:1px 6px;border-radius:99px;font-size:0.65rem;"></span>
       </button>
       <button class="header-tab" onclick="switchTab('comparison')" id="tab-comparison">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;display:inline;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -503,6 +627,11 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
         Reports <span id="reportsTabCount" style="margin-left:4px;background:rgba(255,255,255,0.2);padding:1px 6px;border-radius:99px;font-size:0.65rem;"></span>
       </button>
     </div>
+    <button class="queue-btn-header" id="queueHeaderBtn" onclick="toggleQueuePanel()" title="Publishing Queue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Publishing Queue
+      <span class="queue-header-count" id="queueHeaderCount">0</span>
+    </button>
     <div id="syncStatus" onclick="ghLoadAll()" title="Click to refresh from GitHub">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
       <span id="syncText">Loading…</span>
@@ -752,9 +881,17 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         PDF
       </button>
+      <button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#fff;" onclick="openSendForReviewModal()" id="sendForReviewBtn" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Send For Review
+      </button>
+      <button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#fff;" onclick="queueCurrentForPublishing()" id="queueForPublishBtn" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        Queue For Publishing
+      </button>
       <button class="btn btn-orange btn-xs" onclick="saveReviewToArchive()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
-        Save to Archive
+        Save to Storage
       </button>
     </div>
     <div class="progress-wrap hidden" id="progressWrap">
@@ -777,12 +914,12 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 </div>
 </div><!-- /tab-view generator -->
 
-<!-- ══════════════════════════════ TAB 2: ARCHIVE ══════════════════════════════ -->
+<!-- ══════════════════════════════ TAB 2: STORAGE ══════════════════════════════ -->
 <div class="tab-view" id="view-archive">
   <div class="archive-container">
     <div class="archive-header-row">
       <div>
-        <h1 id="archiveHeading">Content Archive</h1>
+        <h1 id="archiveHeading">Content Storage</h1>
         <div class="archive-stats" id="archiveStats">0 saved items</div>
       </div>
       <div class="archive-actions">
@@ -804,7 +941,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         <h3>No saved content yet</h3>
-        <p>Generate content and click <strong>Save to Archive</strong> to store it here.</p>
+        <p>Generate content and click <strong>Save to Storage</strong> to store it here.</p>
       </div>
     </div>
     <div class="archive-grid" id="archiveGrid"></div>
@@ -838,11 +975,11 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
         <button class="btn btn-outline btn-sm" onclick="switchTab('archive')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-          Back to Archive
+          Back to Storage
         </button>
         <h1>AI Comparison Report</h1>
       </div>
-      <p id="comparisonSubtitle" style="font-size:0.8rem;color:var(--text-muted);">Select items from the Archive tab and click Compare.</p>
+      <p id="comparisonSubtitle" style="font-size:0.8rem;color:var(--text-muted);">Select items from the Storage tab and click Compare.</p>
     </div>
     <div class="comparison-reviews" id="comparisonReviews"></div>
     <div class="analysis-panel">
@@ -908,6 +1045,56 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
   </div><!-- /main-content -->
 </div><!-- /app-layout -->
 
+<!-- PUBLISHING QUEUE PANEL (slide-in from right) -->
+<div class="queue-panel" id="queuePanel">
+  <div class="queue-panel-header">
+    <div class="queue-panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Publishing Queue
+      <span class="queue-count-badge" id="queuePanelCount">0</span>
+    </div>
+    <button class="queue-close-btn" onclick="toggleQueuePanel()">&#x2715; Close</button>
+  </div>
+  <div class="queue-list" id="queueList">
+    <div class="queue-empty" id="queueEmpty">No items queued for publishing yet.<br><br>Approve an item in Storage and click <strong>Queue For Publishing</strong>.</div>
+  </div>
+</div>
+
+<!-- SEND FOR REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal" onclick="closeReviewModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Send For Review
+      </h3>
+      <button class="modal-close" onclick="closeReviewModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-article-title" id="reviewModalTitle"></div>
+      <div class="form-group">
+        <label>Reviewer Email Address</label>
+        <input type="text" id="reviewerEmail" placeholder="reviewer@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Reviewer Name (optional)</label>
+        <input type="text" id="reviewerName" placeholder="Dr. Smith" />
+      </div>
+      <div class="form-group">
+        <label>Message (optional)</label>
+        <textarea id="reviewMessage" rows="3" placeholder="Please review this article and provide feedback..."></textarea>
+      </div>
+      <div id="reviewModalAlert" class="alert hidden"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeReviewModal()">Cancel</button>
+      <button class="btn btn-orange btn-sm" onclick="sendForReview()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Send Review Link
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
@@ -983,6 +1170,8 @@ let selectedArchiveIds = new Set();
 let comparisonReviewIds = [];
 let currentAnalysisText = '';
 let currentReportId = null;
+let currentReviewForModal = null; // article being sent for review
+let publishingQueue = JSON.parse(localStorage.getItem('sla_publishing_queue') || '[]');
 
 // GitHub in-memory store — keyed by category
 // ghData[catId] = { reviews: [], prompts: [], comparisons: [], revSHA, promSHA, compSHA }
@@ -1392,6 +1581,9 @@ async function generateReview() {
       setStatus('done', 'Done');
       isGenerating = false;
       updateGenerateButton();
+      // Enable review/queue toolbar buttons now that content exists
+      document.getElementById('sendForReviewBtn').disabled = false;
+      document.getElementById('queueForPublishBtn').disabled = false;
       return;
     } catch (err) {
       lastError = err.message;
@@ -1612,8 +1804,7 @@ async function saveReviewToArchive() {
   updateAllCounts();
   try {
     await ghSaveReviews(currentCategory, `Save ${currentCategory} item: ${title.slice(0,60)}`);
-    const btn = document.getElementById('generateBtn').nextElementSibling;
-    showAlert('generateAlert', `✓ Saved to ${CATEGORIES.find(c=>c.id===currentCategory)?.label} Archive`, 'success');
+    showAlert('generateAlert', `\u2713 Saved to ${CATEGORIES.find(c=>c.id===currentCategory)?.label} Storage`, 'success');
     setTimeout(() => hideAlert('generateAlert'), 3000);
   } catch(e) {
     showAlert('generateAlert', 'Saved locally but GitHub sync failed: ' + e.message, 'warning');
@@ -1634,10 +1825,14 @@ function renderArchive() {
     const preview = r.text.replace(/<[^>]+>/g,'').slice(0, 160).replace(/#+\s*/g,'').trim() + '…';
     const card = document.createElement('div');
     card.className = 'archive-card' + (isSelected ? ' selected' : '');
+    const isApproved = r.approved === true;
+    const isQueued = publishingQueue.some(q => q.id === r.id);
     card.innerHTML = `
       <div class="archive-card-header">
         <input type="checkbox" class="archive-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleArchiveSelect('${r.id}', this.checked)" />
-        <div class="archive-card-title">${escapeHtml(r.title.slice(0,80))}${r.title.length>80?'…':''}</div>
+        <div class="archive-card-title">${escapeHtml(r.title.slice(0,80))}${r.title.length>80?'\u2026':''}</div>
+        ${isApproved ? '<span class="approved-badge">\u2713 Approved</span>' : ''}
+        ${isQueued ? '<span class="queued-badge">\u25b6 Queued</span>' : ''}
       </div>
       <div class="archive-card-body">
         <div class="archive-card-preview">${escapeHtml(preview)}</div>
@@ -1648,11 +1843,21 @@ function renderArchive() {
         </div>
       </div>
       <div class="archive-card-actions">
+        <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--success);user-select:none;" title="Approved for publishing">
+          <input type="checkbox" ${isApproved ? 'checked' : ''} onchange="toggleApproved('${r.id}', this.checked)" style="accent-color:var(--success);width:13px;height:13px;cursor:pointer;" />
+          Approved
+        </label>
         <button class="btn btn-orange btn-xs" onclick="loadArchiveItem('${r.id}')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="5 12 12 5 19 12"/><line x1="12" y1="5" x2="12" y2="19"/></svg>Load
         </button>
         <button class="btn btn-outline btn-xs" onclick="downloadArchiveWord('${r.id}')">Word</button>
         <button class="btn btn-outline btn-xs" onclick="downloadArchivePDF('${r.id}')">PDF</button>
+        <button class="btn btn-outline btn-xs" style="color:var(--sla-orange);border-color:rgba(244,121,32,0.4);" onclick="openSendForReviewModalFromArchive('${r.id}')" title="Send for review">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+        <button class="btn btn-outline btn-xs" style="${isQueued ? 'color:var(--sla-orange);border-color:rgba(244,121,32,0.5);' : ''}" onclick="toggleQueueItem('${r.id}')" title="${isQueued ? 'Remove from queue' : 'Queue for publishing'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </button>
         <button class="btn btn-danger-outline btn-xs" onclick="deleteArchiveItem('${r.id}')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
         </button>
@@ -2200,6 +2405,191 @@ function escapeHtml(str) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ═══════════════════════════════════════════════════════════
+//  PUBLISHING QUEUE & REVIEW WORKFLOW
+// ═══════════════════════════════════════════════════════════
+
+// Toggle approved status on an archive item
+async function toggleApproved(id, checked) {
+  const archive = getArchive();
+  const item = archive.find(x => x.id === id);
+  if (!item) return;
+  item.approved = checked;
+  try {
+    await ghSaveReviews(currentCategory, `${checked ? 'Approve' : 'Unapprove'} item: ${item.title.slice(0,60)}`);
+  } catch(e) { console.warn('Approved flag sync failed:', e.message); }
+  renderArchive();
+}
+
+// Toggle an archive item in/out of the publishing queue
+function toggleQueueItem(id) {
+  const allReviews = [];
+  CATEGORIES.forEach(c => { allReviews.push(...ghData[c.id].reviews); });
+  const item = allReviews.find(x => x.id === id);
+  if (!item) return;
+  const idx = publishingQueue.findIndex(q => q.id === id);
+  if (idx >= 0) {
+    publishingQueue.splice(idx, 1);
+  } else {
+    publishingQueue.push({
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      model: item.model,
+      wordCount: item.wordCount,
+      queuedAt: new Date().toISOString()
+    });
+  }
+  localStorage.setItem('sla_publishing_queue', JSON.stringify(publishingQueue));
+  renderArchive();
+  renderQueuePanel();
+  updateQueueHeaderBtn();
+}
+
+// Queue the currently generated (unsaved) article for publishing
+function queueCurrentForPublishing() {
+  if (!rawArticleText) return;
+  const title = document.getElementById('modelUsedBadge').textContent
+    ? (extractTitleFromArticle(rawArticleText) || 'Untitled Article')
+    : 'Untitled Article';
+  const model = document.getElementById('modelUsedBadge').textContent.replace('\u2713 ','');
+  const tempId = 'tmp_' + Date.now();
+  publishingQueue.push({
+    id: tempId,
+    title,
+    category: currentCategory,
+    model,
+    wordCount: rawArticleText.split(/\s+/).filter(w=>w).length,
+    queuedAt: new Date().toISOString(),
+    unsaved: true
+  });
+  localStorage.setItem('sla_publishing_queue', JSON.stringify(publishingQueue));
+  renderQueuePanel();
+  updateQueueHeaderBtn();
+  showAlert('generateAlert', '\u25b6 Added to Publishing Queue', 'success');
+  setTimeout(() => hideAlert('generateAlert'), 3000);
+}
+
+// Render the publishing queue panel items
+function renderQueuePanel() {
+  const list  = document.getElementById('queueList');
+  const empty = document.getElementById('queueEmpty');
+  const count = document.getElementById('queuePanelCount');
+  count.textContent = publishingQueue.length;
+  if (publishingQueue.length === 0) {
+    empty.style.display = '';
+    list.innerHTML = '';
+    list.appendChild(empty);
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = '';
+  publishingQueue.forEach((item, idx) => {
+    const date = new Date(item.queuedAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    const catLabel = CATEGORIES.find(c => c.id === item.category)?.label || item.category;
+    const div = document.createElement('div');
+    div.className = 'queue-item';
+    div.innerHTML = `
+      <div class="queue-item-title">${escapeHtml(item.title.slice(0,70))}${item.title.length>70?'\u2026':''}</div>
+      <div class="queue-item-meta">${catLabel} &middot; ${(item.wordCount||0).toLocaleString()} words &middot; Queued ${date}${item.unsaved?' &middot; <em>unsaved</em>':''}</div>
+      <div class="queue-item-actions">
+        <button class="btn btn-outline btn-xs" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);" onclick="removeFromQueue(${idx})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          Remove
+        </button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function removeFromQueue(idx) {
+  publishingQueue.splice(idx, 1);
+  localStorage.setItem('sla_publishing_queue', JSON.stringify(publishingQueue));
+  renderQueuePanel();
+  renderArchive();
+  updateQueueHeaderBtn();
+}
+
+function toggleQueuePanel() {
+  document.getElementById('queuePanel').classList.toggle('open');
+}
+
+function updateQueueHeaderBtn() {
+  const btn = document.getElementById('queueHeaderBtn');
+  const count = document.getElementById('queueHeaderCount');
+  count.textContent = publishingQueue.length;
+  btn.classList.toggle('has-items', publishingQueue.length > 0);
+}
+
+// Open Send For Review modal from the generator toolbar (current article)
+function openSendForReviewModal() {
+  if (!rawArticleText) return;
+  const title = extractTitleFromArticle(rawArticleText) || 'Untitled Article';
+  currentReviewForModal = { title, text: rawArticleText, id: null };
+  document.getElementById('reviewModalTitle').textContent = title.slice(0, 120);
+  document.getElementById('reviewerEmail').value = '';
+  document.getElementById('reviewerName').value = '';
+  document.getElementById('reviewMessage').value = '';
+  hideAlert('reviewModalAlert');
+  document.getElementById('reviewModal').classList.add('open');
+}
+
+// Open Send For Review modal from an archive card
+function openSendForReviewModalFromArchive(id) {
+  const item = getArchive().find(x => x.id === id);
+  if (!item) return;
+  currentReviewForModal = item;
+  document.getElementById('reviewModalTitle').textContent = item.title.slice(0, 120);
+  document.getElementById('reviewerEmail').value = '';
+  document.getElementById('reviewerName').value = '';
+  document.getElementById('reviewMessage').value = '';
+  hideAlert('reviewModalAlert');
+  document.getElementById('reviewModal').classList.add('open');
+}
+
+function closeReviewModal(event) {
+  if (event && event.target !== document.getElementById('reviewModal')) return;
+  document.getElementById('reviewModal').classList.remove('open');
+  currentReviewForModal = null;
+}
+
+function sendForReview() {
+  const email   = document.getElementById('reviewerEmail').value.trim();
+  const name    = document.getElementById('reviewerName').value.trim();
+  const message = document.getElementById('reviewMessage').value.trim();
+  if (!email) { showAlert('reviewModalAlert', 'Please enter a reviewer email address.', 'error'); return; }
+  if (!email.includes('@')) { showAlert('reviewModalAlert', 'Please enter a valid email address.', 'error'); return; }
+  if (!currentReviewForModal) return;
+
+  const title   = currentReviewForModal.title || 'Article';
+  const catLabel = CATEGORIES.find(c => c.id === currentCategory)?.label || 'Content';
+  const itemId  = currentReviewForModal.id || 'current';
+  const repoUrl = `https://github.com/slapharma/SLAHEALTH_ClinicalReview_Generator`;
+
+  // Build a mailto link — the reviewer gets a link to the GitHub repo and the article title
+  const greeting = name ? `Dear ${name},\n\n` : '';
+  const customMsg = message ? `\n\n${message}\n\n` : '\n\n';
+  const body = encodeURIComponent(
+    `${greeting}You have been asked to review the following ${catLabel} article from SLA Health Content Generator:${customMsg}` +
+    `Article: ${title}\n` +
+    `Category: ${catLabel}\n` +
+    (itemId !== 'current' ? `Item ID: ${itemId}\n` : '') +
+    `\nPlease access the SLA Health Content Generator to view and review this article:\n${repoUrl}\n\n` +
+    `This is an automated message from SLA Health Content Generator.`
+  );
+  const subject = encodeURIComponent(`[SLA Health] Review Request: ${title.slice(0, 60)}`);
+  const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+
+  // Open the mailto link
+  window.location.href = mailtoLink;
+
+  showAlert('reviewModalAlert', `\u2713 Review email prepared for ${email}`, 'success');
+  setTimeout(() => {
+    document.getElementById('reviewModal').classList.remove('open');
+    currentReviewForModal = null;
+  }, 2000);
+}
+
+// ═══════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
@@ -2220,6 +2610,8 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   ghLoadAll().then(() => updateCategoryHeader(currentCategory));
+  renderQueuePanel();
+  updateQueueHeaderBtn();
 });
 </script>
 </body>
