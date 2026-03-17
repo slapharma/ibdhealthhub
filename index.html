@@ -57,7 +57,7 @@ header {
   gap: 1rem;
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
-.brand-logo { width: 38px; height: 38px; }
+.brand-logo { height: 34px; width: auto; background: #fff; border-radius: 5px; padding: 3px 6px; }
 .brand-name { color: #fff; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.5px; line-height: 1.1; }
 .brand-name span { color: var(--sla-orange); }
 .brand-sub { color: rgba(255,255,255,0.55); font-size: 0.6rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
@@ -829,17 +829,8 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 <!-- ══════════════════════════════ HEADER ══════════════════════════════ -->
 <header>
   <a class="brand" href="#">
-    <svg class="brand-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="44" height="44" rx="8" fill="#F47920"/>
-      <rect x="5" y="10" width="34" height="2.5" rx="1.25" fill="white"/>
-      <rect x="5" y="17" width="34" height="2.5" rx="1.25" fill="white"/>
-      <rect x="5" y="24" width="22" height="2.5" rx="1.25" fill="white"/>
-      <rect x="5" y="33" width="34" height="2.5" rx="1.25" fill="white" opacity="0.7"/>
-    </svg>
-    <div>
-      <div class="brand-name"><span>SLA Health</span></div>
-      <div class="brand-sub">Content Generator</div>
-    </div>
+    <img class="brand-logo" src="logo.png" alt="SLA Health"/>
+    <div class="brand-sub" style="margin-left:2px;">Content Generator</div>
   </a>
   <div class="header-right">
     <div class="header-tabs">
