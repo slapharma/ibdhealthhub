@@ -1474,6 +1474,16 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 
 <script>
 // ═══════════════════════════════════════════════════════════
+//  API CLIENT — content pipeline (replaces localStorage queue)
+// ═══════════════════════════════════════════════════════════
+const contentApi = {
+  async getAll()      { try { const r = await fetch('/api/content'); if (!r.ok) return []; return r.json(); } catch { return []; } },
+  async create(data)  { try { const r = await fetch('/api/content', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }); return r.ok ? r.json() : null; } catch { return null; } },
+  async update(id, d) { try { const r = await fetch(`/api/content/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) }); return r.ok ? r.json() : null; } catch { return null; } },
+  async remove(id)    { try { await fetch(`/api/content/${id}`, { method:'DELETE' }); } catch {} },
+};
+
+// ═══════════════════════════════════════════════════════════
 //  CONSTANTS
 // ═══════════════════════════════════════════════════════════
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
@@ -1569,7 +1579,7 @@ let comparisonReviewIds = [];
 let currentAnalysisText = '';
 let currentReportId = null;
 let currentReviewForModal = null; // article being sent for review
-let publishingQueue = JSON.parse(localStorage.getItem('sla_publishing_queue') || '[]');
+let publishingQueue = []; // populated async from API on page load
 
 // GitHub in-memory store — keyed by category
 // ghData[catId] = { reviews: [], prompts: [], comparisons: [], revSHA, promSHA, compSHA }
@@ -2905,48 +2915,48 @@ async function toggleApproved(id, checked) {
 }
 
 // Toggle an archive item in/out of the publishing queue
-function toggleQueueItem(id) {
+async function toggleQueueItem(id) {
   const allReviews = [];
   CATEGORIES.forEach(c => { allReviews.push(...ghData[c.id].reviews); });
   const item = allReviews.find(x => x.id === id);
   if (!item) return;
   const idx = publishingQueue.findIndex(q => q.id === id);
   if (idx >= 0) {
+    await contentApi.remove(publishingQueue[idx].id);
     publishingQueue.splice(idx, 1);
   } else {
-    publishingQueue.push({
-      id: item.id,
+    const created = await contentApi.create({
       title: item.title,
+      body: item.body || item.content || '',
+      excerpt: item.excerpt || '',
       category: item.category,
-      model: item.model,
-      wordCount: item.wordCount,
-      queuedAt: new Date().toISOString()
     });
+    if (created) {
+      publishingQueue.push({ ...created, model: item.model, wordCount: item.wordCount, queuedAt: created.createdAt });
+    }
   }
-  localStorage.setItem('sla_publishing_queue', JSON.stringify(publishingQueue));
   renderArchive();
   renderQueuePanel();
   updateQueueHeaderBtn();
 }
 
 // Queue the currently generated (unsaved) article for publishing
-function queueCurrentForPublishing() {
+async function queueCurrentForPublishing() {
   if (!rawArticleText) return;
   const title = document.getElementById('modelUsedBadge').textContent
     ? (extractTitleFromArticle(rawArticleText) || 'Untitled Article')
     : 'Untitled Article';
   const model = document.getElementById('modelUsedBadge').textContent.replace('\u2713 ','');
-  const tempId = 'tmp_' + Date.now();
-  publishingQueue.push({
-    id: tempId,
+  const wordCount = rawArticleText.split(/\s+/).filter(w=>w).length;
+  const created = await contentApi.create({
     title,
+    body: rawArticleText,
+    excerpt: rawArticleText.split(/\s+/).slice(0, 30).join(' ') + '…',
     category: currentCategory,
-    model,
-    wordCount: rawArticleText.split(/\s+/).filter(w=>w).length,
-    queuedAt: new Date().toISOString(),
-    unsaved: true
   });
-  localStorage.setItem('sla_publishing_queue', JSON.stringify(publishingQueue));
+  if (created) {
+    publishingQueue.push({ ...created, model, wordCount, queuedAt: created.createdAt });
+  }
   renderQueuePanel();
   updateQueueHeaderBtn();
   showAlert('generateAlert', '\u25b6 Added to Publishing Queue', 'success');
@@ -2985,9 +2995,10 @@ function renderQueuePanel() {
   });
 }
 
-function removeFromQueue(idx) {
+async function removeFromQueue(idx) {
+  const item = publishingQueue[idx];
+  if (item?.id) await contentApi.remove(item.id);
   publishingQueue.splice(idx, 1);
-  localStorage.setItem('sla_publishing_queue', JSON.stringify(publishingQueue));
   renderQueuePanel();
   renderArchive();
   updateQueueHeaderBtn();
@@ -3396,6 +3407,12 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   ghLoadAll().then(() => updateCategoryHeader(currentCategory));
+  // Load publishing queue from API (falls back to empty if API not available)
+  contentApi.getAll().then(items => {
+    publishingQueue = items.filter(i => i.status !== 'published');
+    renderQueuePanel();
+    updateQueueHeaderBtn();
+  });
   renderQueuePanel();
   updateQueueHeaderBtn();
 });
