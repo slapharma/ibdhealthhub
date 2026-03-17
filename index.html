@@ -3277,20 +3277,18 @@ async function generateHeroImage() {
   }
   if (!userPrompt) userPrompt = 'healthcare medical professional clinical';
 
-  // Use OpenRouter to generate an image description, then use a free image generation service
-  const imagePrompt = `Professional hero image for a healthcare article: ${userPrompt}. Wide format, 16:5 aspect ratio, photorealistic, high quality, clean modern medical/clinical aesthetic.`;
+  // Keep prompt concise — very long URLs can fail
+  const imagePrompt = `${userPrompt}, professional medical photography, clean clinical aesthetic`.substring(0, 180);
+  const seed = Math.floor(Math.random() * 99999);
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=1200&height=400&model=flux&seed=${seed}`;
 
-  // Use Pollinations.ai (free, no API key needed) for image generation
-  const encodedPrompt = encodeURIComponent(imagePrompt);
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1200&height=375&nologo=true&enhance=true`;
-
-  statusEl.textContent = 'Generating...';
+  statusEl.textContent = 'Generating… this can take 15–30 seconds';
   try {
-    // Pre-load the image
     await new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = resolve;
-      img.onerror = reject;
+      const timer = setTimeout(() => { img.src = ''; reject(new Error('Timed out')); }, 45000);
+      img.onload  = () => { clearTimeout(timer); resolve(); };
+      img.onerror = () => { clearTimeout(timer); reject(new Error('Load failed')); };
       img.src = imageUrl;
     });
     document.getElementById('heroAiPlaceholder').style.display = 'none';
@@ -3303,7 +3301,7 @@ async function generateHeroImage() {
     statusEl.textContent = '✓ Image generated';
   } catch (e) {
     alertEl.className = 'alert alert-error';
-    alertEl.textContent = 'Image generation failed. Try a different description.';
+    alertEl.textContent = `Image generation failed (${e.message}). Pollinations.ai may be busy — please try again in a moment.`;
     statusEl.textContent = '';
   }
   btn.disabled = false;
@@ -3321,32 +3319,27 @@ async function searchUnsplash() {
   document.getElementById('unsplashCredit').textContent = '';
 
   try {
-    // Use Unsplash Source API (no key needed for basic search)
-    // We use the Unsplash API via a public endpoint
-    const res = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=9&orientation=landscape&client_id=YOUR_UNSPLASH_KEY`);
-    if (!res.ok) throw new Error('Unsplash API error');
-    const data = await res.json();
-    unsplashResults = data.results || [];
-    if (!unsplashResults.length) {
-      statusEl.className = 'alert alert-error'; statusEl.textContent = 'No images found. Try a different search term.';
-      return;
-    }
+    // Generate 6 keyword-based images via Pollinations.ai (free, no API key needed)
+    statusEl.className = 'alert'; statusEl.textContent = 'Generating images…';
+    const variants = [
+      `${query}, professional medical photography, clinic`,
+      `${query}, healthcare professional, clean modern`,
+      `${query}, pharmaceutical research laboratory`,
+      `${query}, doctor patient consultation, bright`,
+      `${query}, medical science, high resolution`,
+      `${query}, hospital clinical setting, wide angle`
+    ];
+    unsplashResults = variants.map((prompt, i) => {
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt.substring(0,150))}?width=400&height=250&model=flux&seed=${i * 137}`;
+      return { urls: { small: url, full: url.replace('width=400&height=250', 'width=1200&height=400') }, user: { name: 'Pollinations AI' } };
+    });
     statusEl.className = 'alert hidden';
     grid.innerHTML = unsplashResults.map((img, i) => `
-      <img src="${img.urls.small}" class="unsplash-thumb" alt="${img.alt_description || query}" onclick="selectUnsplashImage(${i})" title="Photo by ${img.user.name}" />
+      <img src="${img.urls.small}" class="unsplash-thumb" alt="${query}" onclick="selectUnsplashImage(${i})" loading="lazy" onerror="this.style.opacity='0.3'" />
     `).join('');
-    document.getElementById('unsplashCredit').textContent = 'Photos from Unsplash. Click to select.';
+    document.getElementById('unsplashCredit').textContent = 'AI-generated images via Pollinations.ai. Click to select.';
   } catch (e) {
-    // Fallback: use Unsplash Source (random images by keyword, no API key)
-    statusEl.className = 'alert hidden';
-    const fallbackUrls = Array.from({length: 6}, (_, i) =>
-      `https://source.unsplash.com/400x250/?${encodeURIComponent(query)}&sig=${i}`
-    );
-    unsplashResults = fallbackUrls.map((url, i) => ({ fallbackUrl: url, user: { name: 'Unsplash' }, urls: { small: url, full: url } }));
-    grid.innerHTML = fallbackUrls.map((url, i) => `
-      <img src="${url}" class="unsplash-thumb" alt="${query}" onclick="selectUnsplashImage(${i})" />
-    `).join('');
-    document.getElementById('unsplashCredit').textContent = 'Photos from Unsplash. Click to select.';
+    statusEl.className = 'alert alert-error'; statusEl.textContent = 'Image search failed. Please try again.';
   }
 }
 
