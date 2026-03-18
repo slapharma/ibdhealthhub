@@ -2398,6 +2398,8 @@ function switchTab(tab) {
   if (tab === 'settings')  loadSettings();
   if (tab === 'dashboard') loadDashboard();
   if (tab === 'calendar')  loadCalendar();
+  const catHdr = document.getElementById('categoryHeader');
+  if (catHdr) catHdr.style.display = (tab === 'dashboard' || tab === 'calendar' || tab === 'pipeline') ? 'none' : '';
 }
 
 // ═══════════════════════════════════════════════════════════
