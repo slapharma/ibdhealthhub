@@ -869,6 +869,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 }
 .pipeline-col-header.col-draft    { background: #2c3e50; }
 .pipeline-col-header.col-review   { background: #1a5276; }
+.pipeline-col-header.col-rejected { background: #922b21; }
 .pipeline-col-header.col-approved { background: #1a7245; }
 .pipeline-col-header.col-scheduled{ background: #6c3483; }
 .pipeline-col-header.col-published{ background: var(--sla-navy); }
@@ -4280,7 +4281,10 @@ function openMonDrawer(itemId, source) {
     { label: 'Generated',         ts: generatedAt,           status: generatedAt ? 'done' : 'pending' },
     { label: 'Added to Pipeline', ts: item._source !== 'archive' ? item.createdAt : null, status: item._source !== 'archive' ? 'done' : 'pending' },
     { label: 'Sent for Review',   ts: item.sentForReviewAt || null, status: item.sentForReviewAt ? 'done' : (item.status === 'in_review' ? 'active' : 'pending') },
-    { label: 'Approved',          ts: item.approvedAt || null, status: item.approvedAt ? 'done' : (['approved','scheduled','published'].includes(item.status) ? 'done' : 'pending') },
+    { label: item.status === 'rejected' ? 'Changes Requested' : 'Approved',
+      ts: item.status === 'rejected' ? (item.rejectionComments?.[0]?.at || item.updatedAt) : (item.approvedAt || null),
+      status: item.status === 'rejected' ? 'rejected' : (item.approvedAt ? 'done' : (['approved','scheduled','published'].includes(item.status) ? 'done' : 'pending')),
+      comment: item.status === 'rejected' ? (item.rejectionComments || []).map(function(c){ return c.comment; }).join('\n') : null },
     { label: 'Scheduled',         ts: item.scheduledAt || null, status: item.scheduledAt ? 'done' : (item.status === 'scheduled' ? 'active' : 'pending') },
     { label: 'Published',         ts: item.publishedAt || null, status: item.publishedAt ? 'done' : 'pending' },
   ];
@@ -4291,12 +4295,19 @@ function openMonDrawer(itemId, source) {
     : timelineSteps;
 
   document.getElementById('monDrawerTimeline').innerHTML = steps.map(function(s) {
-    const dotCls = s.status === 'done' ? 'done' : (s.status === 'active' ? 'active' : '');
+    const isRej = s.status === 'rejected';
+    const dotCls = isRej ? '' : (s.status === 'done' ? 'done' : (s.status === 'active' ? 'active' : ''));
+    const dotStyle = isRej ? 'style="border-color:#e74c3c;background:#e74c3c;"' : '';
     const lblCls = s.status === 'pending' ? 'pending' : '';
+    const lblStyle = isRej ? 'style="color:#c0392b;"' : '';
+    const commentHtml = (s.comment && isRej)
+      ? '<div style="margin-top:6px;background:rgba(231,76,60,0.07);border-left:2px solid #e74c3c;padding:6px 10px;border-radius:0 4px 4px 0;font-size:0.68rem;color:var(--text);line-height:1.5;">' + escapeHtml(s.comment) + '</div>'
+      : '';
     return '<div class="mon-tl-step">' +
-      '<div class="mon-tl-dot ' + dotCls + '"></div>' +
-      '<div class="mon-tl-label ' + lblCls + '">' + escapeHtml(s.label) + '</div>' +
+      '<div class="mon-tl-dot ' + dotCls + '" ' + dotStyle + '></div>' +
+      '<div class="mon-tl-label ' + lblCls + '" ' + lblStyle + '>' + escapeHtml(s.label) + '</div>' +
       '<div class="mon-tl-ts">' + (s.ts ? fmtDateTime(s.ts) : '<span style="color:var(--text-muted);font-style:italic;">Pending</span>') + '</div>' +
+      commentHtml +
     '</div>';
   }).join('');
 
@@ -4666,11 +4677,12 @@ function calEventClick(id) {
 // ═══════════════════════════════════════════════════════════
 
 const STATUS_COLS = [
-  { id: 'draft',     label: 'Draft',     cls: 'col-draft' },
-  { id: 'in_review', label: 'In Review', cls: 'col-review' },
-  { id: 'approved',  label: 'Approved',  cls: 'col-approved' },
-  { id: 'scheduled', label: 'Scheduled', cls: 'col-scheduled' },
-  { id: 'published', label: 'Published', cls: 'col-published' },
+  { id: 'draft',     label: 'Draft',            cls: 'col-draft' },
+  { id: 'in_review', label: 'In Review',        cls: 'col-review' },
+  { id: 'rejected',  label: 'Changes Requested', cls: 'col-rejected' },
+  { id: 'approved',  label: 'Approved',         cls: 'col-approved' },
+  { id: 'scheduled', label: 'Scheduled',        cls: 'col-scheduled' },
+  { id: 'published', label: 'Published',        cls: 'col-published' },
 ];
 
 const CATEGORY_LABELS = {
@@ -4752,6 +4764,22 @@ function renderKanbanCard(item) {
     actions = item.wpPostUrl
       ? `<button class="btn btn-outline btn-sm" onclick="window.open('${item.wpPostUrl}','_blank')">View on WordPress ↗</button>`
       : '';
+  } else if (item.status === 'rejected') {
+    badge = `<div class="kbadge" style="background:rgba(231,76,60,0.12);color:#c0392b;border:1px solid rgba(231,76,60,0.3);">↩ Changes Requested</div>`;
+    const comments = (item.rejectionComments || []);
+    if (comments.length) {
+      extra = comments.map(c => `
+        <div style="margin-top:8px;background:rgba(231,76,60,0.06);border-left:3px solid #e74c3c;border-radius:0 6px 6px 0;padding:8px 10px;">
+          <div style="font-size:0.62rem;color:#c0392b;font-weight:700;margin-bottom:3px;">Reviewer feedback</div>
+          <div style="font-size:0.72rem;color:var(--text);line-height:1.5;">${escapeHtml(c.comment)}</div>
+          <div style="font-size:0.6rem;color:var(--text-muted);margin-top:3px;">${c.at ? new Date(c.at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''}</div>
+        </div>`).join('');
+    }
+    actions = `
+      <button class="btn btn-orange btn-sm" onclick="resetToDraft('${item.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 9a9 9 0 1 0 .49-3.5"/></svg>
+        Reset to Draft
+      </button>`;
   } else {
     // draft — show Send for Review AND direct Approve (bypass email)
     actions = `
@@ -4778,6 +4806,17 @@ function renderKanbanCard(item) {
       </div>
       ${actions ? `<div class="kcard-actions">${actions}</div>` : ''}
     </div>`;
+}
+
+async function resetToDraft(contentId) {
+  try {
+    const r = await fetch(`/api/content/${contentId}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'draft' }),
+    });
+    if (r.ok) loadPipeline();
+    else { const d = await r.json(); alert('Reset failed: ' + (d.error || r.statusText)); }
+  } catch(e) { alert('Reset failed: ' + e.message); }
 }
 
 async function sendForReview(contentId) {
