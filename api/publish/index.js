@@ -1,20 +1,37 @@
 import { kv } from '@vercel/kv';
 
-const CATEGORY_MAP = {
-  'clinical-reviews':  0,  // update with real WP category IDs
-  'industry-news':     1,
-  'op-eds':            0,
-  'white-papers':      0,
-  'infographics':      0,
+// Map app category IDs → WordPress category slugs
+const CATEGORY_SLUG_MAP = {
+  'industry-news':    'content-healthcare-news',
+  'clinical-reviews': 'content-clinical-reviews',
+  'op-eds':           'content-expert-opinions',
+  'white-papers':     'content-white-papers',
+  'infographics':     'content-infographic',
 };
 
-export function buildWpPayload(item, categoryMap = CATEGORY_MAP) {
+// Resolve a WP category slug to its numeric ID via the REST API.
+// Returns the ID on success, or null if not found / on error.
+async function resolveWpCategoryId(slug, siteUrl, authHeader) {
+  try {
+    const resp = await fetch(
+      `${siteUrl}/wp-json/wp/v2/categories?slug=${encodeURIComponent(slug)}&per_page=1`,
+      { headers: { Authorization: authHeader } }
+    );
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    return Array.isArray(data) && data.length > 0 ? data[0].id : null;
+  } catch {
+    return null;
+  }
+}
+
+export function buildWpPayload(item, categoryIds) {
   return {
     title:      item.title,
     content:    item.body,
     excerpt:    item.excerpt ?? '',
     status:     'publish',
-    categories: categoryMap[item.category] ? [categoryMap[item.category]] : [],
+    categories: Array.isArray(categoryIds) && categoryIds.length > 0 ? categoryIds : [],
   };
 }
 
@@ -22,14 +39,25 @@ async function publishToWordPress(item) {
   const credentials = Buffer.from(
     `${process.env.WP_USERNAME}:${process.env.WP_APP_PASSWORD}`
   ).toString('base64');
+  const authHeader = `Basic ${credentials}`;
+  const siteUrl    = process.env.WP_SITE_URL;
 
-  const response = await fetch(`${process.env.WP_SITE_URL}/wp-json/wp/v2/posts`, {
+  // Resolve category slug → numeric ID
+  const slug       = CATEGORY_SLUG_MAP[item.category] ?? null;
+  const categoryId = slug ? await resolveWpCategoryId(slug, siteUrl, authHeader) : null;
+  const categoryIds = categoryId ? [categoryId] : [];
+
+  if (slug && !categoryId) {
+    console.warn(`[publish] WP category slug "${slug}" not found — posting without category`);
+  }
+
+  const response = await fetch(`${siteUrl}/wp-json/wp/v2/posts`, {
     method: 'POST',
     headers: {
       'Content-Type':  'application/json',
-      'Authorization': `Basic ${credentials}`,
+      'Authorization': authHeader,
     },
-    body: JSON.stringify(buildWpPayload(item)),
+    body: JSON.stringify(buildWpPayload(item, categoryIds)),
   });
 
   if (!response.ok) {
