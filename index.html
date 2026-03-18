@@ -1043,6 +1043,26 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
   .calendar-day { min-height: 60px; }
 }
 
+/* Approve button states on archive cards */
+.btn-approve {
+  background: transparent; border: 1px solid #27ae60; color: #27ae60;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.btn-approve:hover { background: #27ae60; color: #fff; }
+.btn-approved-on {
+  background: #27ae60; border: 1px solid #27ae60; color: #fff;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.btn-approved-on:hover { background: #1e9450; border-color: #1e9450; }
+/* Approve button in pipeline draft column */
+.btn-approve-pipeline {
+  background: #27ae60; border: 1px solid #27ae60; color: #fff;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;
+  font-family: 'Montserrat', sans-serif; cursor: pointer; transition: all 0.15s;
+}
+.btn-approve-pipeline:hover { background: #1e9450; border-color: #1e9450; }
+
 /* ══════════════════════════════════════════════════
    CATEGORY BAR (replaces sidebar)
 ══════════════════════════════════════════════════ */
@@ -2877,16 +2897,17 @@ function renderArchive() {
         </div>
       </div>
       <div class="archive-card-actions">
-        <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:0.65rem;font-weight:700;color:var(--success);user-select:none;" title="Approved for publishing">
-          <input type="checkbox" ${isApproved ? 'checked' : ''} onchange="toggleApproved('${r.id}', this.checked)" style="accent-color:var(--success);width:13px;height:13px;cursor:pointer;" />
-          Approved
-        </label>
+        <button class="btn btn-xs ${isApproved ? 'btn-approved-on' : 'btn-approve'}" onclick="toggleApproved('${r.id}', ${!isApproved})" title="${isApproved ? 'Click to unapprove' : 'Approve this article'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="20 6 9 17 4 12"/></svg>
+          ${isApproved ? 'Approved' : 'Approve'}
+        </button>
         <button class="btn btn-orange btn-xs" onclick="loadArchiveItem('${r.id}')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="5 12 12 5 19 12"/><line x1="12" y1="5" x2="12" y2="19"/></svg>Load
         </button>
         <button class="btn btn-outline btn-xs" onclick="downloadArchivePDF('${r.id}')">PDF</button>
-        <button class="btn btn-outline btn-xs" style="${isQueued ? 'color:var(--sla-orange);border-color:rgba(244,121,32,0.5);' : ''}" onclick="toggleQueueItem('${r.id}')" title="${isQueued ? 'Remove from queue' : 'Queue for publishing'}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <button class="btn btn-outline btn-xs" style="${isQueued ? 'color:var(--sla-orange);border-color:rgba(244,121,32,0.5);' : ''}" onclick="toggleQueueItem('${r.id}')" title="${isQueued ? 'Remove from review queue' : 'Send for review'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          ${isQueued ? 'In Review' : 'Send for Review'}
         </button>
         <button class="btn btn-danger-outline btn-xs" onclick="deleteArchiveItem('${r.id}')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
@@ -3438,7 +3459,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 //  PUBLISHING QUEUE & REVIEW WORKFLOW
 // ═══════════════════════════════════════════════════════════
 
-// Toggle approved status on an archive item
+// Approve an archive item — marks approved AND adds to pipeline as draft
 async function toggleApproved(id, checked) {
   const archive = getArchive();
   const item = archive.find(x => x.id === id);
@@ -3447,33 +3468,63 @@ async function toggleApproved(id, checked) {
   try {
     await ghSaveReviews(currentCategory, `${checked ? 'Approve' : 'Unapprove'} item: ${item.title.slice(0,60)}`);
   } catch(e) { console.warn('Approved flag sync failed:', e.message); }
+
+  // When approving: add to pipeline as draft (bypasses email review flow)
+  if (checked) {
+    const alreadyQueued = publishingQueue.some(q => q.sourceId === id || q.title === item.title);
+    if (!alreadyQueued) {
+      const created = await contentApi.create({
+        title: item.title,
+        body: item.text || '',
+        excerpt: (item.text || '').split(/\s+/).slice(0, 30).join(' ') + '…',
+        category: item.category,
+        sourceId: id,
+      });
+      if (created) publishingQueue.push({ ...created, sourceId: id });
+    }
+  }
   renderArchive();
 }
 
-// Toggle an archive item in/out of the publishing queue
+// Send for review — adds archive item to pipeline as draft for review flow
 async function toggleQueueItem(id) {
   const allReviews = [];
   CATEGORIES.forEach(c => { allReviews.push(...ghData[c.id].reviews); });
   const item = allReviews.find(x => x.id === id);
   if (!item) return;
-  const idx = publishingQueue.findIndex(q => q.id === id);
+  const idx = publishingQueue.findIndex(q => q.sourceId === id || q.title === item.title);
   if (idx >= 0) {
     await contentApi.remove(publishingQueue[idx].id);
     publishingQueue.splice(idx, 1);
   } else {
     const created = await contentApi.create({
       title: item.title,
-      body: item.body || item.content || '',
-      excerpt: item.excerpt || '',
+      body: item.text || item.body || item.content || '',
+      excerpt: (item.text || '').split(/\s+/).slice(0, 30).join(' ') + '…',
       category: item.category,
+      sourceId: id,
     });
-    if (created) {
-      publishingQueue.push({ ...created, model: item.model, wordCount: item.wordCount, queuedAt: created.createdAt });
-    }
+    if (created) publishingQueue.push({ ...created, sourceId: id });
   }
   renderArchive();
-  renderQueuePanel();
-  updateQueueHeaderBtn();
+}
+
+// Direct approve in pipeline — jump straight to approved, bypassing email
+async function approveDirect(contentId) {
+  const btn = event.target.closest('.btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Approving…'; }
+  try {
+    const r = await fetch(`/api/content/${contentId}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'approved' })
+    });
+    if (r.ok) {
+      const updated = await r.json();
+      const idx = publishingQueue.findIndex(q => q.id === contentId);
+      if (idx >= 0) publishingQueue[idx] = { ...publishingQueue[idx], ...updated };
+      loadPipeline();
+    }
+  } catch(e) { if (btn) { btn.disabled = false; btn.textContent = 'Approve'; } }
 }
 
 // Queue the currently generated (unsaved) article for publishing
@@ -4200,9 +4251,16 @@ function renderKanbanCard(item) {
       ? `<button class="btn btn-outline btn-sm" onclick="window.open('${item.wpPostUrl}','_blank')">View on WordPress ↗</button>`
       : '';
   } else {
-    // draft
+    // draft — show Send for Review AND direct Approve (bypass email)
     actions = `
-      <button class="btn btn-orange btn-sm" onclick="sendForReview('${item.id}')">Send for Review</button>
+      <button class="btn btn-orange btn-sm" onclick="sendForReview('${item.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Send for Review
+      </button>
+      <button class="btn btn-approve-pipeline btn-sm" onclick="approveDirect('${item.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;"><polyline points="20 6 9 17 4 12"/></svg>
+        Approve
+      </button>
       <button class="btn btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c;" onclick="deletePipelineItem('${item.id}')">Delete</button>`;
   }
 
