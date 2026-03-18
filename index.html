@@ -902,31 +902,55 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
    RESPONSIVE — Mobile (≤640px)
 ══════════════════════════════════════════════════ */
 @media (max-width: 640px) {
-  /* Sidebar collapses to bottom bar on mobile */
-  .sidebar-toggle-btn { display: none; }
+  /* ── Mobile slide-out drawer ── */
+  .sidebar-toggle-btn { display: flex; }
   .topbar { padding: 0 0.75rem; gap: 8px; }
   .topbar-title { font-size: 0.78rem; }
-  body { flex-direction: column; }
-  /* Override collapsed width on mobile — sidebar is full-width bottom bar */
-  body.sidebar-collapsed .sidebar { width: 100%; }
+
+  /* Sidebar hides off-screen left, slides in on open */
   .sidebar {
-    width: 100%; height: auto; flex-direction: row;
-    position: fixed; bottom: 0; top: auto; left: 0; right: 0;
-    border-right: none; border-top: 1px solid rgba(255,255,255,0.1);
+    position: fixed;
+    top: 0; left: calc(-1 * var(--sidebar-w));
+    height: 100vh; width: var(--sidebar-w);
+    flex-direction: column;
+    border-right: 1px solid rgba(30,45,64,0.2);
+    border-top: none;
+    transition: left 0.25s ease, box-shadow 0.25s ease;
     z-index: 500;
-    transition: none;
+    box-shadow: none;
   }
-  .sidebar-logo { display: none; }
-  .sidebar-nav {
-    flex: 1; flex-direction: row; display: flex; overflow-x: auto;
-    padding: 0; scrollbar-width: none;
+  body.mobile-nav-open .sidebar {
+    left: 0;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.28);
   }
-  .nav-section-label { display: none; }
-  .nav-item { flex-direction: column; gap: 2px; padding: 6px 10px; border-left: none; border-top: 3px solid transparent; justify-content: center; align-items: center; flex-shrink: 0; min-width: 52px; }
-  .nav-item span { display: block; font-size: 0.52rem; }
-  .nav-item.active { border-top-color: var(--sla-teal); border-left-color: transparent; }
-  .sidebar-footer { display: none; }
-  .app-main { padding-bottom: 56px; }
+
+  /* Don't collapse to 52px strip on mobile — keep full width */
+  body.sidebar-collapsed .sidebar { width: var(--sidebar-w); }
+
+  /* Overlay backdrop */
+  .nav-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 499;
+    cursor: pointer;
+  }
+  body.mobile-nav-open .nav-overlay { display: block; }
+
+  /* Restore full sidebar layout inside the drawer */
+  .sidebar-logo { display: flex; }
+  .sidebar-nav { flex-direction: column; padding: 10px 0; overflow-y: auto; }
+  .nav-section-label { display: block; }
+  .nav-item {
+    flex-direction: row; gap: 9px; padding: 9px 16px;
+    border-left: 3px solid transparent; border-top: none;
+    justify-content: flex-start; align-items: center;
+  }
+  .nav-item span { display: block; font-size: 0.72rem; }
+  .nav-item.active { border-left-color: var(--sla-navy); border-top-color: transparent; }
+  .sidebar-footer { display: flex; }
+
+  .app-main { padding-bottom: 0; }
   .status-badge { font-size: 0.6rem; padding: 3px 7px; }
   .queue-btn-header { padding: 4px 8px; font-size: 0.62rem; }
   .queue-btn-header svg { display: none; }
@@ -1000,8 +1024,6 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
    RESPONSIVE — Small Mobile (≤400px)
 ══════════════════════════════════════════════════ */
 @media (max-width: 400px) {
-  .nav-item { min-width: 44px; padding: 5px 8px; }
-  .nav-item span { font-size: 0.48rem; }
   .category-header-title { font-size: 0.9rem; }
   .article-toolbar .btn span { display: none; }
   .article-toolbar .btn svg { display: inline !important; width: 13px; height: 13px; }
@@ -1535,6 +1557,9 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
     </div>
   </div>
 </aside>
+
+<!-- Mobile nav overlay backdrop -->
+<div class="nav-overlay" id="navOverlay" onclick="closeMobileNav()"></div>
 
 <!-- ══════════════════════════════ APP MAIN ══════════════════════════════ -->
 <div class="app-main">
@@ -2902,9 +2927,19 @@ const TAB_TITLES = {
   settings:     'Settings',
 };
 
+function closeMobileNav() {
+  document.body.classList.remove('mobile-nav-open');
+}
+
 function toggleSidebar() {
-  const collapsed = document.body.classList.toggle('sidebar-collapsed');
-  localStorage.setItem('sla_sidebar_collapsed', collapsed ? '1' : '0');
+  if (window.innerWidth <= 640) {
+    // Mobile: toggle slide-out drawer
+    document.body.classList.toggle('mobile-nav-open');
+  } else {
+    // Desktop/tablet: toggle icon-only collapsed strip
+    const collapsed = document.body.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('sla_sidebar_collapsed', collapsed ? '1' : '0');
+  }
 }
 
 function switchTab(tab) {
@@ -4429,6 +4464,13 @@ window.addEventListener('DOMContentLoaded', () => {
   loadApiKeyUI();
   updateCategoryHeader('clinical-reviews');
   switchTab('dashboard');
+
+  // Close mobile nav drawer when any nav item is tapped
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (window.innerWidth <= 640) closeMobileNav();
+    });
+  });
 
   const zone = document.getElementById('uploadZone');
   zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
