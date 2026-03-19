@@ -1337,6 +1337,37 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .cal-legend-dot.sched { background: rgba(243,156,18,0.5); }
 .cal-legend-dot.pub { background: rgba(39,174,96,0.5); }
 
+/* Calendar event popup */
+.cal-event-popup {
+  position: fixed; z-index: 800; min-width: 220px;
+  background: var(--card); border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(10,20,35,0.22); overflow: hidden;
+}
+.cal-event-popup-head {
+  padding: 11px 14px 10px; background: var(--sla-navy);
+}
+.cal-event-popup-title {
+  font-size: 0.78rem; font-weight: 800; color: #fff;
+  line-height: 1.35; white-space: normal; word-break: break-word;
+}
+.cal-event-popup-date {
+  font-size: 0.6rem; color: rgba(255,255,255,0.55); margin-top: 4px; font-weight: 600;
+}
+.cal-event-popup-actions { display: flex; flex-direction: column; }
+.cal-event-popup-btn {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 14px; font-size: 0.75rem; font-weight: 700;
+  color: var(--sla-navy); background: transparent; border: none;
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  text-align: left; width: 100%; transition: background 0.1s;
+  font-family: 'Montserrat', sans-serif;
+}
+.cal-event-popup-btn:last-child { border-bottom: none; }
+.cal-event-popup-btn:hover { background: rgba(0,201,167,0.07); }
+.cal-event-popup-btn.danger { color: var(--error); }
+.cal-event-popup-btn.danger:hover { background: rgba(231,76,60,0.07); }
+.cal-event-popup-btn svg { flex-shrink: 0; opacity: 0.7; }
+
 @media (max-width: 900px) {
   .dash-categories { grid-template-columns: repeat(3, 1fr); }
   .dash-metrics { grid-template-columns: repeat(2, 1fr); }
@@ -3171,6 +3202,29 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 </div><!-- /tab-view settings -->
 
 <!-- SCHEDULE MODAL -->
+<!-- CALENDAR EVENT POPUP -->
+<div id="calEventPopupOverlay" style="display:none;position:fixed;inset:0;z-index:799;" onclick="closeCalPopup()"></div>
+<div id="calEventPopup" class="cal-event-popup" style="display:none;">
+  <div class="cal-event-popup-head">
+    <div class="cal-event-popup-title" id="calPopupTitle">—</div>
+    <div class="cal-event-popup-date" id="calPopupDate"></div>
+  </div>
+  <div class="cal-event-popup-actions">
+    <button class="cal-event-popup-btn" onclick="calPopupLoadArticle()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Load Article
+    </button>
+    <button class="cal-event-popup-btn" onclick="calPopupEditSchedule()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Edit Schedule
+    </button>
+    <button class="cal-event-popup-btn danger" onclick="calPopupRemoveSchedule()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      Remove Schedule
+    </button>
+  </div>
+</div>
+
 <div class="sched-modal-overlay" id="schedModal">
   <div class="sched-modal">
     <div class="sched-modal-header">
@@ -6481,14 +6535,89 @@ function buildCalDay(date, otherMonth, events) {
 
   let html = `<div class="calendar-day-num">${date.getDate()}</div>`;
   (events[key] || []).forEach(ev => {
-    html += `<div class="cal-event ${ev.type}" title="${escapeHtml(ev.title)}" onclick="calEventClick('${ev.id}')">${escapeHtml(ev.title.substring(0,22))}${ev.title.length > 22 ? '...' : ''}</div>`;
+    html += `<div class="cal-event ${ev.type}" title="${escapeHtml(ev.title)}" onclick="calEventClick('${ev.id}',event)">${escapeHtml(ev.title.substring(0,22))}${ev.title.length > 22 ? '...' : ''}</div>`;
   });
   cell.innerHTML = html;
   return cell;
 }
 
-function calEventClick(id) {
-  switchTab('pipeline');
+let _calPopupId   = null;
+let _calPopupItem = null;
+
+function calEventClick(id, e) {
+  e.stopPropagation();
+  const item = (publishingQueue || []).find(function(i) { return i.id === id; });
+  if (!item) return;
+  _calPopupId   = id;
+  _calPopupItem = item;
+
+  // Populate popup content
+  document.getElementById('calPopupTitle').textContent = item.title || 'Untitled';
+  const schedDate = item.scheduledAt
+    ? new Date(item.scheduledAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : (item.publishedAt ? 'Published ' + new Date(item.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '');
+  document.getElementById('calPopupDate').textContent = schedDate;
+
+  // Show popup and position near the clicked element
+  const popup   = document.getElementById('calEventPopup');
+  const overlay = document.getElementById('calEventPopupOverlay');
+  popup.style.display   = 'block';
+  overlay.style.display = 'block';
+
+  const triggerRect = e.currentTarget.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // Start below the event chip
+  let top  = triggerRect.bottom + 6;
+  let left = triggerRect.left;
+
+  // After display, adjust so popup stays within viewport
+  requestAnimationFrame(function() {
+    const pr = popup.getBoundingClientRect();
+    if (left + pr.width > vw - 8)  left = Math.max(8, vw - pr.width - 8);
+    if (top  + pr.height > vh - 8) top  = Math.max(8, triggerRect.top - pr.height - 6);
+    popup.style.left = left + 'px';
+    popup.style.top  = top  + 'px';
+  });
+
+  popup.style.left = left + 'px';
+  popup.style.top  = top  + 'px';
+}
+
+function closeCalPopup() {
+  document.getElementById('calEventPopup').style.display   = 'none';
+  document.getElementById('calEventPopupOverlay').style.display = 'none';
+  _calPopupId   = null;
+  _calPopupItem = null;
+}
+
+function calPopupLoadArticle() {
+  const id = _calPopupId;
+  closeCalPopup();
+  viewArticleFromPipeline(id);
+}
+
+function calPopupEditSchedule() {
+  if (!_calPopupItem) return;
+  const { id, title, category } = { id: _calPopupId, title: _calPopupItem.title || '', category: _calPopupItem.category || '' };
+  closeCalPopup();
+  openScheduleModal(id, title, category);
+}
+
+async function calPopupRemoveSchedule() {
+  if (!_calPopupItem) return;
+  const title = _calPopupItem.title || 'this article';
+  if (!confirm('Remove schedule for "' + title + '"?\nThe article will return to Approved status.')) return;
+  const id = _calPopupId;
+  closeCalPopup();
+  try {
+    await contentApi.update(id, { status: 'approved', scheduledAt: null, gcalEventId: null });
+    renderCalendar();
+    if (document.getElementById('view-pipeline').classList.contains('active')) loadPipeline();
+  } catch(err) {
+    alert('Failed to remove schedule: ' + err.message);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
