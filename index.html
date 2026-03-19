@@ -3189,7 +3189,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
         </label>
         <input type="datetime-local" id="schedDateTime" />
       </div>
-      <div class="sched-field">
+      <div id="schedCategoryRow" class="sched-field">
         <label>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
           WordPress Category
@@ -3200,6 +3200,12 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
           <option value="op-eds">Opinion &amp; Commentary</option>
           <option value="white-papers">White Papers &amp; Guides</option>
         </select>
+      </div>
+      <div id="schedCategoryDisplay" style="display:none;font-size:0.72rem;color:var(--text-muted);display:none;align-items:center;gap:7px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;flex-shrink:0;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <span>WordPress Category:</span>
+        <strong id="schedCategoryLabel" style="color:var(--sla-navy);font-weight:800;"></strong>
+        <span style="font-size:0.6rem;color:var(--sla-teal);font-weight:700;margin-left:2px;">✓ Auto-detected</span>
       </div>
       <div class="sched-gcal-row">
         <div class="sched-gcal-info">
@@ -6644,7 +6650,7 @@ function renderKanbanCard(item) {
   } else if (item.status === 'approved') {
     badge   = `<div class="kbadge kbadge-approved">✓ Approved</div>`;
     actions = `
-      <button class="btn btn-orange btn-sm" onclick="openScheduleModal('${item.id}','${escapeHtml(item.title)}')">Schedule Post</button>
+      <button class="btn btn-orange btn-sm" onclick="openScheduleModal('${item.id}','${escapeHtml(item.title)}','${item.category||''}')">Schedule Post</button>
       <button class="btn btn-outline btn-sm" onclick="publishNow('${item.id}')">Publish Now</button>`;
   } else if (item.status === 'scheduled') {
     const schedDate = item.scheduledAt ? new Date(item.scheduledAt).toLocaleString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
@@ -6653,7 +6659,7 @@ function renderKanbanCard(item) {
       ? `<div class="kcard-service-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Google Calendar synced ✓</div>`
       : '';
     actions = `
-      <button class="btn btn-outline btn-sm" onclick="openScheduleModal('${item.id}','${escapeHtml(item.title)}')">Edit Schedule</button>
+      <button class="btn btn-outline btn-sm" onclick="openScheduleModal('${item.id}','${escapeHtml(item.title)}','${item.category||''}')">Edit Schedule</button>
       <button class="btn btn-orange btn-sm" onclick="publishNow('${item.id}')">Publish Now</button>`;
   } else if (item.status === 'published') {
     const pubDate = item.publishedAt ? new Date(item.publishedAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '';
@@ -6815,13 +6821,32 @@ async function deletePipelineItem(contentId) {
 let _schedContentId = null;
 let _schedGcalOn    = true;
 
-function openScheduleModal(contentId, title) {
+function openScheduleModal(contentId, title, category) {
   _schedContentId = contentId;
   document.getElementById('schedModalTitle').textContent = title;
   // Default to tomorrow 09:00
   const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0);
-  document.getElementById('schedDateTime').value =
-    d.toISOString().slice(0, 16);
+  document.getElementById('schedDateTime').value = d.toISOString().slice(0, 16);
+
+  const rowEl     = document.getElementById('schedCategoryRow');
+  const displayEl = document.getElementById('schedCategoryDisplay');
+  const labelEl   = document.getElementById('schedCategoryLabel');
+
+  if (category) {
+    // Pre-select the dropdown value (still used if confirmSchedule ever reads it)
+    const sel = document.getElementById('schedCategory');
+    if (sel) sel.value = category;
+    // Show read-only badge, hide the dropdown field
+    const catLabel = (CATEGORIES.find(function(c) { return c.id === category; }) || {}).label || category;
+    if (labelEl) labelEl.textContent = catLabel;
+    if (rowEl)     rowEl.style.display     = 'none';
+    if (displayEl) displayEl.style.display = 'flex';
+  } else {
+    // No category known — show the dropdown, hide the badge
+    if (rowEl)     rowEl.style.display     = '';
+    if (displayEl) displayEl.style.display = 'none';
+  }
+
   updateSchedGcalToggle();
   document.getElementById('schedModal').classList.add('open');
 }
