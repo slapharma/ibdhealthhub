@@ -1165,21 +1165,39 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .social-conn-creds label:first-child { margin-top: 0; }
 .social-conn-creds input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1px solid var(--border); border-radius: 0; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; background: var(--card); color: var(--sla-navy); }
 .social-conn-creds-actions { display: flex; gap: 8px; margin-top: 10px; }
+/* ── Prompts Page ── */
 .prompts-view { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
-.prompts-view-title { font-size: 1rem; font-weight: 800; color: var(--sla-navy); margin: 0 0 4px; }
-.prompts-view-sub { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 1.5rem; }
-.prompt-cat-block { background: var(--card); border: 1px solid var(--border); margin-bottom: 1rem; }
+.prompt-cat-block { background: var(--card); border: 1px solid var(--border); margin-bottom: 1.25rem; }
 .prompt-cat-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--sla-navy); }
 .prompt-cat-header-title { font-size: 0.72rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; flex: 1; }
-.prompt-list { display: flex; flex-direction: column; gap: 0; }
-.prompt-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
-.prompt-item:last-child { border-bottom: none; }
-.prompt-item-num { font-size: 0.6rem; font-weight: 800; color: var(--text-muted); min-width: 22px; padding-top: 3px; }
-.prompt-item-text { flex: 1; font-size: 0.72rem; line-height: 1.6; color: var(--text); white-space: pre-wrap; font-family: 'Montserrat', sans-serif; resize: vertical; border: none; background: transparent; width: 100%; outline: none; }
-.prompt-item-text:focus { background: var(--bg); padding: 4px 6px; }
-.prompt-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.prompt-add-row { padding: 12px 16px; border-top: 1px solid var(--border); background: var(--bg); display: flex; gap: 8px; align-items: center; }
-.prompt-add-row textarea { flex: 1; padding: 7px 10px; border: 1px solid var(--border); font-family: 'Montserrat', sans-serif; font-size: 0.72rem; resize: vertical; min-height: 60px; border-radius: 0; color: var(--sla-navy); background: var(--card); }
+.prompt-cat-header-count { font-size: 0.6rem; color: rgba(255,255,255,0.55); }
+.prompt-list { display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--bg); }
+
+/* Prompt card */
+.prompt-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid transparent; }
+.prompt-card.is-default { border-left-color: var(--sla-teal); }
+.prompt-card-head { display: flex; align-items: center; gap: 8px; padding: 7px 12px; background: rgba(30,45,64,0.03); border-bottom: 1px solid var(--border); }
+.prompt-card-num { font-size: 0.58rem; font-weight: 800; color: var(--text-muted); }
+.prompt-card-default-badge { font-size: 0.55rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; background: rgba(0,201,167,0.12); color: #009e85; }
+.prompt-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.prompt-card-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.prompt-card-field label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--sla-navy); display: block; margin-bottom: 4px; }
+.prompt-card-field input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1px solid var(--border); border-radius: 0; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; color: var(--sla-navy); background: var(--bg); outline: none; }
+.prompt-card-field input:focus { border-color: var(--sla-teal); background: var(--card); }
+.prompt-card-content-label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--sla-navy); }
+.prompt-card-textarea { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid var(--border); border-radius: 0; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; line-height: 1.6; color: var(--text); background: var(--bg); resize: vertical; min-height: 100px; outline: none; }
+.prompt-card-textarea:focus { border-color: var(--sla-teal); background: var(--card); }
+.prompt-card-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.prompt-card-default-note { font-size: 0.65rem; color: var(--sla-teal); font-weight: 700; }
+
+/* Add prompt form */
+.prompt-add-form { padding: 12px 14px; border-top: 1px solid var(--border); background: rgba(30,45,64,0.02); display: flex; flex-direction: column; gap: 8px; }
+.prompt-add-form-title { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); }
+.prompt-add-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.prompt-add-field label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--sla-navy); display: block; margin-bottom: 4px; }
+.prompt-add-field input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1px solid var(--border); border-radius: 0; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; color: var(--sla-navy); background: var(--card); }
+.prompt-add-textarea { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid var(--border); border-radius: 0; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; resize: vertical; min-height: 70px; color: var(--sla-navy); background: var(--card); }
+.prompt-add-actions { display: flex; gap: 8px; }
 
 /* ══════════════════════════════════════════════════
    DASHBOARD TAB
@@ -2421,9 +2439,28 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 <!-- ═══════════════ SETTINGS TAB ═══════════════ -->
 <!-- PROMPTS TAB -->
 <div class="tab-view" id="view-prompts">
+  <!-- Prompts page header — same visual language as Generate's category header -->
+  <div class="category-header" style="flex-shrink:0;">
+    <div class="category-header-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </div>
+    <div class="category-header-text">
+      <div class="category-header-label">Prompt Library</div>
+      <div class="category-header-title">Generation <span>Prompts</span></div>
+      <div class="category-header-desc">Name, author and manage prompts per content category · the default prompt drives AI generation</div>
+    </div>
+    <div class="category-header-stats">
+      <div class="cat-stat">
+        <div class="cat-stat-num" id="promptsStatTotal">—</div>
+        <div class="cat-stat-label">Total Prompts</div>
+      </div>
+      <div class="cat-stat">
+        <div class="cat-stat-num" id="promptsStatCats">—</div>
+        <div class="cat-stat-label">Categories</div>
+      </div>
+    </div>
+  </div>
   <div class="prompts-view">
-    <div class="prompts-view-title">Prompt Library</div>
-    <div class="prompts-view-sub">Manage generation prompts for each content category. The active prompt is used when generating content.</div>
     <div id="promptCatBlocks">
       <div style="color:var(--text-muted);font-size:0.82rem;padding:2rem;">Loading prompts…</div>
     </div>
@@ -5939,71 +5976,186 @@ function disconnectSocialConn(platId) {
 }
 
 // ─── Prompts tab ───
+// Prompt object shape: { name: string, createdBy: string, text: string }
+// stored[0] is always the active default for generation
+
 function getPromptsForCat(catId) {
-  try { return JSON.parse(localStorage.getItem('sla_prompts_' + catId) || 'null'); } catch(_) { return null; }
+  try {
+    const raw = JSON.parse(localStorage.getItem('sla_prompts_' + catId) || 'null');
+    if (!raw) return null;
+    // Migrate legacy plain strings to objects
+    return raw.map(function(p) {
+      if (typeof p === 'string') return { name: 'Default Prompt', createdBy: 'SLA Health', text: p };
+      return p;
+    });
+  } catch(_) { return null; }
 }
+
 function savePromptsForCat(catId, arr) {
   localStorage.setItem('sla_prompts_' + catId, JSON.stringify(arr));
 }
+
 function getEffectivePrompt(catId) {
   const stored = getPromptsForCat(catId);
-  return (stored && stored.length) ? stored[0] : DEFAULT_PROMPT;
+  if (stored && stored.length) {
+    const first = stored[0];
+    return (typeof first === 'string') ? first : (first.text || DEFAULT_PROMPT);
+  }
+  return DEFAULT_PROMPT;
 }
 
 function loadPromptsTab() {
   const el = document.getElementById('promptCatBlocks');
   if (!el) return;
+
+  // Update header stats
+  let totalPrompts = 0;
+  CATEGORIES.forEach(function(cat) {
+    const p = getPromptsForCat(cat.id);
+    totalPrompts += p ? p.length : 1;
+  });
+  const statTotal = document.getElementById('promptsStatTotal');
+  const statCats  = document.getElementById('promptsStatCats');
+  if (statTotal) statTotal.textContent = totalPrompts;
+  if (statCats)  statCats.textContent  = CATEGORIES.length;
+
+  const DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: DEFAULT_PROMPT };
+
   el.innerHTML = CATEGORIES.map(function(cat) {
-    const prompts = getPromptsForCat(cat.id) || [DEFAULT_PROMPT];
-    const promptItems = prompts.map(function(text, i) {
-      const safeId = cat.id + '-' + i;
-      return '<div class="prompt-item" id="prompt-item-' + safeId + '">' +
-        '<div class="prompt-item-num">#' + (i+1) + '</div>' +
-        '<textarea class="prompt-item-text" id="prompt-text-' + safeId + '" rows="4">' + escapeHtml(text) + '</textarea>' +
-        '<div class="prompt-item-actions">' +
-          '<button class="btn btn-orange btn-xs" onclick="savePromptItem(\'' + cat.id + '\',' + i + ')">Save</button>' +
-          (i > 0 ? '<button class="btn btn-outline btn-xs" onclick="deletePromptItem(\'' + cat.id + '\',' + i + ')">✕</button>' : '') +
+    const prompts = getPromptsForCat(cat.id) || [DEFAULT_OBJ];
+
+    const promptCards = prompts.map(function(p, i) {
+      const safeId  = cat.id + '-' + i;
+      const isDefault = i === 0;
+      const pText   = typeof p === 'string' ? p : (p.text || '');
+      const pName   = typeof p === 'string' ? 'Default Prompt' : (p.name || '');
+      const pBy     = typeof p === 'string' ? 'SLA Health' : (p.createdBy || '');
+
+      return '<div class="prompt-card' + (isDefault ? ' is-default' : '') + '" id="prompt-card-' + safeId + '">' +
+        '<div class="prompt-card-head">' +
+          '<span class="prompt-card-num">#' + (i + 1) + '</span>' +
+          (isDefault ? '<span class="prompt-card-default-badge">Default</span>' : '') +
+          '<div style="flex:1;"></div>' +
+          (!isDefault ? '<button class="btn btn-outline btn-xs" onclick="setDefaultPrompt(\'' + cat.id + '\',' + i + ')">Set as Default</button>' : '') +
+          '<button class="btn btn-outline btn-xs" style="color:var(--danger,#e74c3c);" onclick="deletePromptItem(\'' + cat.id + '\',' + i + ')">Remove</button>' +
+        '</div>' +
+        '<div class="prompt-card-body">' +
+          '<div class="prompt-card-fields">' +
+            '<div class="prompt-card-field">' +
+              '<label>Prompt Name</label>' +
+              '<input type="text" id="prompt-name-' + safeId + '" value="' + escapeHtml(pName) + '" placeholder="e.g. Formal Clinical Style" />' +
+            '</div>' +
+            '<div class="prompt-card-field">' +
+              '<label>Created By</label>' +
+              '<input type="text" id="prompt-by-' + safeId + '" value="' + escapeHtml(pBy) + '" placeholder="Author name" />' +
+            '</div>' +
+          '</div>' +
+          '<div class="prompt-card-content-label">Prompt Content</div>' +
+          '<textarea class="prompt-card-textarea" id="prompt-text-' + safeId + '" rows="5">' + escapeHtml(pText) + '</textarea>' +
+          '<div class="prompt-card-footer">' +
+            '<button class="btn btn-orange btn-sm" onclick="savePromptItem(\'' + cat.id + '\',' + i + ')">Save Changes</button>' +
+            (isDefault ? '<span class="prompt-card-default-note">✓ Active — used for generation in ' + escapeHtml(cat.label) + '</span>' : '') +
+          '</div>' +
         '</div>' +
       '</div>';
     }).join('');
+
     return '<div class="prompt-cat-block">' +
       '<div class="prompt-cat-header">' +
-        '<div class="prompt-cat-header-title">' + cat.label + '</div>' +
-        '<span style="font-size:0.6rem;color:rgba(255,255,255,0.55);">' + prompts.length + ' prompt' + (prompts.length !== 1 ? 's' : '') + '</span>' +
+        '<div class="prompt-cat-header-title">' + escapeHtml(cat.label) + '</div>' +
+        '<span class="prompt-cat-header-count">' + prompts.length + ' prompt' + (prompts.length !== 1 ? 's' : '') + '</span>' +
       '</div>' +
-      '<div class="prompt-list" id="prompt-list-' + cat.id + '">' + promptItems + '</div>' +
-      '<div class="prompt-add-row">' +
-        '<textarea placeholder="Add a new prompt for ' + cat.label + '…" id="prompt-new-' + cat.id + '" rows="2"></textarea>' +
-        '<button class="btn btn-orange btn-sm" onclick="addPromptToCat(\'' + cat.id + '\')">Add Prompt</button>' +
+      '<div class="prompt-list">' + promptCards + '</div>' +
+      '<div class="prompt-add-form">' +
+        '<div class="prompt-add-form-title">Add New Prompt</div>' +
+        '<div class="prompt-add-fields">' +
+          '<div class="prompt-add-field"><label>Prompt Name</label><input type="text" id="prompt-new-name-' + cat.id + '" placeholder="e.g. Concise Summary Style" /></div>' +
+          '<div class="prompt-add-field"><label>Created By</label><input type="text" id="prompt-new-by-' + cat.id + '" placeholder="Author name" /></div>' +
+        '</div>' +
+        '<textarea class="prompt-add-textarea" placeholder="Enter prompt content for ' + escapeHtml(cat.label) + '…" id="prompt-new-' + cat.id + '" rows="3"></textarea>' +
+        '<div class="prompt-add-actions">' +
+          '<button class="btn btn-orange btn-sm" onclick="addPromptToCat(\'' + cat.id + '\')">Add Prompt</button>' +
+        '</div>' +
       '</div>' +
     '</div>';
   }).join('');
 }
 
 function savePromptItem(catId, idx) {
-  const el = document.getElementById('prompt-text-' + catId + '-' + idx);
-  if (!el) return;
-  const prompts = getPromptsForCat(catId) || [DEFAULT_PROMPT];
-  prompts[idx] = el.value;
+  const nameEl = document.getElementById('prompt-name-' + catId + '-' + idx);
+  const byEl   = document.getElementById('prompt-by-'   + catId + '-' + idx);
+  const textEl = document.getElementById('prompt-text-' + catId + '-' + idx);
+  if (!textEl) return;
+
+  const DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: DEFAULT_PROMPT };
+  const prompts = getPromptsForCat(catId) || [DEFAULT_OBJ];
+
+  prompts[idx] = {
+    name:      nameEl ? nameEl.value.trim() : (prompts[idx].name || ''),
+    createdBy: byEl   ? byEl.value.trim()   : (prompts[idx].createdBy || ''),
+    text:      textEl.value.trim(),
+  };
   savePromptsForCat(catId, prompts);
-  el.style.background = 'rgba(0,201,167,0.08)';
-  setTimeout(function() { el.style.background = ''; }, 800);
+
+  // If this is the default (idx 0) and the generator is on this category, sync the textarea
+  if (idx === 0 && currentCategory === catId) {
+    const genTA = document.getElementById('promptTextarea');
+    if (genTA) genTA.value = prompts[0].text;
+  }
+
+  textEl.style.background = 'rgba(0,201,167,0.08)';
+  setTimeout(function() { textEl.style.background = ''; }, 800);
+}
+
+function setDefaultPrompt(catId, idx) {
+  const prompts = getPromptsForCat(catId);
+  if (!prompts || idx === 0) return;
+
+  // Move selected prompt to front — index 0 is always the default
+  const selected = prompts.splice(idx, 1)[0];
+  prompts.unshift(selected);
+  savePromptsForCat(catId, prompts);
+
+  // Sync to generator textarea if this category is active
+  if (currentCategory === catId) {
+    const genTA = document.getElementById('promptTextarea');
+    if (genTA) genTA.value = selected.text || selected;
+  }
+
+  loadPromptsTab();
 }
 
 function deletePromptItem(catId, idx) {
-  const prompts = getPromptsForCat(catId) || [DEFAULT_PROMPT];
+  const prompts = getPromptsForCat(catId) || [];
+  if (prompts.length <= 1) {
+    alert('Each category must keep at least one prompt.');
+    return;
+  }
   prompts.splice(idx, 1);
   savePromptsForCat(catId, prompts);
   loadPromptsTab();
 }
 
 function addPromptToCat(catId) {
-  const el = document.getElementById('prompt-new-' + catId);
-  if (!el || !el.value.trim()) return;
-  const prompts = getPromptsForCat(catId) || [DEFAULT_PROMPT];
-  prompts.push(el.value.trim());
+  const textEl = document.getElementById('prompt-new-' + catId);
+  const nameEl = document.getElementById('prompt-new-name-' + catId);
+  const byEl   = document.getElementById('prompt-new-by-'   + catId);
+  if (!textEl || !textEl.value.trim()) return;
+
+  const DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: DEFAULT_PROMPT };
+  const prompts = getPromptsForCat(catId) || [DEFAULT_OBJ];
+
+  prompts.push({
+    name:      (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : ('Prompt ' + (prompts.length + 1)),
+    createdBy: (byEl   && byEl.value.trim())   ? byEl.value.trim()   : '',
+    text:      textEl.value.trim(),
+  });
   savePromptsForCat(catId, prompts);
-  el.value = '';
+
+  textEl.value = '';
+  if (nameEl) nameEl.value = '';
+  if (byEl)   byEl.value   = '';
+
   loadPromptsTab();
 }
 
