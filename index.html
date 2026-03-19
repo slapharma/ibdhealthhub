@@ -1055,19 +1055,19 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .pipeline-col-header.col-published{ background: var(--sla-navy); }
 .pipeline-col-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 6px; }
 .pipeline-col-label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); display: inline-block; }
-.pipeline-col-count { background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.9); font-size: 0.6rem; font-weight: 800; padding: 1px 7px; border-radius: 99px; }
+.pipeline-col-count { background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.9); font-size: 0.6rem; font-weight: 800; padding: 1px 7px; border-radius: 0; }
 .pipeline-col-body { padding: 8px; min-height: 80px; display: flex; flex-direction: column; gap: 8px; }
 .pipeline-empty { text-align: center; padding: 20px 12px; color: var(--text-muted); font-size: 0.68rem; opacity: 0.6; }
 
 /* Kanban cards */
 .kcard { background: var(--card); border: 1px solid var(--border); border-radius: 0; padding: 10px 12px; box-shadow: 0 1px 3px rgba(30,45,64,0.06); cursor: default; }
-.kcard-cat { font-size: 0.55rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; background: var(--sla-orange); color: #fff; padding: 2px 7px; border-radius: 99px; display: inline-block; margin-bottom: 6px; }
+.kcard-cat { font-size: 0.55rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; background: var(--sla-orange); color: #fff; padding: 2px 7px; border-radius: 0; display: inline-block; margin-bottom: 6px; }
 .kcard-title { font-size: 0.75rem; font-weight: 700; color: var(--sla-navy); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
 .kcard-meta { display: flex; gap: 10px; font-size: 0.62rem; color: var(--text-muted); margin-bottom: 8px; }
 .kcard-meta svg { width: 10px; height: 10px; vertical-align: middle; margin-right: 2px; }
 
 /* Status badges */
-.kbadge { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; border: 1.5px solid; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px; }
+.kbadge { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; padding: 2px 8px; border-radius: 0; border: 1.5px solid; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px; }
 .kbadge-approved  { color: #1a7245; border-color: #1a7245; background: rgba(26,114,69,0.08); }
 .kbadge-scheduled { color: #6c3483; border-color: #6c3483; background: rgba(108,52,131,0.08); }
 .kbadge-published { color: #fff; border-color: var(--sla-navy); background: var(--sla-navy); }
@@ -1094,6 +1094,50 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 
 /* Pipeline loading */
 .pipeline-loading { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.78rem; }
+
+/* ── Pipeline layout toggles ── */
+.pipeline-layout-btns { display: flex; gap: 2px; border: 1px solid var(--border); overflow: hidden; }
+.pipeline-layout-btn { padding: 5px 9px; background: transparent; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.12s; }
+.pipeline-layout-btn:hover { background: rgba(30,45,64,0.06); color: var(--sla-navy); }
+.pipeline-layout-btn.active { background: var(--sla-navy); color: #fff; }
+.pipeline-layout-btn svg { width: 14px; height: 14px; }
+
+/* ── Stacked kanban ── */
+.pipeline-board.layout-stacked { flex-direction: column; overflow-x: hidden; overflow-y: auto; align-items: stretch; gap: 10px; }
+.pipeline-board.layout-stacked .pipeline-col { flex: none; min-width: 0; width: 100%; }
+.pipeline-board.layout-stacked .pipeline-col-body { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+.pipeline-board.layout-stacked .kcard { width: 240px; flex-shrink: 0; }
+
+/* ── List view ── */
+.pipeline-board.layout-list { flex-direction: column; overflow-x: hidden; overflow-y: auto; align-items: stretch; gap: 0; padding-bottom: 1.25rem; }
+.pipeline-list-group { margin-bottom: 10px; }
+.pipeline-list-group-hdr { display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); }
+.pipeline-list-group-hdr-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #fff; flex: 1; }
+.pipeline-list-group-hdr-count { background: rgba(255,255,255,0.2); color: #fff; font-size: 0.58rem; font-weight: 800; padding: 1px 6px; }
+.pipeline-list-group-chevron { color: rgba(255,255,255,0.7); transition: transform 0.18s; }
+.pipeline-list-group.collapsed .pipeline-list-group-chevron { transform: rotate(-90deg); }
+.pipeline-list-rows { display: flex; flex-direction: column; border: 1px solid var(--border); border-top: none; }
+.pipeline-list-group.collapsed .pipeline-list-rows { display: none; }
+.pipeline-list-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px; background: var(--card); border-bottom: 1px solid var(--border); }
+.pipeline-list-row:last-child { border-bottom: none; }
+.pipeline-list-row:hover { background: rgba(0,201,167,0.03); }
+.pipeline-list-title { flex: 1; font-size: 0.75rem; font-weight: 600; color: var(--sla-navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pipeline-list-cat { font-size: 0.55rem; font-weight: 800; text-transform: uppercase; background: var(--sla-orange); color: #fff; padding: 2px 6px; white-space: nowrap; flex-shrink: 0; }
+.pipeline-list-date { font-size: 0.62rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+.pipeline-list-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+/* ── New Article dropdown ── */
+.pipeline-new-wrap { position: relative; }
+.pipeline-new-menu {
+  position: absolute; top: calc(100% + 4px); right: 0;
+  background: var(--card); border: 1px solid var(--border);
+  min-width: 180px; z-index: 300; box-shadow: 0 4px 16px rgba(30,45,64,0.15);
+  display: none;
+}
+.pipeline-new-menu.open { display: block; }
+.pipeline-new-menu-item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 0.72rem; font-weight: 600; color: var(--sla-navy); cursor: pointer; border-bottom: 1px solid var(--border); width: 100%; background: none; border-left: none; border-right: none; border-top: none; text-align: left; font-family: 'Montserrat', sans-serif; }
+.pipeline-new-menu-item:last-child { border-bottom: none; }
+.pipeline-new-menu-item:hover { background: rgba(0,201,167,0.06); }
 
 /* ═══════════════════════════════════════════════════════════
    SCHEDULE MODAL
@@ -1316,7 +1360,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .btn-approve-pipeline {
   background: #27ae60; border: 1px solid #27ae60; color: #fff;
   display: inline-flex; align-items: center; gap: 4px;
-  padding: 5px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;
+  padding: 5px 10px; border-radius: 0; font-size: 0.72rem; font-weight: 700;
   font-family: 'Montserrat', sans-serif; cursor: pointer; transition: all 0.15s;
 }
 .btn-approve-pipeline:hover { background: #1e9450; border-color: #1e9450; }
@@ -2419,15 +2463,37 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
         <div class="pipeline-title">Content <span>Pipeline</span></div>
         <div class="pipeline-subtitle" id="pipelineSubtitle">Loading…</div>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <!-- Layout toggle buttons -->
+        <div class="pipeline-layout-btns" id="pipelineLayoutBtns">
+          <button class="pipeline-layout-btn active" id="layout-btn-kanban-h" onclick="setPipelineLayout('kanban-h')" title="Horizontal Kanban">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="5" height="18"/><rect x="9.5" y="3" width="5" height="18"/><rect x="17" y="3" width="5" height="18"/></svg>
+          </button>
+          <button class="pipeline-layout-btn" id="layout-btn-kanban-v" onclick="setPipelineLayout('kanban-v')" title="Stacked Kanban">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="6"/><rect x="2" y="10" width="20" height="6"/><rect x="2" y="18" width="20" height="4"/></svg>
+          </button>
+          <button class="pipeline-layout-btn" id="layout-btn-list" onclick="setPipelineLayout('list')" title="List View">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="switchTab('calendar')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><rect x="3" y="4" width="18" height="18" rx="0"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Calendar
+        </button>
         <button class="btn btn-outline btn-sm" onclick="loadPipeline()" title="Refresh">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          Refresh
         </button>
-        <button class="btn btn-orange btn-sm" onclick="switchTab('generator')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Article
-        </button>
+        <!-- New Article dropdown -->
+        <div class="pipeline-new-wrap" id="pipelineNewWrap">
+          <button class="btn btn-orange btn-sm" onclick="togglePipelineNewMenu(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Article
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:9px;height:9px;margin-left:2px;"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="pipeline-new-menu" id="pipelineNewMenu">
+            <!-- Rendered by renderPipelineNewMenu() -->
+          </div>
+        </div>
       </div>
     </div>
     <div class="pipeline-board" id="pipelineBoard">
@@ -4641,6 +4707,14 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Close pipeline New Article dropdown on outside click
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#pipelineNewWrap')) {
+      const menu = document.getElementById('pipelineNewMenu');
+      if (menu) menu.classList.remove('open');
+    }
+  });
+
   const zone = document.getElementById('uploadZone');
   zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
@@ -5536,9 +5610,57 @@ const CATEGORY_LABELS = {
   'infographics':     'Infographic',
 };
 
+// ── Pipeline layout ──────────────────────────────
+function getPipelineLayout() {
+  return localStorage.getItem('sla_pipeline_layout') || 'kanban-h';
+}
+
+function setPipelineLayout(layout) {
+  localStorage.setItem('sla_pipeline_layout', layout);
+  // Update active button
+  ['kanban-h','kanban-v','list'].forEach(function(l) {
+    const btn = document.getElementById('layout-btn-' + l);
+    if (btn) btn.classList.toggle('active', l === layout);
+  });
+  loadPipeline();
+}
+
+function renderPipelineNewMenu() {
+  const menu = document.getElementById('pipelineNewMenu');
+  if (!menu) return;
+  menu.innerHTML = CATEGORIES.map(function(cat) {
+    return '<button class="pipeline-new-menu-item" onclick="pipelineNewArticle(\'' + cat.id + '\')">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;flex-shrink:0;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
+      escapeHtml(cat.label) +
+    '</button>';
+  }).join('');
+}
+
+function togglePipelineNewMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('pipelineNewMenu');
+  if (!menu) return;
+  if (!menu.innerHTML) renderPipelineNewMenu();
+  menu.classList.toggle('open');
+}
+
+function pipelineNewArticle(catId) {
+  const menu = document.getElementById('pipelineNewMenu');
+  if (menu) menu.classList.remove('open');
+  switchTab('generator');
+  switchCategory(catId);
+}
+
 async function loadPipeline() {
   const board = document.getElementById('pipelineBoard');
   board.innerHTML = '<div class="pipeline-loading">Loading…</div>';
+
+  // Restore active layout button
+  const layout = getPipelineLayout();
+  ['kanban-h','kanban-v','list'].forEach(function(l) {
+    const btn = document.getElementById('layout-btn-' + l);
+    if (btn) btn.classList.toggle('active', l === layout);
+  });
 
   const items = await contentApi.getAll();
   const cols = {};
@@ -5550,19 +5672,58 @@ async function loadPipeline() {
   const total = items.length;
   document.getElementById('pipelineSubtitle').textContent =
     `${total} article${total !== 1 ? 's' : ''} across all stages`;
-  board.innerHTML = STATUS_COLS.map(col => `
-    <div class="pipeline-col">
-      <div class="pipeline-col-header ${col.cls}">
-        <span class="pipeline-col-label">${col.label}</span>
-        <span class="pipeline-col-count">${cols[col.id].length}</span>
+
+  if (layout === 'list') {
+    board.className = 'pipeline-board layout-list';
+    board.innerHTML = STATUS_COLS.map(col => {
+      const groupItems = cols[col.id];
+      return `<div class="pipeline-list-group" id="plg-${col.id}">
+        <div class="${col.cls} pipeline-list-group-hdr" onclick="togglePipelineListGroup('${col.id}')">
+          <span class="pipeline-list-group-hdr-label">${col.label}</span>
+          <span class="pipeline-list-group-hdr-count">${groupItems.length}</span>
+          <svg class="pipeline-list-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="pipeline-list-rows">
+          ${groupItems.length
+            ? groupItems.map(item => renderListRow(item)).join('')
+            : '<div class="pipeline-empty" style="padding:12px 14px;">No items in this stage</div>'}
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    board.className = 'pipeline-board' + (layout === 'kanban-v' ? ' layout-stacked' : '');
+    board.innerHTML = STATUS_COLS.map(col => `
+      <div class="pipeline-col">
+        <div class="pipeline-col-header ${col.cls}">
+          <span class="pipeline-col-label">${col.label}</span>
+          <span class="pipeline-col-count">${cols[col.id].length}</span>
+        </div>
+        <div class="pipeline-col-body">
+          ${cols[col.id].length
+            ? cols[col.id].map(item => renderKanbanCard(item)).join('')
+            : '<div class="pipeline-empty">No items</div>'}
+        </div>
       </div>
-      <div class="pipeline-col-body">
-        ${cols[col.id].length
-          ? cols[col.id].map(item => renderKanbanCard(item)).join('')
-          : '<div class="pipeline-empty">No items</div>'}
-      </div>
+    `).join('');
+  }
+}
+
+function togglePipelineListGroup(colId) {
+  const el = document.getElementById('plg-' + colId);
+  if (el) el.classList.toggle('collapsed');
+}
+
+function renderListRow(item) {
+  const catLabel = CATEGORY_LABELS[item.category] || item.category;
+  const dateStr  = item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'2-digit' }) : '—';
+  return `<div class="pipeline-list-row">
+    <span class="pipeline-list-cat">${escapeHtml(catLabel)}</span>
+    <span class="pipeline-list-title" title="${escapeHtml(item.title || '')}">${escapeHtml(item.title || 'Untitled')}</span>
+    <span class="pipeline-list-date">${dateStr}</span>
+    <div class="pipeline-list-actions">
+      <button class="btn btn-outline btn-xs" onclick="openMonDrawer('${item.id}','pipeline')">View</button>
     </div>
-  `).join('');
+  </div>`;
 }
 
 function renderKanbanCard(item) {
@@ -5647,7 +5808,13 @@ function renderKanbanCard(item) {
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>${wordCount} words</span>
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${dateStr}</span>
       </div>
-      ${actions ? `<div class="kcard-actions">${actions}</div>` : ''}
+      <div class="kcard-actions">
+        <button class="btn btn-outline btn-sm" onclick="openMonDrawer('${item.id}','pipeline')" style="width:100%;justify-content:center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          View Article
+        </button>
+        ${actions}
+      </div>
     </div>`;
 }
 
