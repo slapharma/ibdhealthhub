@@ -34,7 +34,7 @@ export async function parseApprovalToken(token) {
 
 function buildApprovalEmail({ reviewer, content, approveUrl, rejectUrl }) {
   return {
-    from: process.env.RESEND_FROM_EMAIL ?? 'noreply@slahealth.co.uk',
+    from: process.env.RESEND_FROM_EMAIL ?? 'noreply@mail.slahealth.co.uk',
     to: reviewer.email,
     subject: `Review requested: ${content.title}`,
     html: `
