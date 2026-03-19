@@ -1425,12 +1425,13 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .social-cp-meta-badge.ready { background: rgba(0,201,167,0.12); color: #009e85; }
 .social-cp-meta-badge.pending { background: rgba(30,45,64,0.07); color: var(--sla-navy); }
 .social-cp-plat-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
-.social-cp-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 1.25rem; }
+.social-cp-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; }
 .social-cp-chip {
-  display: flex; align-items: center; gap: 7px;
-  padding: 9px 12px; background: var(--bg); border: 2px solid var(--border);
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 12px; background: var(--bg); border: 2px solid var(--border);
   font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
   cursor: pointer; transition: all 0.15s; user-select: none;
+  white-space: nowrap;
 }
 .social-cp-chip:hover { border-color: var(--sla-teal); color: var(--sla-navy); }
 .social-cp-chip.active {
@@ -1440,8 +1441,11 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .social-cp-chip svg { width: 16px; height: 16px; flex-shrink: 0; }
 .social-cp-chip-count { font-size: 0.6rem; color: var(--sla-teal); margin-left: auto; font-weight: 800; }
 .social-cp-chip.active .social-cp-chip-count { color: rgba(255,255,255,0.65); }
-.social-cp-gen-btn { width: 100%; padding: 12px; font-size: 0.85rem; font-weight: 800; letter-spacing: 0.3px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.social-cp-gen-btns { display: flex; flex-direction: column; gap: 6px; }
+.social-cp-gen-btn { width: 100%; padding: 10px 12px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.3px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .social-cp-gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.social-cp-gen-btn.secondary { background: transparent; border: 2px solid var(--sla-navy); color: var(--sla-navy); }
+.social-cp-gen-btn.secondary:hover:not(:disabled) { background: var(--sla-navy); color: #fff; }
 
 /* ── Article library list ── */
 .social-library-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; padding: 0 2px; }
@@ -2326,10 +2330,16 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
     <div class="social-cp-plat-label">Will generate posts for</div>
     <div class="social-cp-chips" id="socialCpChips"></div>
 
-    <button class="btn btn-orange social-cp-gen-btn" id="socialCpGenBtn" onclick="generateSocialFromControl()" disabled>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      Generate All Posts
-    </button>
+    <div class="social-cp-gen-btns">
+      <button class="btn btn-orange social-cp-gen-btn" id="socialCpGenBtn" onclick="generateSocialFromControl(false)" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Generate Selected
+      </button>
+      <button class="btn social-cp-gen-btn secondary" id="socialCpGenAllBtn" onclick="generateSocialFromControl(true)" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Generate All Platforms
+      </button>
+    </div>
   </div>
 
   <!-- ── Article Library ── -->
@@ -5498,6 +5508,10 @@ function renderMonRow(item) {
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
         ' View' +
       '</button>' +
+      '<button class="btn btn-orange btn-xs" onclick="event.stopPropagation();viewArticleFromPipeline(\'' + safeId + '\')" title="Load article into Generate tab" style="margin-left:4px;">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        ' Load' +
+      '</button>' +
     '</td>' +
     '</tr>';
 }
@@ -5718,11 +5732,12 @@ function toggleSocialPlatform(platId) {
 }
 
 function selectSocialArticle(id) {
-  const meta    = document.getElementById('socialCpMeta');
-  const mTitle  = document.getElementById('socialCpMetaTitle');
-  const mCat    = document.getElementById('socialCpMetaCat');
-  const mBadge  = document.getElementById('socialCpMetaBadge');
-  const genBtn  = document.getElementById('socialCpGenBtn');
+  const meta       = document.getElementById('socialCpMeta');
+  const mTitle     = document.getElementById('socialCpMetaTitle');
+  const mCat       = document.getElementById('socialCpMetaCat');
+  const mBadge     = document.getElementById('socialCpMetaBadge');
+  const genBtn     = document.getElementById('socialCpGenBtn');
+  const genAllBtn  = document.getElementById('socialCpGenAllBtn');
 
   // Highlight selected row in list
   document.querySelectorAll('.social-article-row').forEach(function(r) {
@@ -5731,7 +5746,8 @@ function selectSocialArticle(id) {
 
   if (!id) {
     if (meta) meta.style.display = 'none';
-    if (genBtn) genBtn.disabled = true;
+    if (genBtn)    genBtn.disabled = true;
+    if (genAllBtn) genAllBtn.disabled = true;
     return;
   }
 
@@ -5747,14 +5763,18 @@ function selectSocialArticle(id) {
     mBadge.textContent = hasPosts ? '✓ Posts ready' : (item.status || 'draft');
     mBadge.className   = 'social-cp-meta-badge ' + (hasPosts ? 'ready' : 'pending');
   }
+  const lightning = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> ';
   if (genBtn) {
     genBtn.disabled = false;
-    genBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> ' +
-      (hasPosts ? 'Regenerate Posts' : 'Generate All Posts');
+    genBtn.innerHTML = lightning + (hasPosts ? 'Regenerate Selected' : 'Generate Selected');
+  }
+  if (genAllBtn) {
+    genAllBtn.disabled = false;
+    genAllBtn.innerHTML = lightning + (hasPosts ? 'Regenerate All Platforms' : 'Generate All Platforms');
   }
 }
 
-async function generateSocialFromControl() {
+async function generateSocialFromControl(allPlatforms) {
   const select = document.getElementById('socialArticleSelect');
   const id = select && select.value;
   if (!id) return;
@@ -5766,7 +5786,7 @@ async function generateSocialFromControl() {
     setTimeout(function() { row.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 80);
   }
 
-  await generateSocialForArticle(id);
+  await generateSocialForArticle(id, !!allPlatforms);
 
   // Refresh control panel status after generation
   selectSocialArticle(id);
@@ -5999,7 +6019,7 @@ function postNowSocial(articleId, platId, idx) {
   alert('Post Now: ' + (plat ? plat.label : platId) + ' integration coming soon.\n\nPost text:\n' + text.slice(0, 200));
 }
 
-async function generateSocialForArticle(articleId) {
+async function generateSocialForArticle(articleId, allPlatforms) {
   const item = allSocialItems.find(function(i) { return i.id === articleId; });
   if (!item) { alert('Article not found.'); return; }
 
@@ -6012,8 +6032,10 @@ async function generateSocialForArticle(articleId) {
   const btn = row && row.querySelector('.social-article-head .btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
 
-  // Only generate for active (toggled-on) platforms
-  const activePlats = SOCIAL_PLATFORMS.filter(function(p) { return activeSocialPlatforms.has(p.id); });
+  // allPlatforms=true overrides toggles and generates for every platform
+  const activePlats = allPlatforms
+    ? SOCIAL_PLATFORMS
+    : SOCIAL_PLATFORMS.filter(function(p) { return activeSocialPlatforms.has(p.id); });
 
   activePlats.forEach(function(plat) {
     for (var i = 0; i < plat.postCount; i++) {
