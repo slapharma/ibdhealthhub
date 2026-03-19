@@ -22,6 +22,7 @@
   --sla-navy-lt:  #3a5270;
   --bg:           #EEF7F3;
   --sidebar-bg:   #B8D4CC;   /* sage green — a few tones darker than --bg */
+  --header-green: #1b3f30;   /* dark forest green for card headers */
   --card:         #ffffff;
   --border:       #dde3ea;
   --text:         #1a2332;
@@ -295,8 +296,8 @@ body.sidebar-collapsed #syncStatus { width: auto; justify-content: center; }
 
 /* ── Dynamic Category Header ── */
 .category-header {
-  background: var(--card);
-  border-bottom: 2px solid var(--border);
+  background: var(--header-green);
+  border-bottom: 2px solid rgba(255,255,255,0.1);
   border-left: 4px solid var(--sla-teal);
   padding: 14px 1.5rem 12px;
   display: flex;
@@ -331,16 +332,16 @@ body.sidebar-collapsed #syncStatus { width: auto; justify-content: center; }
   font-family: 'Montserrat', sans-serif;
   font-size: 1.1rem;
   font-weight: 800;
-  color: var(--sla-navy);
+  color: #ffffff;
   letter-spacing: -0.3px;
   line-height: 1.1;
 }
-.category-header-title span { color: var(--sla-orange); }
+.category-header-title span { color: var(--sla-teal); }
 .category-header-desc {
   font-family: 'Montserrat', sans-serif;
   font-size: 0.68rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.6);
   margin-top: 3px;
   letter-spacing: 0.2px;
 }
@@ -1212,7 +1213,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 /* ── Prompts Page ── */
 .prompts-view { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
 .prompt-cat-block { background: var(--card); border: 1px solid var(--border); margin-bottom: 1.25rem; }
-.prompt-cat-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--sla-navy); }
+.prompt-cat-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--header-green); }
 .prompt-cat-header-title { font-size: 0.72rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; flex: 1; }
 .prompt-cat-header-count { font-size: 0.6rem; color: rgba(255,255,255,0.55); }
 .prompt-list { display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--bg); }
@@ -1424,19 +1425,30 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .social-cp-meta-badge.ready { background: rgba(0,201,167,0.12); color: #009e85; }
 .social-cp-meta-badge.pending { background: rgba(30,45,64,0.07); color: var(--sla-navy); }
 .social-cp-plat-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
-.social-cp-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.social-cp-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 1.25rem; }
 .social-cp-chip {
-  display: flex; align-items: center; gap: 5px;
-  padding: 5px 10px; background: var(--bg); border: 1px solid var(--border);
-  font-size: 0.68rem; font-weight: 700; color: var(--sla-navy);
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 12px; background: var(--bg); border: 2px solid var(--border);
+  font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
+  cursor: pointer; transition: all 0.15s; user-select: none;
 }
-.social-cp-chip svg { width: 14px; height: 14px; flex-shrink: 0; }
-.social-cp-chip-count { color: var(--sla-teal); margin-left: 1px; }
+.social-cp-chip:hover { border-color: var(--sla-teal); color: var(--sla-navy); }
+.social-cp-chip.active {
+  background: var(--sla-navy); border-color: var(--sla-navy); color: #fff;
+}
+.social-cp-chip.active svg path, .social-cp-chip.active svg rect, .social-cp-chip.active svg circle { fill: #fff !important; stroke: #fff; }
+.social-cp-chip svg { width: 16px; height: 16px; flex-shrink: 0; }
+.social-cp-chip-count { font-size: 0.6rem; color: var(--sla-teal); margin-left: auto; font-weight: 800; }
+.social-cp-chip.active .social-cp-chip-count { color: rgba(255,255,255,0.65); }
 .social-cp-gen-btn { width: 100%; padding: 12px; font-size: 0.85rem; font-weight: 800; letter-spacing: 0.3px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .social-cp-gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ── Article library list ── */
 .social-library-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; padding: 0 2px; }
+.social-cat-group-hdr { display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: var(--header-green); border-bottom: 1px solid rgba(255,255,255,0.1); margin-top: 8px; }
+.social-cat-group-hdr:first-child { margin-top: 0; }
+.social-cat-group-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.85); flex: 1; }
+.social-cat-group-count { font-size: 0.6rem; color: var(--sla-teal); font-weight: 700; }
 .social-article-list { display: flex; flex-direction: column; gap: 1px; }
 .social-article-row { background: var(--card); border: 1px solid var(--border); margin-bottom: 1px; }
 .social-article-row.is-selected { border-left: 3px solid var(--sla-teal); }
@@ -1492,6 +1504,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .mon-ch-tiktok    { color: #010101; border-color: #aaa;    background: rgba(0,0,0,0.05); }
 .mon-ch-linkedin  { color: #0077B5; border-color: #0077B5; background: rgba(0,119,181,0.08); }
 .mon-channel-none { color: var(--text-muted); font-size: 0.72rem; }
+.mon-row-actions { padding: 6px 14px; white-space: nowrap; }
 
 .monitoring-view {
   padding: 1.5rem; max-width: 1400px; margin: 0 auto;
@@ -2126,7 +2139,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
   <div class="monitoring-header">
     <div>
       <h1 style="font-size:1.1rem;font-weight:800;color:var(--sla-navy);margin:0 0 3px;">Content Monitoring</h1>
-      <p style="font-size:0.75rem;color:var(--text-muted);margin:0;">Live status of every article across the pipeline</p>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0;">Live status of every article across the library</p>
     </div>
     <button class="btn btn-outline btn-sm" onclick="loadMonitoring()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -2170,7 +2183,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
       </div>
       <div class="dash-metric">
         <div class="dash-metric-value" id="metricSaved">0</div>
-        <div class="dash-metric-label">Saved to Storage</div>
+        <div class="dash-metric-label">Saved to Library</div>
       </div>
       <div class="dash-metric metric-approved">
         <div class="dash-metric-value" id="metricApproved">0</div>
@@ -2244,6 +2257,8 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 <div class="tab-view" id="view-distribution">
 <div class="social-view">
 
+  <div id="socialCopyAlert" style="display:none;"></div>
+
   <!-- ── Control Panel ── -->
   <div class="social-cp">
     <div class="social-cp-title">Social Post Generator</div>
@@ -2313,7 +2328,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
   </div>
 </div><!-- /tab-view calendar -->
 
-<!-- ══════════════════════════════ TAB 2: STORAGE ══════════════════════════════ -->
+<!-- ══════════════════════════════ TAB 2: LIBRARY ══════════════════════════════ -->
 <div class="tab-view" id="view-archive">
 <div class="cat-bar" id="catBar-archive">
   <button class="cat-bar-btn active" data-cat="clinical-reviews" onclick="switchCategory('clinical-reviews')">Clinical Reviews</button>
@@ -2325,7 +2340,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
   <div class="archive-container">
     <div class="archive-header-row">
       <div>
-        <h1 id="archiveHeading">Content Storage</h1>
+        <h1 id="archiveHeading">Content Library</h1>
         <div class="archive-stats" id="archiveStats">0 saved items</div>
       </div>
       <div class="archive-actions">
@@ -2347,7 +2362,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         <h3>No saved content yet</h3>
-        <p>Generate content and click <strong>Save to Storage</strong> to store it here.</p>
+        <p>Generate content and click <strong>Save to Library</strong> to store it here.</p>
       </div>
     </div>
     <div class="archive-grid" id="archiveGrid"></div>
@@ -2381,11 +2396,11 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
         <button class="btn btn-outline btn-sm" onclick="switchTab('archive')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-          Back to Storage
+          Back to Library
         </button>
         <h1>AI Comparison Report</h1>
       </div>
-      <p id="comparisonSubtitle" style="font-size:0.8rem;color:var(--text-muted);">Select items from the Storage tab and click Compare.</p>
+      <p id="comparisonSubtitle" style="font-size:0.8rem;color:var(--text-muted);">Select items from the Library tab and click Compare.</p>
     </div>
     <div class="comparison-reviews" id="comparisonReviews"></div>
     <div class="analysis-panel">
@@ -3028,7 +3043,7 @@ function switchCategory(catId) {
 
   // Update headings
   const catLabel = CATEGORIES.find(c => c.id === catId)?.label || catId;
-  document.getElementById('archiveHeading').textContent  = catLabel + ' Storage';
+  document.getElementById('archiveHeading').textContent  = catLabel + ' Library';
   document.getElementById('reportsHeading').textContent  = catLabel + ' Comparison Reports';
 
   // Update prompt: use category-specific stored prompt or default
@@ -3668,7 +3683,7 @@ async function saveReviewToArchive() {
   updateAllCounts();
   try {
     await ghSaveReviews(currentCategory, `Save ${currentCategory} item: ${title.slice(0,60)}`);
-    showAlert('generateAlert', `\u2713 Saved to ${CATEGORIES.find(c=>c.id===currentCategory)?.label} Storage`, 'success');
+    showAlert('generateAlert', `\u2713 Saved to ${CATEGORIES.find(c=>c.id===currentCategory)?.label} Library`, 'success');
     setTimeout(() => hideAlert('generateAlert'), 3000);
   } catch(e) {
     showAlert('generateAlert', 'Saved locally but GitHub sync failed: ' + e.message, 'warning');
@@ -4766,22 +4781,32 @@ function renderMonRow(item) {
       }).join('')
     : '<span class="mon-channel-none">—</span>';
 
-  return '<tr class="mon-row" onclick="openMonDrawer(\'' + (item.id||'') + '\',\'pipeline\')">' +
+  const safeId = escapeHtml(item.id || '');
+  return '<tr class="mon-row" onclick="openMonDrawer(\'' + safeId + '\',\'pipeline\')">' +
     '<td class="mon-row-title">' + title + '</td>' +
     '<td class="mon-row-cat">' + cat + '</td>' +
     '<td><span class="mon-status-badge ' + sm.cls + '">' + sm.label + '</span></td>' +
     '<td class="mon-row-channels">' + channelTags + '</td>' +
     '<td class="mon-row-date">' + updAt + '</td>' +
+    '<td class="mon-row-actions">' +
+      '<button class="btn btn-outline btn-xs" onclick="event.stopPropagation();openMonDrawer(\'' + safeId + '\',\'pipeline\')" title="View article detail">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+        ' View' +
+      '</button>' +
+    '</td>' +
     '</tr>';
 }
 
-function loadMonitoring() {
-  const items = publishingQueue || [];
+async function loadMonitoring() {
   const container = document.getElementById('monitoringCards');
   if (!container) return;
+  container.innerHTML = '<div class="mon-table-empty">Loading…</div>';
+
+  let items = [];
+  try { items = await contentApi.getAll(); } catch(e) { items = publishingQueue || []; }
 
   if (!items.length) {
-    container.innerHTML = '<div class="mon-table-empty">No content in pipeline yet. Generate and queue an article to get started.</div>';
+    container.innerHTML = '<div class="mon-table-empty">No content in library yet. Generate and save an article to get started.</div>';
     return;
   }
 
@@ -4796,6 +4821,7 @@ function loadMonitoring() {
     '<th>Status</th>' +
     '<th>Published On</th>' +
     '<th>Last Updated</th>' +
+    '<th></th>' +
     '</tr></thead>' +
     '<tbody>' +
     sorted.map(function(item) { return renderMonRow(item); }).join('') +
@@ -4883,7 +4909,7 @@ function openMonDrawer(itemId, source) {
   // Action buttons
   const actions = [];
   if (source === 'archive' || item._source === 'archive') {
-    actions.push('<button class="btn btn-orange btn-sm" onclick="closeMonDrawer();switchTab(\'archive\');">View in Storage</button>');
+    actions.push('<button class="btn btn-orange btn-sm" onclick="closeMonDrawer();switchTab(\'archive\');">View in Library</button>');
   }
   if (source === 'pipeline' || item._source !== 'archive') {
     actions.push('<button class="btn btn-navy btn-sm" onclick="closeMonDrawer();switchTab(\'pipeline\');">View in Pipeline</button>');
@@ -4944,6 +4970,12 @@ const SOCIAL_PLATFORMS = [
   { id: 'instagram', label: 'Instagram',   postCount: 2, maxChars: 2200, tone: 'engaging caption with emojis and 5-8 hashtags, vary the angle each time' },
 ];
 
+// Active platform toggles — all on by default
+let activeSocialPlatforms = new Set(SOCIAL_PLATFORMS.map(function(p) { return p.id; }));
+
+// All items loaded for the social page (updated by loadDistribution)
+let allSocialItems = [];
+
 // In-memory cache: articleId → { twitter: ['post1',...], ... }
 const socialPostCache = {};
 
@@ -4961,12 +4993,23 @@ function renderSocialCpChips() {
   const el = document.getElementById('socialCpChips');
   if (!el) return;
   el.innerHTML = SOCIAL_PLATFORMS.map(function(p) {
-    const svg = (PLAT_SVG[p.id] || '').replace(/width:20px;height:20px/, 'width:14px;height:14px');
-    return '<div class="social-cp-chip">' + svg +
+    const isActive = activeSocialPlatforms.has(p.id);
+    const svg = (PLAT_SVG[p.id] || '').replace(/width:20px;height:20px/g, 'width:16px;height:16px');
+    return '<div class="social-cp-chip' + (isActive ? ' active' : '') + '" onclick="toggleSocialPlatform(\'' + p.id + '\')">' +
+      svg +
       '<span>' + p.label + '</span>' +
       '<span class="social-cp-chip-count">×' + p.postCount + '</span>' +
     '</div>';
   }).join('');
+}
+
+function toggleSocialPlatform(platId) {
+  if (activeSocialPlatforms.has(platId)) {
+    activeSocialPlatforms.delete(platId);
+  } else {
+    activeSocialPlatforms.add(platId);
+  }
+  renderSocialCpChips();
 }
 
 function selectSocialArticle(id) {
@@ -4987,12 +5030,13 @@ function selectSocialArticle(id) {
     return;
   }
 
-  const item = (publishingQueue || []).find(function(i) { return i.id === id; });
+  const item = allSocialItems.find(function(i) { return i.id === id; });
   if (!item) return;
 
   if (meta) meta.style.display = '';
   if (mTitle) mTitle.textContent = (item.title || 'Untitled').slice(0, 90);
-  if (mCat)   mCat.textContent   = item.category || '—';
+  const catLabel = (CATEGORIES.find(function(c) { return c.id === item.category; }) || {}).label || item.category || '—';
+  if (mCat)   mCat.textContent   = catLabel;
   const hasPosts = !!(item.socialPosts || socialPostCache[id]);
   if (mBadge) {
     mBadge.textContent = hasPosts ? '✓ Posts ready' : (item.status || 'draft');
@@ -5023,15 +5067,18 @@ async function generateSocialFromControl() {
   selectSocialArticle(id);
 }
 
-function loadDistribution() {
+async function loadDistribution() {
   const listEl = document.getElementById('socialArticleList');
   const select = document.getElementById('socialArticleSelect');
   if (!listEl) return;
 
-  // Render platform chips in control panel (once)
+  // Render platform chips in control panel
   renderSocialCpChips();
 
-  const items = publishingQueue || [];
+  // Load ALL articles from storage (not just pipeline)
+  let items = [];
+  try { items = await contentApi.getAll(); } catch(e) { items = publishingQueue || []; }
+  allSocialItems = items;
 
   // Populate select dropdown
   if (select) {
@@ -5041,8 +5088,10 @@ function loadDistribution() {
     });
     select.innerHTML = '<option value="">— Choose an article —</option>' +
       sorted.map(function(item) {
+        const catLabel = (CATEGORIES.find(function(c) { return c.id === item.category; }) || {}).label || item.category || '';
+        const prefix = catLabel ? '[' + catLabel + '] ' : '';
         return '<option value="' + escapeHtml(item.id || '') + '">' +
-          escapeHtml((item.title || 'Untitled').slice(0, 80)) + '</option>';
+          prefix + escapeHtml((item.title || 'Untitled').slice(0, 75)) + '</option>';
       }).join('');
     if (prevVal && sorted.find(function(i) { return i.id === prevVal; })) {
       select.value = prevVal;
@@ -5051,20 +5100,39 @@ function loadDistribution() {
   }
 
   if (!items.length) {
-    listEl.innerHTML = '<div class="social-empty">No content in pipeline yet. Generate and queue an article first.</div>';
+    listEl.innerHTML = '<div class="social-empty">No content in library yet. Generate and save an article first.</div>';
     return;
   }
 
-  const sorted = [...items].sort(function(a, b) {
-    return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+  // Group by category
+  let html = '';
+  CATEGORIES.forEach(function(cat) {
+    const catItems = items.filter(function(i) { return i.category === cat.id; })
+      .sort(function(a, b) { return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0); });
+    if (!catItems.length) return;
+    html += '<div class="social-cat-group-hdr">' +
+      '<span class="social-cat-group-label">' + escapeHtml(cat.label) + '</span>' +
+      '<span class="social-cat-group-count">' + catItems.length + ' article' + (catItems.length !== 1 ? 's' : '') + '</span>' +
+    '</div>';
+    html += catItems.map(function(item) { return renderSocialArticleRow(item); }).join('');
   });
 
-  listEl.innerHTML = sorted.map(function(item) {
-    return renderSocialArticleRow(item);
-  }).join('');
+  // Uncategorised
+  const uncatItems = items.filter(function(i) {
+    return !CATEGORIES.find(function(c) { return c.id === i.category; });
+  }).sort(function(a, b) { return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0); });
+  if (uncatItems.length) {
+    html += '<div class="social-cat-group-hdr">' +
+      '<span class="social-cat-group-label">Uncategorised</span>' +
+      '<span class="social-cat-group-count">' + uncatItems.length + ' article' + (uncatItems.length !== 1 ? 's' : '') + '</span>' +
+    '</div>';
+    html += uncatItems.map(function(item) { return renderSocialArticleRow(item); }).join('');
+  }
 
-  // Restore any cached/saved social posts
-  sorted.forEach(function(item) {
+  listEl.innerHTML = html;
+
+  // Restore cached/saved social posts
+  items.forEach(function(item) {
     const posts = socialPostCache[item.id] || item.socialPosts;
     const sched = item.socialSchedule;
     if (posts) {
@@ -5076,7 +5144,8 @@ function loadDistribution() {
 
 function renderSocialArticleRow(item) {
   const title = escapeHtml((item.title || 'Untitled').slice(0, 90));
-  const cat   = escapeHtml(item.category || '—');
+  const catLabel = (CATEGORIES.find(function(c) { return c.id === item.category; }) || {}).label || item.category || '—';
+  const cat = escapeHtml(catLabel);
   const hasPosts = !!(item.socialPosts || socialPostCache[item.id]);
   const statusHtml = hasPosts ? '<span class="social-article-status">Posts ready</span>' : '';
 
@@ -5114,11 +5183,23 @@ function renderSocialArticleRow(item) {
 
 function renderSocialPostSlot(articleId, platId, idx) {
   const safeAId = (articleId||'').replace(/'/g, '');
-  return '<div class="social-post-card" id="social-slot-' + safeAId + '-' + platId + '-' + idx + '">' +
+  const slotId  = 'social-slot-' + safeAId + '-' + platId + '-' + idx;
+  return '<div class="social-post-card" id="' + slotId + '">' +
     '<div class="social-post-num">Post ' + (idx + 1) + '</div>' +
     '<div class="social-post-text generating">Not yet generated</div>' +
     '<div class="social-post-actions" style="display:none;">' +
-      '<button class="btn btn-outline btn-xs" onclick="navigator.clipboard.writeText(this.closest(\'.social-post-card\').querySelector(\'.social-post-text\').textContent)">Copy</button>' +
+      '<button class="btn btn-outline btn-xs" title="Copy to clipboard" onclick="copySocialPost(\'' + safeAId + '\',\'' + platId + '\',' + idx + ')">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy' +
+      '</button>' +
+      '<button class="btn btn-outline btn-xs" title="Re-generate this post" onclick="regenSocialPost(\'' + safeAId + '\',\'' + platId + '\',' + idx + ')">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Re-Gen' +
+      '</button>' +
+      '<button class="btn btn-outline btn-xs" title="Post now" onclick="postNowSocial(\'' + safeAId + '\',\'' + platId + '\',' + idx + ')">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Post Now' +
+      '</button>' +
+      '<button class="btn btn-outline btn-xs" title="Delete this post" style="color:var(--error);" onclick="deleteSocialPost(\'' + safeAId + '\',\'' + platId + '\',' + idx + ')">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg> Delete' +
+      '</button>' +
     '</div>' +
   '</div>';
 }
@@ -5128,9 +5209,94 @@ function toggleSocialRow(articleId) {
   if (row) row.classList.toggle('open');
 }
 
+function copySocialPost(articleId, platId, idx) {
+  const slot = document.getElementById('social-slot-' + articleId + '-' + platId + '-' + idx);
+  if (!slot) return;
+  const text = slot.querySelector('.social-post-text').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    const el = document.getElementById('socialCopyAlert');
+    if (el) {
+      el.className = 'alert alert-success';
+      el.textContent = '✓ Copied to clipboard';
+      setTimeout(function() { el.style.display = 'none'; el.className = ''; }, 2500);
+    }
+  }).catch(function() { alert('Copy failed — please copy manually.'); });
+}
+
+async function regenSocialPost(articleId, platId, idx) {
+  const item = allSocialItems.find(function(i) { return i.id === articleId; });
+  if (!item) return;
+  const plat = SOCIAL_PLATFORMS.find(function(p) { return p.id === platId; });
+  if (!plat) return;
+  const slot = document.getElementById('social-slot-' + articleId + '-' + platId + '-' + idx);
+  if (!slot) return;
+  const textEl = slot.querySelector('.social-post-text');
+  textEl.textContent = 'Regenerating…';
+  textEl.className = 'social-post-text generating';
+  slot.querySelector('.social-post-actions').style.display = 'none';
+  const angles = [
+    'Highlight the key clinical finding.',
+    'Focus on patient impact and quality of life.',
+    'Lead with a striking statistic or data point.',
+    'Ask a thought-provoking question to the reader.',
+    'Summarise in one powerful sentence then expand briefly.',
+  ];
+  const angle = angles[idx % angles.length];
+  const excerpt = (item.body || item.content || item.excerpt || '').replace(/<[^>]+>/g, '').trim().slice(0, 1500);
+  const prompt = 'You are a social media copywriter for SLA Health, a UK medical content platform.\n' +
+    'Write post ' + (idx+1) + ' of ' + plat.postCount + ' for ' + plat.label + '.\n' +
+    'Tone: ' + plat.tone + '\nMaximum characters: ' + plat.maxChars + '\n' +
+    'Angle for this post: ' + angle + '\nArticle title: ' + (item.title || '') + '\n' +
+    'Article excerpt: ' + excerpt + '\n\nWrite ONLY the post text. No preamble, no explanation.';
+  try {
+    const text = await callOpenRouter(prompt, getApiKey());
+    textEl.textContent = text.trim();
+    textEl.className = 'social-post-text';
+    slot.querySelector('.social-post-actions').style.display = '';
+    // Update cache
+    if (!socialPostCache[articleId]) socialPostCache[articleId] = {};
+    if (!socialPostCache[articleId][platId]) socialPostCache[articleId][platId] = [];
+    socialPostCache[articleId][platId][idx] = text.trim();
+    await contentApi.update(articleId, { socialPosts: socialPostCache[articleId] });
+  } catch(e) {
+    textEl.textContent = 'Error: ' + e.message;
+    textEl.className = 'social-post-text generating';
+    slot.querySelector('.social-post-actions').style.display = '';
+  }
+}
+
+function deleteSocialPost(articleId, platId, idx) {
+  if (!confirm('Delete this post?')) return;
+  const slot = document.getElementById('social-slot-' + articleId + '-' + platId + '-' + idx);
+  if (!slot) return;
+  slot.querySelector('.social-post-text').textContent = 'Deleted';
+  slot.querySelector('.social-post-text').className = 'social-post-text generating';
+  slot.querySelector('.social-post-actions').style.display = 'none';
+  if (socialPostCache[articleId] && socialPostCache[articleId][platId]) {
+    socialPostCache[articleId][platId][idx] = '';
+    contentApi.update(articleId, { socialPosts: socialPostCache[articleId] });
+  }
+}
+
+function postNowSocial(articleId, platId, idx) {
+  const slot = document.getElementById('social-slot-' + articleId + '-' + platId + '-' + idx);
+  if (!slot) return;
+  const text = slot.querySelector('.social-post-text').textContent;
+  const plat = SOCIAL_PLATFORMS.find(function(p) { return p.id === platId; });
+  // If connected account exists, attempt post; otherwise show message
+  const conn = (function() {
+    try { return JSON.parse(localStorage.getItem('sla_social_conn_' + platId) || 'null'); } catch(_) { return null; }
+  })();
+  if (!conn) {
+    alert('No ' + (plat ? plat.label : platId) + ' account connected. Go to Settings to connect.');
+    return;
+  }
+  alert('Post Now: ' + (plat ? plat.label : platId) + ' integration coming soon.\n\nPost text:\n' + text.slice(0, 200));
+}
+
 async function generateSocialForArticle(articleId) {
-  const item = (publishingQueue || []).find(function(i) { return i.id === articleId; });
-  if (!item) { alert('Article not found in pipeline.'); return; }
+  const item = allSocialItems.find(function(i) { return i.id === articleId; });
+  if (!item) { alert('Article not found.'); return; }
 
   const row = document.getElementById('social-row-' + articleId);
   if (row && !row.classList.contains('open')) row.classList.add('open');
@@ -5141,7 +5307,10 @@ async function generateSocialForArticle(articleId) {
   const btn = row && row.querySelector('.social-article-head .btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
 
-  SOCIAL_PLATFORMS.forEach(function(plat) {
+  // Only generate for active (toggled-on) platforms
+  const activePlats = SOCIAL_PLATFORMS.filter(function(p) { return activeSocialPlatforms.has(p.id); });
+
+  activePlats.forEach(function(plat) {
     for (var i = 0; i < plat.postCount; i++) {
       var slot = document.getElementById('social-slot-' + articleId + '-' + plat.id + '-' + i);
       if (slot) {
@@ -5161,7 +5330,7 @@ async function generateSocialForArticle(articleId) {
     'Summarise in one powerful sentence then expand briefly.',
   ];
 
-  await Promise.allSettled(SOCIAL_PLATFORMS.map(async function(plat) {
+  await Promise.allSettled(activePlats.map(async function(plat) {
     const posts = [];
     for (var i = 0; i < plat.postCount; i++) {
       var angle = angles[i % angles.length];
