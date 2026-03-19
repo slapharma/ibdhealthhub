@@ -1309,12 +1309,19 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .dash-recent-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .dash-recent-header h3 { font-size: 0.82rem; font-weight: 700; color: var(--text); }
 .dash-recent-list { padding: 0; }
-.dash-recent-item { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+.dash-recent-item { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
 .dash-recent-item:last-child { border-bottom: none; }
 .dash-recent-item:hover { background: var(--bg); }
 .dash-recent-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--sla-orange); }
-.dash-recent-title { font-size: 0.78rem; font-weight: 600; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-recent-title { font-size: 0.78rem; font-weight: 600; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .dash-recent-meta { font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; }
+.dash-pl-badge { font-size: 0.52rem; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; padding: 2px 7px; border: 1.5px solid; white-space: nowrap; flex-shrink: 0; }
+.dash-pl-badge.s-draft     { color: #2c3e50; border-color: #2c3e50; background: rgba(44,62,80,0.07); }
+.dash-pl-badge.s-in_review { color: #1a5276; border-color: #1a5276; background: rgba(26,82,118,0.07); }
+.dash-pl-badge.s-rejected  { color: #922b21; border-color: #922b21; background: rgba(146,43,33,0.07); }
+.dash-pl-badge.s-approved  { color: #1a7245; border-color: #1a7245; background: rgba(26,114,69,0.07); }
+.dash-pl-badge.s-scheduled { color: #6c3483; border-color: #6c3483; background: rgba(108,52,131,0.07); }
+.dash-pl-badge.s-published { color: var(--sla-navy); border-color: var(--sla-navy); background: rgba(27,63,48,0.08); }
 .dash-empty-recent { padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.8rem; }
 
 /* ══════════════════════════════════════════════════
@@ -1893,12 +1900,17 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 
     <!-- Category selector card -->
     <div class="card" style="overflow:hidden;">
-      <div class="cat-bar" id="catBar-generator" style="border-bottom:none;padding:8px 10px;">
-        <button class="cat-bar-btn active" data-cat="clinical-reviews" onclick="switchCategory('clinical-reviews')">Clinical Reviews</button>
-        <button class="cat-bar-btn" data-cat="industry-news" onclick="switchCategory('industry-news')">Industry News</button>
-        <button class="cat-bar-btn" data-cat="op-eds" onclick="switchCategory('op-eds')">Op-Eds</button>
-        <button class="cat-bar-btn" data-cat="white-papers" onclick="switchCategory('white-papers')">White Papers</button>
-        <button class="cat-bar-btn" data-cat="infographics" onclick="switchCategory('infographics')">Infographics</button>
+      <div class="card-header">
+        <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Content Category</h2>
+      </div>
+      <div class="card-body" style="padding:10px 12px;">
+        <div class="cat-bar" id="catBar-generator" style="border-bottom:none;padding:0;background:none;flex-wrap:wrap;">
+          <button class="cat-bar-btn active" data-cat="clinical-reviews" onclick="switchCategory('clinical-reviews')">Clinical Reviews</button>
+          <button class="cat-bar-btn" data-cat="industry-news" onclick="switchCategory('industry-news')">Industry News</button>
+          <button class="cat-bar-btn" data-cat="op-eds" onclick="switchCategory('op-eds')">Op-Eds</button>
+          <button class="cat-bar-btn" data-cat="white-papers" onclick="switchCategory('white-papers')">White Papers</button>
+          <button class="cat-bar-btn" data-cat="infographics" onclick="switchCategory('infographics')">Infographics</button>
+        </div>
       </div>
     </div>
 
@@ -2029,12 +2041,12 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           Hero Image
         </h2>
-        <div class="hero-mode-toggle">
+      </div>
+      <div class="card-body">
+        <div class="hero-mode-toggle" style="margin-bottom:10px;">
           <button class="hero-mode-btn active" id="heroModeSearchBtn" onclick="setHeroLeftMode('search')" title="Auto-extract keywords from source and search Pexels">🔍 Auto-Search</button>
           <button class="hero-mode-btn" id="heroModeAiBtn" onclick="setHeroLeftMode('ai')" title="Auto-generate image from source context using AI">✨ Auto-Generate</button>
         </div>
-      </div>
-      <div class="card-body">
         <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:3px;" id="heroLeftHint">Keywords extracted from source (max 6):</div>
         <div id="heroLeftKeywordChips" class="keyword-chips"></div>
         <div style="display:flex;gap:6px;margin-top:4px;">
@@ -6677,21 +6689,28 @@ function loadDashboard() {
   if (recent.length === 0) {
     list.innerHTML = '<div class="dash-empty-recent">No articles saved yet. Generate your first piece of content above.</div>';
   } else {
+    const STATUS_LABELS = { draft:'Draft', in_review:'In Review', rejected:'Rejected', approved:'Approved', scheduled:'Scheduled', published:'Published' };
     list.innerHTML = recent.map(r => {
       const date = r.savedAt ? new Date(r.savedAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '';
-      return `<div class="dash-recent-item" onclick="loadArchiveItemFromDash('${r.id}','${r._cat}')">
+      const pq = window.publishingQueue || [];
+      const pItem = pq.find(q => q.sourceId === r.id || q.title === r.title);
+      const plBadge = pItem
+        ? `<span class="dash-pl-badge s-${pItem.status.replace('_','-')}">${STATUS_LABELS[pItem.status] || pItem.status}</span>`
+        : '';
+      return `<div class="dash-recent-item">
         <div class="dash-recent-dot" style="${r.approved ? 'background:var(--success)' : ''}"></div>
         <div class="dash-recent-title">${escapeHtml(r.title || 'Untitled')}</div>
         <div class="dash-recent-meta">${escapeHtml(r._catLabel)} &middot; ${date}</div>
+        ${plBadge}
+        <button class="btn btn-outline btn-xs" onclick="loadArchiveItemFromDash('${r.id}','${r._cat}')" style="flex-shrink:0;">Load</button>
       </div>`;
     }).join('');
   }
 }
 
 function loadArchiveItemFromDash(id, catId) {
-  // Switch to the correct category and load the item
   switchCategory(catId);
-  switchTab('archive');
+  loadArchiveItem(id);
 }
 
 function startGeneratorForCategory(catId) {
