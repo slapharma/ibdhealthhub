@@ -1824,6 +1824,33 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
   padding: 14px 20px; border-top: 1px solid var(--border);
   display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap;
 }
+
+/* ── Automation Module ─────────────────────────────────── */
+.btn-sub-tab {
+  padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-muted); font-size: 0.8rem;
+  font-weight: 600; cursor: pointer; transition: all 0.15s;
+  font-family: 'Montserrat', sans-serif;
+}
+.btn-sub-tab.active {
+  background: var(--sla-orange); border-color: var(--sla-orange); color: #fff;
+}
+.auto-rule-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px 20px; display: flex; align-items: center; gap: 16px;
+  transition: border-color 0.15s;
+}
+.auto-rule-card:hover { border-color: var(--sla-orange); }
+.auto-rule-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.auto-rule-dot.enabled  { background: #22c55e; }
+.auto-rule-dot.disabled { background: #ef4444; }
+.auto-rule-info { flex: 1; min-width: 0; }
+.auto-rule-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.auto-rule-meta { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+.auto-rule-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.inbox-detail-wrap { padding: 24px; }
+.inbox-detail-wrap h2 { font-size: 1.1rem; margin: 0 0 8px; color: var(--text); }
+.inbox-action-row { display: flex; gap: 12px; margin-top: 20px; }
 </style>
 </head>
 <body>
@@ -1890,6 +1917,11 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
     <button class="nav-item" onclick="switchTab('settings')" id="tab-settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span>Settings</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('automation')" id="tab-automation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Automation</span>
+      <span class="nav-badge" id="automationInboxBadge" style="display:none;">0</span>
     </button>
   </nav>
 
@@ -3412,6 +3444,47 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
   </div>
 </div><!-- /tab-view settings -->
 
+<!-- ═══════════════════════════════════════ AUTOMATION TAB ═══════════════════════════════════════ -->
+<div class="tab-view" id="view-automation">
+  <div style="padding:20px 24px; flex:1; display:flex; flex-direction:column; min-height:0;">
+    <!-- Page header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-shrink:0;">
+      <h1 style="font-size:1.1rem; font-weight:800; color:var(--sla-navy); margin:0;">Automation</h1>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-sub-tab active" id="subTabRules" onclick="switchAutoSubTab('rules')">Rules</button>
+        <button class="btn-sub-tab" id="subTabInbox" onclick="switchAutoSubTab('inbox')">
+          Inbox
+          <span id="inboxBadgeHeader" style="display:none; background:var(--sla-orange); color:#fff; font-size:0.6rem; font-weight:700; border-radius:10px; padding:1px 5px; margin-left:4px; vertical-align:middle;">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Rules sub-view -->
+    <div id="autoSubRules" style="flex:1; min-height:0; overflow-y:auto;">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+        <button class="btn btn-orange btn-sm" onclick="openRuleWizard()">+ New Rule</button>
+      </div>
+      <div id="autoRulesList" style="display:flex; flex-direction:column; gap:12px;">
+        <p style="color:var(--text-muted); text-align:center; padding:40px 0;">No automation rules yet. Create your first rule to get started.</p>
+      </div>
+    </div>
+
+    <!-- Inbox sub-view -->
+    <div id="autoSubInbox" style="display:none; flex:1; min-height:0; display:none;">
+      <div style="display:flex; gap:0; height:100%; border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+        <div id="autoInboxList" style="width:280px; flex-shrink:0; border-right:1px solid var(--border); overflow-y:auto; background:var(--card);">
+          <p style="color:var(--text-muted); padding:16px;">No items pending review.</p>
+        </div>
+        <div id="autoInboxDetail" style="flex:1; overflow-y:auto; background:var(--card);">
+          <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--text-muted);">
+            Select an item from the inbox to review
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /tab-view automation -->
+
 <!-- SCHEDULE MODAL -->
 <!-- CALENDAR EVENT POPUP -->
 <div id="calEventPopupOverlay" style="display:none;position:fixed;inset:0;z-index:799;" onclick="closeCalPopup()"></div>
@@ -4162,6 +4235,7 @@ const TAB_TITLES = {
   settings:     'Settings',
   prompts:      'Prompts',
   llm:          'LLM Management',
+  automation:   'Automation',
 };
 
 function closeMobileNav() {
@@ -4180,7 +4254,7 @@ function toggleSidebar() {
 }
 
 function switchTab(tab) {
-  ['dashboard','generator','archive','comparison','reports','pipeline','distribution','calendar','monitoring','settings','prompts','llm'].forEach(t => {
+  ['dashboard','generator','archive','comparison','reports','pipeline','distribution','calendar','monitoring','settings','prompts','llm','automation'].forEach(t => {
     const v = document.getElementById('view-' + t);
     const b = document.getElementById('tab-' + t);
     if (v) v.classList.toggle('active', t === tab);
@@ -4196,6 +4270,7 @@ function switchTab(tab) {
   if (tab === 'monitoring')    loadMonitoring();
   if (tab === 'distribution')  loadDistribution && loadDistribution();
   if (tab === 'prompts')       loadPromptsTab();
+  if (tab === 'automation')    loadAutomation();
 
   // Update topbar title
   const tt = document.getElementById('topbarTitle');
@@ -4203,7 +4278,7 @@ function switchTab(tab) {
 
   // Hide category header on non-content tabs
   const catHdr = document.getElementById('categoryHeader');
-  const hideCat = ['dashboard','calendar','pipeline','monitoring','distribution','reports','settings','prompts','llm'].includes(tab);
+  const hideCat = ['dashboard','calendar','pipeline','monitoring','distribution','reports','settings','prompts','llm','automation'].includes(tab);
   if (catHdr) catHdr.style.display = hideCat ? 'none' : '';
 }
 
@@ -4430,6 +4505,221 @@ function showToast(msg) {
   toast.style.opacity = '1';
   clearTimeout(toast._t);
   toast._t = setTimeout(function() { toast.style.opacity = '0'; }, 2200);
+}
+
+// ── Shared utility helpers ────────────────────────────────────────────────────
+
+function escHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function timeAgo(iso) {
+  if (!iso) return '';
+  var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60)   return diff + 's ago';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+async function apiFetch(path, opts) {
+  var res = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts || {}));
+  if (!res.ok) {
+    var text = await res.text().catch(() => res.statusText);
+    throw new Error(text || res.statusText);
+  }
+  var ct = res.headers.get('content-type') || '';
+  return ct.includes('application/json') ? res.json() : res.text();
+}
+
+// ── Automation Module ─────────────────────────────────────────────────────────
+
+function switchAutoSubTab(tab) {
+  document.getElementById('autoSubRules').style.display = tab === 'rules' ? '' : 'none';
+  document.getElementById('autoSubInbox').style.display = tab === 'inbox' ? '' : 'none';
+  document.getElementById('subTabRules').classList.toggle('active', tab === 'rules');
+  document.getElementById('subTabInbox').classList.toggle('active', tab === 'inbox');
+  if (tab === 'inbox') loadAutoInbox();
+  if (tab === 'rules') loadAutoRules();
+}
+
+function loadAutomation() {
+  switchAutoSubTab('rules');
+  updateInboxBadge();
+}
+
+async function loadAutoRules() {
+  var list = document.getElementById('autoRulesList');
+  if (!list) return;
+  list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px 0;">Loading rules...</p>';
+  try {
+    var rules = await apiFetch('/api/automation/rules');
+    if (!rules || !rules.length) {
+      list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px 0;">No automation rules yet. Click <strong>+ New Rule</strong> to get started.</p>';
+      return;
+    }
+    list.innerHTML = rules.map(renderRuleCard).join('');
+  } catch (err) {
+    list.innerHTML = '<p style="color:#ef4444;padding:20px;">Failed to load rules: ' + escHtml(err.message) + '</p>';
+  }
+}
+
+function renderRuleCard(rule) {
+  var triggerLabel = rule.trigger && rule.trigger.type === 'schedule'
+    ? 'Cron: ' + rule.trigger.cron
+    : (rule.trigger && rule.trigger.type === 'event' ? 'Event-driven' : 'Volume-based');
+  var reviewLabel = rule.review && rule.review.required ? 'Requires review' : 'Auto-publish';
+  var notifParts = [];
+  if (rule.notifications && rule.notifications.telegram && rule.notifications.telegram.enabled) notifParts.push('Telegram');
+  if (rule.notifications && rule.notifications.email && rule.notifications.email.enabled) notifParts.push('Email');
+  var notifLabel = notifParts.length ? notifParts.join(' + ') : 'No notifications';
+  var lastRun = rule.lastRunAt ? 'Last run ' + timeAgo(rule.lastRunAt) : 'Never run';
+  var btnStyle = 'padding:4px 8px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text-muted);cursor:pointer;font-size:0.75rem;font-family:\'Montserrat\',sans-serif;';
+  var sources = rule.sources || [];
+
+  return '<div class="auto-rule-card" id="ruleCard-' + escHtml(rule.id) + '">' +
+    '<div class="auto-rule-dot ' + (rule.enabled ? 'enabled' : 'disabled') + '" title="' + (rule.enabled ? 'Active' : 'Paused') + '"></div>' +
+    '<div class="auto-rule-info">' +
+      '<div class="auto-rule-name">' + escHtml(rule.name) + '</div>' +
+      '<div class="auto-rule-meta">' + escHtml(rule.category) + ' &middot; ' + triggerLabel + ' &middot; ' + sources.length + ' source' + (sources.length !== 1 ? 's' : '') + ' &middot; ' + reviewLabel + ' &middot; ' + notifLabel + '</div>' +
+      '<div class="auto-rule-meta" style="margin-top:2px;">' + lastRun + ' &middot; ' + ((rule.stats && rule.stats.articlesGenerated) || 0) + ' generated &middot; ' + ((rule.stats && rule.stats.articlesPublished) || 0) + ' published</div>' +
+    '</div>' +
+    '<div class="auto-rule-actions">' +
+      '<button style="' + btnStyle + '" title="' + (rule.enabled ? 'Pause rule' : 'Resume rule') + '" onclick="toggleAutoRule(\'' + escHtml(rule.id) + '\',' + (!rule.enabled) + ')">' + (rule.enabled ? '&#9646;&#9646;' : '&#9654;') + '</button>' +
+      '<button style="' + btnStyle + '" title="Clone rule" onclick="cloneAutoRule(\'' + escHtml(rule.id) + '\')">&#10697;</button>' +
+      '<button style="' + btnStyle + '" title="Edit rule" onclick="openRuleWizard(\'' + escHtml(rule.id) + '\')">&#9998;</button>' +
+      '<button style="' + btnStyle + 'color:#ef4444;border-color:#ef4444;" title="Delete rule" onclick="deleteAutoRuleConfirm(\'' + escHtml(rule.id) + '\',\'' + escHtml(rule.name) + '\')">&#128465;</button>' +
+    '</div>' +
+  '</div>';
+}
+
+async function toggleAutoRule(id, enabled) {
+  try {
+    await apiFetch('/api/automation/rules/' + id, { method: 'PATCH', body: JSON.stringify({ enabled: enabled }) });
+    loadAutoRules();
+  } catch (err) { showToast('Failed to update rule: ' + err.message); }
+}
+
+async function cloneAutoRule(id) {
+  try {
+    var rules = await apiFetch('/api/automation/rules');
+    var source = rules.find(function(r) { return r.id === id; });
+    if (!source) return;
+    var clone = Object.assign({}, source);
+    delete clone.id; delete clone.createdAt; delete clone.updatedAt; delete clone.lastRunAt; delete clone.stats;
+    clone.name = source.name + ' (copy)';
+    await apiFetch('/api/automation/rules', { method: 'POST', body: JSON.stringify(clone) });
+    loadAutoRules();
+    showToast('Rule cloned');
+  } catch (err) { showToast('Clone failed: ' + err.message); }
+}
+
+function deleteAutoRuleConfirm(id, name) {
+  if (!confirm('Delete rule "' + name + '"?\n\nThis cannot be undone.')) return;
+  apiFetch('/api/automation/rules/' + id, { method: 'DELETE' })
+    .then(function() { loadAutoRules(); showToast('Rule deleted'); })
+    .catch(function(err) { showToast('Delete failed: ' + err.message); });
+}
+
+function openRuleWizard(editId) {
+  showToast('Rule wizard coming in next commit');
+}
+
+async function updateInboxBadge() {
+  try {
+    var jobs = await apiFetch('/api/automation/jobs?status=pending_review');
+    var count = (jobs || []).length;
+    ['automationInboxBadge', 'inboxBadgeHeader'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = count;
+      el.style.display = count > 0 ? '' : 'none';
+    });
+  } catch (e) { /* non-fatal */ }
+}
+
+async function loadAutoInbox() {
+  var list = document.getElementById('autoInboxList');
+  if (!list) return;
+  list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">Loading...</p>';
+  try {
+    var jobs = await apiFetch('/api/automation/jobs?status=pending_review');
+    if (!jobs || !jobs.length) {
+      list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">No items pending review.</p>';
+      return;
+    }
+    list.innerHTML = jobs.map(function(j) { return renderInboxCard(j); }).join('');
+  } catch (err) {
+    list.innerHTML = '<p style="color:#ef4444;padding:16px;">' + escHtml(err.message) + '</p>';
+  }
+}
+
+function renderInboxCard(job) {
+  var age = job.createdAt ? timeAgo(job.createdAt) : '';
+  return '<div style="padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;" id="autoInboxCard-' + escHtml(job.id) + '" onclick="openAutoInboxJob(\'' + escHtml(job.id) + '\')">' +
+    '<div style="font-size:0.7rem;color:var(--sla-orange);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Pending Review</div>' +
+    '<div style="font-weight:600;font-size:0.85rem;color:var(--text);margin-bottom:3px;">' + escHtml(job.contentId || 'Article') + '</div>' +
+    '<div style="font-size:0.75rem;color:var(--text-muted);">' + escHtml(age) + '</div>' +
+  '</div>';
+}
+
+async function openAutoInboxJob(jobId) {
+  var detail = document.getElementById('autoInboxDetail');
+  if (!detail) return;
+  detail.innerHTML = '<div style="padding:24px;color:var(--text-muted);">Loading...</div>';
+  try {
+    var job = await apiFetch('/api/automation/jobs/' + jobId);
+    var content = null;
+    var rule = null;
+    try { content = await apiFetch('/api/content/' + job.contentId); } catch (e) {}
+    try { rule = await apiFetch('/api/automation/rules/' + job.ruleId); } catch (e) {}
+    detail.innerHTML = renderAutoInboxDetail(job, content, rule);
+  } catch (err) {
+    detail.innerHTML = '<div style="padding:24px;color:#ef4444;">' + escHtml(err.message) + '</div>';
+  }
+}
+
+function renderAutoInboxDetail(job, content, rule) {
+  var title = (content && content.title) || job.contentId || 'Article';
+  var body = (content && content.body) || '';
+  var ruleName = (rule && rule.name) || job.ruleId || '';
+
+  return '<div class="inbox-detail-wrap">' +
+    '<div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:8px;">Rule: ' + escHtml(ruleName) + '</div>' +
+    '<h2>' + escHtml(title) + '</h2>' +
+    (body ? '<div style="font-size:0.85rem;color:var(--text);line-height:1.7;max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;">' + escHtml(body.substring(0, 2000)) + (body.length > 2000 ? '&hellip;' : '') + '</div>' : '') +
+    '<div class="inbox-action-row">' +
+      '<button class="btn btn-orange btn-sm" onclick="approveAutoJob(\'' + escHtml(job.id) + '\')">Approve &amp; Publish</button>' +
+      '<button style="padding:6px 14px;border-radius:6px;border:1px solid #ef4444;background:transparent;color:#ef4444;font-weight:600;cursor:pointer;font-family:\'Montserrat\',sans-serif;font-size:0.8rem;" onclick="rejectAutoJob(\'' + escHtml(job.id) + '\')">Reject</button>' +
+    '</div>' +
+  '</div>';
+}
+
+async function approveAutoJob(jobId) {
+  try {
+    await apiFetch('/api/automation/approve', {
+      method: 'POST',
+      body: JSON.stringify({ jobId: jobId, action: 'approve', channel: 'manual' }),
+    });
+    showToast('Approved and published');
+    document.getElementById('autoInboxDetail').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);">Select an item to review</div>';
+    loadAutoInbox();
+    updateInboxBadge();
+  } catch (err) { showToast('Failed: ' + err.message); }
+}
+
+async function rejectAutoJob(jobId) {
+  try {
+    await apiFetch('/api/automation/approve', {
+      method: 'POST',
+      body: JSON.stringify({ jobId: jobId, action: 'reject', channel: 'manual' }),
+    });
+    showToast('Rejected');
+    document.getElementById('autoInboxDetail').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);">Select an item to review</div>';
+    loadAutoInbox();
+    updateInboxBadge();
+  } catch (err) { showToast('Failed: ' + err.message); }
 }
 
 function loadLLMPage() {
@@ -6045,7 +6335,7 @@ window.addEventListener('DOMContentLoaded', () => {
   updateCategoryHeader('clinical-reviews');
   // Hash deep-link: /#pipeline, /#generator, etc. (used by review confirmation pages)
   var hashTab = window.location.hash.replace('#', '');
-  var validTabs = ['dashboard','generator','archive','pipeline','distribution','calendar','monitoring','settings','prompts','llm'];
+  var validTabs = ['dashboard','generator','archive','pipeline','distribution','calendar','monitoring','settings','prompts','llm','automation'];
   if (hashTab && validTabs.includes(hashTab)) {
     switchTab(hashTab);
     history.replaceState(null, '', window.location.pathname); // clean URL
