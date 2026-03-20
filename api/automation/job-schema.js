@@ -1,6 +1,12 @@
 import { randomUUID } from 'crypto';
 
+export function validateJob(data) {
+  if (!data.ruleId) throw new Error('ruleId is required');
+  if (!data.contentId) throw new Error('contentId is required');
+}
+
 export function buildJob(data) {
+  validateJob(data);
   const now = new Date().toISOString();
   return {
     id: `job_${randomUUID()}`,

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { buildJob } from './job-schema.js';
+import { buildJob, validateJob } from './job-schema.js';
 
 test('buildJob sets id with job_ prefix', () => {
   const job = buildJob({
@@ -8,6 +8,8 @@ test('buildJob sets id with job_ prefix', () => {
     contentId: 'c1',
   });
   assert.match(job.id, /^job_/);
+  assert.equal(job.ruleId, 'r1');   // verify ruleId passthrough
+  assert.equal(job.contentId, 'c1');  // verify contentId passthrough
 });
 
 test('buildJob sets default status to pending_review', () => {
@@ -41,4 +43,12 @@ test('buildJob accepts custom status', () => {
     status: 'auto_published',
   });
   assert.equal(job.status, 'auto_published');
+});
+
+test('validateJob throws on missing ruleId', () => {
+  assert.throws(() => validateJob({ contentId: 'c1' }), { message: 'ruleId is required' });
+});
+
+test('validateJob throws on missing contentId', () => {
+  assert.throws(() => validateJob({ ruleId: 'r1' }), { message: 'contentId is required' });
 });
