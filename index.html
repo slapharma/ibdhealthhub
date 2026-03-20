@@ -1851,6 +1851,11 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .inbox-detail-wrap { padding: 24px; }
 .inbox-detail-wrap h2 { font-size: 1.1rem; margin: 0 0 8px; color: var(--text); }
 .inbox-action-row { display: flex; gap: 12px; margin-top: 20px; }
+
+/* ── Rule Wizard step indicators ── */
+.wiz-step { flex:1; text-align:center; padding:6px 4px; border-radius:6px; font-size:0.72rem; font-weight:600; background:var(--bg); border:1px solid var(--border); color:var(--text-muted); }
+.wiz-step.active { background:var(--sla-orange); color:#fff; border-color:var(--sla-orange); }
+.wiz-step.done   { background:var(--sla-navy); color:#fff; border-color:var(--sla-navy); }
 </style>
 </head>
 <body>
@@ -4622,8 +4627,258 @@ function deleteAutoRuleConfirm(id, name) {
     .catch(function(err) { showToast('Delete failed: ' + err.message); });
 }
 
+// ── Rule Wizard ───────────────────────────────────────────────────────────────
+var _wizStep = 1;
+var _wizEditId = null;
+var _wizSources = [];
+var _wizEmails = [];
+
 function openRuleWizard(editId) {
-  showToast('Rule wizard coming in next commit');
+  _wizStep = 1;
+  _wizEditId = editId || null;
+  _wizSources = [];
+  _wizEmails = [];
+
+  // Populate category dropdowns
+  var catSel = document.getElementById('wizCategory');
+  var tplSel = document.getElementById('wizTemplate');
+  if (catSel && typeof CATEGORIES !== 'undefined') {
+    catSel.innerHTML = CATEGORIES.map(function(c) { return '<option value="' + escHtml(c.id) + '">' + escHtml(c.label) + '</option>'; }).join('');
+  }
+  if (tplSel && typeof CATEGORIES !== 'undefined') {
+    tplSel.innerHTML = CATEGORIES.map(function(c) { return '<option value="' + escHtml(c.id) + '">' + escHtml(c.label) + '</option>'; }).join('');
+  }
+
+  document.getElementById('ruleWizardTitle').textContent = editId ? 'Edit Rule' : 'New Automation Rule';
+  document.getElementById('wizName').value = '';
+  document.getElementById('wizSourcesList').innerHTML = '';
+  document.getElementById('wizEmailChips').innerHTML = '';
+  document.getElementById('wizTgEnabled').checked = false;
+  document.getElementById('wizEmailEnabled').checked = false;
+  document.getElementById('wizTgOpts').style.display = 'none';
+  document.getElementById('wizEmailOpts').style.display = 'none';
+
+  _wizRenderStep(1);
+
+  var modal = document.getElementById('ruleWizardModal');
+  modal.style.display = 'flex';
+}
+
+function closeRuleWizard() {
+  document.getElementById('ruleWizardModal').style.display = 'none';
+}
+
+function _wizRenderStep(step) {
+  _wizStep = step;
+  for (var i = 1; i <= 5; i++) {
+    var panel = document.getElementById('wizPanel' + i);
+    var stepEl = document.getElementById('wizStep' + i);
+    if (panel) panel.style.display = i === step ? '' : 'none';
+    if (stepEl) {
+      stepEl.className = 'wiz-step' + (i === step ? ' active' : i < step ? ' done' : '');
+    }
+  }
+  var btnBack = document.getElementById('wizBtnBack');
+  var btnNext = document.getElementById('wizBtnNext');
+  if (btnBack) btnBack.style.display = step > 1 ? '' : 'none';
+  if (btnNext) btnNext.textContent = step === 5 ? 'Create Rule' : 'Next \u2192';
+  if (step === 5) _wizBuildSummary();
+}
+
+function wizBack() {
+  if (_wizStep > 1) _wizRenderStep(_wizStep - 1);
+}
+
+function wizNext() {
+  if (!_wizValidateStep(_wizStep)) return;
+  if (_wizStep < 5) {
+    _wizRenderStep(_wizStep + 1);
+  } else {
+    _wizSubmit();
+  }
+}
+
+function _wizValidateStep(step) {
+  if (step === 1) {
+    if (!document.getElementById('wizName').value.trim()) {
+      alert('Please enter a rule name.'); return false;
+    }
+    if (!_wizSources.length) {
+      alert('Please add at least one source.'); return false;
+    }
+  }
+  return true;
+}
+
+function wizAddSource(type) {
+  var id = 'src_' + Date.now();
+  _wizSources.push({ id: id, type: type, url: '', repo: '', path: '', branch: 'main' });
+  _wizRenderSources();
+}
+
+function wizRemoveSource(id) {
+  _wizSources = _wizSources.filter(function(s) { return s.id !== id; });
+  _wizRenderSources();
+}
+
+function _wizRenderSources() {
+  var list = document.getElementById('wizSourcesList');
+  if (!list) return;
+  list.innerHTML = _wizSources.map(function(s) {
+    var label = s.type === 'rss' ? 'RSS' : s.type === 'url' ? 'URL' : 'GitHub';
+    var ph = s.type === 'rss' ? 'https://feeds.bmj.com/bmj/recent' : s.type === 'url' ? 'https://www.nice.org.uk/news' : '';
+    var inputHtml = s.type === 'github'
+      ? '<input placeholder="owner/repo" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.repo=el.value;})(this)" value="' + escHtml(s.repo) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;"> <input placeholder="path (optional)" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.path=el.value;})(this)" value="' + escHtml(s.path) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">'
+      : '<input type="url" placeholder="' + ph + '" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.url=el.value;})(this)" value="' + escHtml(s.url) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">';
+    return '<div style="display:flex;align-items:center;gap:8px;">'
+      + '<span style="min-width:52px;font-size:0.75rem;font-weight:600;color:var(--text-muted);">' + label + '</span>'
+      + inputHtml
+      + '<button onclick="wizRemoveSource(\'' + s.id + '\')" style="padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:#ef4444;cursor:pointer;font-size:0.8rem;">&#x2715;</button>'
+      + '</div>';
+  }).join('');
+}
+
+function wizUpdateTriggerUI() {
+  var type = document.querySelector('input[name="wizTrigger"]:checked');
+  var val = type ? type.value : 'schedule';
+  document.getElementById('wizTrigSchedule').style.display = val === 'schedule' ? '' : 'none';
+  document.getElementById('wizTrigEvent').style.display = val === 'event' ? '' : 'none';
+}
+
+function wizUpdateCronUI() {
+  var val = document.getElementById('wizCronPreset').value;
+  document.getElementById('wizCustomCron').style.display = val === 'custom' ? '' : 'none';
+}
+
+function wizUpdateReviewUI() {
+  var req = document.querySelector('input[name="wizReview"]:checked');
+  document.getElementById('wizReviewOpts').style.display = (!req || req.value === 'yes') ? '' : 'none';
+}
+
+function wizUpdateNotifUI() {
+  document.getElementById('wizTgOpts').style.display = document.getElementById('wizTgEnabled').checked ? '' : 'none';
+  document.getElementById('wizEmailOpts').style.display = document.getElementById('wizEmailEnabled').checked ? '' : 'none';
+}
+
+function wizAddEmail() {
+  var input = document.getElementById('wizEmailNew');
+  var email = input.value.trim();
+  if (!email || !email.includes('@')) return;
+  if (_wizEmails.includes(email)) { input.value = ''; return; }
+  _wizEmails.push(email);
+  input.value = '';
+  _wizRenderEmailChips();
+}
+
+function wizRemoveEmail(email) {
+  _wizEmails = _wizEmails.filter(function(e) { return e !== email; });
+  _wizRenderEmailChips();
+}
+
+function _wizRenderEmailChips() {
+  var container = document.getElementById('wizEmailChips');
+  if (!container) return;
+  container.innerHTML = _wizEmails.map(function(e) {
+    return '<span style="background:var(--sla-navy);color:#fff;border-radius:12px;padding:3px 10px;font-size:0.75rem;display:flex;align-items:center;gap:6px;">'
+      + escHtml(e)
+      + '<button onclick="wizRemoveEmail(\'' + escHtml(e) + '\')" style="background:none;border:none;color:#fff;cursor:pointer;padding:0;font-size:0.9rem;line-height:1;">\u00d7</button></span>';
+  }).join('');
+}
+
+function _wizBuildSummary() {
+  var trigEl = document.querySelector('input[name="wizTrigger"]:checked');
+  var trigType = trigEl ? trigEl.value : 'schedule';
+  var cronPreset = document.getElementById('wizCronPreset').value;
+  var cronDisplay = cronPreset === 'custom' ? (document.getElementById('wizCronExpr').value || 'custom') : cronPreset;
+  var reviewEl = document.querySelector('input[name="wizReview"]:checked');
+  var reviewReq = !reviewEl || reviewEl.value === 'yes';
+  var notifParts = [];
+  if (document.getElementById('wizTgEnabled').checked) notifParts.push('Telegram');
+  if (document.getElementById('wizEmailEnabled').checked) notifParts.push('Email (' + _wizEmails.length + ' recipient' + (_wizEmails.length !== 1 ? 's' : '') + ')');
+
+  var summary = document.getElementById('wizSummary');
+  if (summary) {
+    summary.style.display = '';
+    summary.innerHTML = '<strong>Summary</strong><br>'
+      + 'Name: ' + escHtml(document.getElementById('wizName').value) + '<br>'
+      + 'Category: ' + escHtml(document.getElementById('wizCategory').value) + '<br>'
+      + 'Sources: ' + _wizSources.length + '<br>'
+      + 'Trigger: ' + (trigType === 'schedule' ? cronDisplay : trigType) + '<br>'
+      + 'Max articles/run: ' + (document.getElementById('wizMaxArticles').value || '3') + '<br>'
+      + 'Review: ' + (reviewReq ? ('Required \u00b7 Auto-' + (document.getElementById('wizOnTimeout').value || 'approve') + ' after ' + (document.getElementById('wizTimeoutHours').value || '48') + 'h') : 'Auto-publish') + '<br>'
+      + 'Notifications: ' + (notifParts.length ? notifParts.join(' + ') : 'None');
+  }
+}
+
+async function wizTestTelegram() {
+  var chatId = document.getElementById('wizTgChatId').value.trim();
+  if (!chatId) { alert('Enter a Chat ID first.'); return; }
+  try {
+    await apiFetch('/api/automation/telegram-test', { method: 'POST', body: JSON.stringify({ chatId: chatId }) });
+    showToast('Test message sent to Telegram');
+  } catch (err) { showToast('Failed: ' + err.message); }
+}
+
+async function _wizSubmit() {
+  var trigEl = document.querySelector('input[name="wizTrigger"]:checked');
+  var trigType = trigEl ? trigEl.value : 'schedule';
+  var cronPreset = document.getElementById('wizCronPreset').value;
+  var cronExpr = cronPreset === 'custom' ? document.getElementById('wizCronExpr').value : cronPreset;
+  var reviewEl = document.querySelector('input[name="wizReview"]:checked');
+  var reviewReq = !reviewEl || reviewEl.value === 'yes';
+  var combineEl = document.querySelector('input[name="wizCombine"]:checked');
+
+  var payload = {
+    name: document.getElementById('wizName').value.trim(),
+    category: document.getElementById('wizCategory').value,
+    sources: _wizSources.map(function(s) { var o = {type:s.type}; if(s.url)o.url=s.url; if(s.repo)o.repo=s.repo; if(s.path)o.path=s.path; if(s.branch)o.branch=s.branch; return o; }),
+    trigger: {
+      type: trigType,
+      cron: trigType === 'schedule' ? cronExpr : null,
+      minGapHours: trigType === 'event' ? parseInt(document.getElementById('wizMinGap').value || '4') : null,
+    },
+    generation: {
+      template: document.getElementById('wizTemplate').value,
+      maxArticlesPerRun: parseInt(document.getElementById('wizMaxArticles').value || '3'),
+      prompt: document.getElementById('wizPrompt').value.trim(),
+      combineMode: combineEl ? combineEl.value : 'one-per-item',
+    },
+    review: {
+      required: reviewReq,
+      timeoutHours: reviewReq ? parseInt(document.getElementById('wizTimeoutHours').value || '48') : 48,
+      onTimeout: reviewReq ? document.getElementById('wizOnTimeout').value : 'approve',
+    },
+    notifications: {
+      telegram: {
+        enabled: document.getElementById('wizTgEnabled').checked,
+        chatId: document.getElementById('wizTgChatId').value.trim() || null,
+        allowApproval: document.getElementById('wizTgApprove').checked,
+      },
+      email: {
+        enabled: document.getElementById('wizEmailEnabled').checked,
+        to: _wizEmails.slice(),
+        allowApproval: document.getElementById('wizEmailApprove').checked,
+      },
+    },
+  };
+
+  var btnNext = document.getElementById('wizBtnNext');
+  if (btnNext) btnNext.disabled = true;
+  try {
+    if (_wizEditId) {
+      await apiFetch('/api/automation/rules/' + _wizEditId, { method: 'PATCH', body: JSON.stringify(payload) });
+      showToast('Rule updated');
+    } else {
+      await apiFetch('/api/automation/rules', { method: 'POST', body: JSON.stringify(payload) });
+      showToast('Rule created');
+    }
+    closeRuleWizard();
+    loadAutoRules();
+  } catch (err) {
+    alert('Failed to save rule: ' + err.message);
+  } finally {
+    if (btnNext) btnNext.disabled = false;
+  }
 }
 
 async function updateInboxBadge() {
@@ -8655,5 +8910,175 @@ function checkGcalStatus() {
     }).catch(() => {});
 }
 </script>
+
+<!-- ═══ RULE WIZARD MODAL ═══ -->
+<div id="ruleWizardModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;" onclick="if(event.target===this)closeRuleWizard()">
+  <div style="background:var(--card); border-radius:12px; padding:28px; width:680px; max-width:95vw; max-height:90vh; overflow-y:auto; position:relative;">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 id="ruleWizardTitle" style="margin:0; font-size:1.1rem; color:var(--text);">New Automation Rule</h2>
+      <button onclick="closeRuleWizard()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--text-muted);">&#x2715;</button>
+    </div>
+
+    <!-- Step indicator -->
+    <div style="display:flex; gap:4px; margin-bottom:24px;" id="wizardSteps">
+      <div class="wiz-step active" id="wizStep1">&#9312; Sources</div>
+      <div class="wiz-step" id="wizStep2">&#9313; Trigger</div>
+      <div class="wiz-step" id="wizStep3">&#9314; Generation</div>
+      <div class="wiz-step" id="wizStep4">&#9315; Review</div>
+      <div class="wiz-step" id="wizStep5">&#9316; Notify</div>
+    </div>
+
+    <!-- Step 1: Sources -->
+    <div id="wizPanel1">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Rule Name *</label>
+        <input id="wizName" type="text" maxlength="60" placeholder="e.g. NHS Clinical Weekly Digest" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Category *</label>
+        <select id="wizCategory" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;"></select>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Sources *</label>
+        <div id="wizSourcesList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="wizAddSource('rss')" style="padding:5px 12px;border-radius:6px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ RSS Feed</button>
+          <button onclick="wizAddSource('url')" style="padding:5px 12px;border-radius:6px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ URL</button>
+          <button onclick="wizAddSource('github')" style="padding:5px 12px;border-radius:6px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ GitHub</button>
+          <button disabled style="padding:5px 12px;border-radius:6px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Google Drive</button>
+          <button disabled style="padding:5px 12px;border-radius:6px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Dropbox</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Trigger -->
+    <div id="wizPanel2" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">When should this rule run?</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="schedule" checked onchange="wizUpdateTriggerUI()"> Schedule</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="event" onchange="wizUpdateTriggerUI()"> Event-driven (when new source items appear)</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="volume" onchange="wizUpdateTriggerUI()"> Volume-based (when N items accumulate)</label>
+        </div>
+      </div>
+      <div id="wizTrigSchedule">
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Schedule Preset</label>
+          <select id="wizCronPreset" onchange="wizUpdateCronUI()" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <option value="0 7 * * 1">Weekly &mdash; Mondays at 07:00 UTC</option>
+            <option value="0 7 * * *">Daily &mdash; 07:00 UTC</option>
+            <option value="0 7 1,15 * *">Bi-weekly &mdash; 1st &amp; 15th</option>
+            <option value="0 7 1 * *">Monthly &mdash; 1st of month</option>
+            <option value="custom">Custom cron expression</option>
+          </select>
+        </div>
+        <div id="wizCustomCron" style="display:none;margin-bottom:12px;">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Cron Expression</label>
+          <input id="wizCronExpr" type="text" placeholder="0 7 * * 1" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+        </div>
+      </div>
+      <div id="wizTrigEvent" style="display:none;">
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Minimum gap between runs (hours)</label>
+          <input id="wizMinGap" type="number" value="4" min="1" max="168" style="width:120px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Max articles per run</label>
+        <input id="wizMaxArticles" type="number" value="3" min="1" max="10" style="width:120px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+      </div>
+    </div>
+
+    <!-- Step 3: Generation -->
+    <div id="wizPanel3" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Template</label>
+        <select id="wizTemplate" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;"></select>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Custom prompt <span style="color:var(--text-muted);font-weight:400;">(optional override)</span></label>
+        <textarea id="wizPrompt" maxlength="2000" rows="4" placeholder="Leave blank to use the category's default template" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;resize:vertical;"></textarea>
+      </div>
+      <div>
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Source handling</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizCombine" value="one-per-item" checked> One article per source item</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizCombine" value="combine"> Summarise all into one article</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Review -->
+    <div id="wizPanel4" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Does this content require human review before publishing?</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizReview" value="yes" checked onchange="wizUpdateReviewUI()"> Yes &mdash; hold in Automation Inbox</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizReview" value="no" onchange="wizUpdateReviewUI()"> No &mdash; publish automatically</label>
+        </div>
+      </div>
+      <div id="wizReviewOpts">
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Auto-approve after <input id="wizTimeoutHours" type="number" value="48" min="1" max="720" style="width:70px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);font-size:0.875rem;"> hours if no response</label>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">On timeout:</label>
+          <select id="wizOnTimeout" style="width:220px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <option value="approve">Approve automatically</option>
+            <option value="reject">Reject</option>
+            <option value="skip">Skip (hold indefinitely)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Notify -->
+    <div id="wizPanel5" style="display:none;">
+      <div style="border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;font-weight:600;cursor:pointer;margin-bottom:10px;">
+          <input type="checkbox" id="wizTgEnabled" onchange="wizUpdateNotifUI()"> Enable Telegram notifications
+        </label>
+        <div id="wizTgOpts" style="display:none;padding-left:24px;">
+          <div style="margin-bottom:10px;">
+            <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--text);">Chat ID</label>
+            <input id="wizTgChatId" type="text" placeholder="-1001234567890" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;margin-bottom:8px;cursor:pointer;">
+            <input type="checkbox" id="wizTgApprove" checked> Allow approval via Telegram inline buttons
+          </label>
+          <button onclick="wizTestTelegram()" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:0.78rem;cursor:pointer;">Send test message</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;font-weight:600;cursor:pointer;margin-bottom:10px;">
+          <input type="checkbox" id="wizEmailEnabled" onchange="wizUpdateNotifUI()"> Enable email notifications
+        </label>
+        <div id="wizEmailOpts" style="display:none;padding-left:24px;">
+          <div id="wizEmailChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input id="wizEmailNew" type="email" placeholder="editor@slahealth.co.uk" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <button onclick="wizAddEmail()" style="padding:8px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;cursor:pointer;">+ Add</button>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="wizEmailApprove" checked> Allow approval via email link
+          </label>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div id="wizSummary" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:0.85rem;line-height:1.8;"></div>
+    </div>
+
+    <!-- Wizard footer -->
+    <div style="display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid var(--border);">
+      <button id="wizBtnBack" onclick="wizBack()" style="display:none;padding:8px 20px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;cursor:pointer;">&#8592; Back</button>
+      <span></span>
+      <button id="wizBtnNext" onclick="wizNext()" style="padding:8px 20px;border-radius:6px;border:none;background:var(--sla-orange);color:#fff;font-size:0.875rem;font-weight:600;cursor:pointer;">Next &#8594;</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
