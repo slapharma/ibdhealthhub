@@ -15,6 +15,7 @@ test('validateContentItem rejects missing title', () => {
   assert.throws(() => validateContentItem({ body: 'x' }), /title/i);
 });
 
-test('validateContentItem rejects missing body', () => {
-  assert.throws(() => validateContentItem({ title: 'x' }), /body/i);
+test('validateContentItem allows missing body (body is optional)', () => {
+  // body is optional — title-only drafts are valid
+  assert.doesNotThrow(() => validateContentItem({ title: 'x' }));
 });
