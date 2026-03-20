@@ -4,11 +4,15 @@ const TERMINAL_STATUSES = ['approved', 'rejected', 'published', 'timed_out', 'au
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
 async function answerCallbackQuery(callbackQueryId, text) {
-  await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ callback_query_id: callbackQueryId, text, show_alert: false }),
-  });
+  try {
+    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ callback_query_id: callbackQueryId, text, show_alert: false }),
+    });
+  } catch (err) {
+    console.error('answerCallbackQuery failed:', err.message);
+  }
 }
 
 export function createHandler(kvInstance = defaultKv) {
@@ -46,12 +50,16 @@ export function createHandler(kvInstance = defaultKv) {
       const rule = await kvInstance.get(`automation:rule:${job.ruleId}`);
       if (rule?.publish?.wordpress) {
         try {
-          await fetch(`${APP_URL}/api/publish`, {
+          const publishRes = await fetch(`${APP_URL}/api/publish`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: job.contentId }),
           });
-          await kvInstance.set(`automation:job:${jobId}`, { ...updated, status: 'published' });
+          if (publishRes.ok) {
+            await kvInstance.set(`automation:job:${jobId}`, { ...updated, status: 'published' });
+          } else {
+            console.error('Publish after Telegram approval failed: HTTP', publishRes.status);
+          }
         } catch (err) {
           console.error('Publish after Telegram approval failed:', err.message);
         }

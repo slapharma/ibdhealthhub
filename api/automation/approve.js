@@ -44,12 +44,16 @@ export default async function handler(req, res) {
     const rule = await kv.get(`automation:rule:${job.ruleId}`);
     if (rule?.publish?.wordpress) {
       try {
-        await fetch(`${APP_URL}/api/publish`, {
+        const publishRes = await fetch(`${APP_URL}/api/publish`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: job.contentId }),
         });
-        await kv.set(`automation:job:${jobId}`, { ...updated, status: 'published' });
+        if (publishRes.ok) {
+          await kv.set(`automation:job:${jobId}`, { ...updated, status: 'published' });
+        } else {
+          console.error('Publish after approval failed: HTTP', publishRes.status);
+        }
       } catch (err) {
         // Publish failed — job stays 'approved', not 'published'
         console.error('Publish after approval failed:', err.message);
