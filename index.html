@@ -574,7 +574,9 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .cat-card { background:var(--card); border:1.5px solid var(--border); border-radius:0; padding:12px 14px; cursor:pointer; transition:border-color 0.14s,box-shadow 0.14s; display:flex; align-items:flex-start; gap:11px; }
 .cat-card:hover { border-color:var(--sla-orange); box-shadow:0 2px 10px rgba(244,121,32,0.1); }
 .cat-card.active { border-color:var(--sla-orange); background:rgba(244,121,32,0.04); box-shadow:0 0 0 2px rgba(244,121,32,0.15); }
-.cat-card-icon { font-size:1.2rem; flex-shrink:0; width:28px; text-align:center; padding-top:1px; }
+.cat-card-icon { flex-shrink:0; width:28px; height:28px; display:flex; align-items:center; justify-content:center; color:var(--sla-navy); }
+.cat-card-icon svg { width:18px; height:18px; transition:color 0.15s; }
+.cat-card:hover .cat-card-icon svg { color:var(--sla-orange); }
 .cat-card-body { flex:1; min-width:0; }
 .cat-card-name { font-size:0.78rem; font-weight:800; color:var(--sla-navy); margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .cat-card-desc { font-size:0.66rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:6px; }
@@ -1545,16 +1547,17 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 /* Automation row */
 .dash-automation-row { display: flex; gap: 16px; align-items: flex-start; }
 .dash-auto-create-card {
-  background: var(--sla-navy); color: #fff;
+  background: transparent; color: var(--text-muted);
   padding: 24px 20px; min-width: 140px; width: 140px; flex-shrink: 0;
   cursor: pointer; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 8px;
-  border: 1px solid var(--sla-navy); transition: background 0.15s;
+  border: 2px dashed var(--border); transition: border-color 0.15s, color 0.15s;
 }
-.dash-auto-create-card:hover { background: var(--sla-navy-lt); }
-.dash-auto-create-icon { font-size: 2rem; font-weight: 300; line-height: 1; }
+.dash-auto-create-card:hover { border-color: var(--sla-navy); color: var(--sla-navy); }
+.dash-auto-create-icon { display: flex; align-items: center; justify-content: center; }
+.dash-auto-create-icon svg { width: 28px; height: 28px; }
 .dash-auto-create-label { font-size: 0.68rem; font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: 0.05em; }
-.dash-auto-list { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.dash-auto-list { flex: 1; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
 .dash-auto-empty { color: var(--text-muted); font-size: 0.8rem; padding: 12px 0; }
 .dash-auto-item {
   background: var(--card); border: 1px solid var(--border);
@@ -1566,6 +1569,12 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .dash-auto-dot { width: 8px; height: 8px; flex-shrink: 0; }
 .dash-auto-dot.enabled { background: var(--sla-teal); }
 .dash-auto-dot.disabled { background: var(--border); }
+
+/* Automation flat form */
+.auto-form-section { margin-bottom: 16px; }
+.auto-form-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sla-navy); margin-bottom: 6px; }
+.auto-form-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); background: var(--card); font-family: 'Montserrat', sans-serif; font-size: 0.82rem; color: var(--text); border-radius: 0; box-sizing: border-box; }
+.auto-form-input:focus { outline: none; border-color: var(--sla-navy); }
 
 /* Category cards — new dashboard overrides */
 .dash-page .dash-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 0; }
@@ -2183,6 +2192,20 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
       <span>Reports</span>
     </button>
 
+    <div class="nav-group-header">Automation</div>
+    <button class="nav-item nav-item-child" onclick="switchTab('automation-new')" id="tab-automation-new">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>Create New</span>
+    </button>
+    <button class="nav-item nav-item-child" onclick="switchTab('automation-rules')" id="tab-automation-rules">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Automations</span>
+    </button>
+    <button class="nav-item nav-item-child" onclick="switchTab('automation-inbox')" id="tab-automation-inbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span>Notifications</span>
+      <span class="nav-badge" id="automationInboxBadge" style="display:none;">0</span>
+    </button>
     <div class="nav-section-label">System</div>
     <button class="nav-item" onclick="switchTab('categories')" id="tab-categories">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -2195,20 +2218,6 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
     <button class="nav-item" onclick="switchTab('settings')" id="tab-settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span>Settings</span>
-    </button>
-    <div class="nav-group-header">Automation</div>
-    <button class="nav-item nav-item-child" onclick="switchTab('automation-new')" id="tab-automation-new">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      <span>+ Create New</span>
-    </button>
-    <button class="nav-item nav-item-child" onclick="switchTab('automation-rules')" id="tab-automation-rules">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="14" y2="18"/></svg>
-      <span>&#8801; View Rules</span>
-    </button>
-    <button class="nav-item nav-item-child" onclick="switchTab('automation-inbox')" id="tab-automation-inbox">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-      <span>&#128229; Inbox</span>
-      <span class="nav-badge" id="automationInboxBadge" style="display:none;">0</span>
     </button>
   </nav>
 
@@ -2716,6 +2725,10 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
           <div class="dash-kpi-value" id="metricCategories">0</div>
           <div class="dash-kpi-label">Categories</div>
         </div>
+        <div class="dash-kpi-card">
+          <div class="dash-kpi-value" id="metricAutomations">0</div>
+          <div class="dash-kpi-label">Automations</div>
+        </div>
       </div>
     </section>
 
@@ -2724,7 +2737,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
       <div class="dash-section-title">Automation Sequences</div>
       <div class="dash-automation-row">
         <div class="dash-auto-create-card" onclick="switchTab('automation-new')">
-          <div class="dash-auto-create-icon">+</div>
+          <div class="dash-auto-create-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
           <div class="dash-auto-create-label">Create New Sequence</div>
         </div>
         <div class="dash-auto-list" id="dashAutoList">
@@ -2752,7 +2765,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
           LLM Settings
         </button>
         <button class="dash-setting-btn" onclick="switchTab('distribution')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           Social Prompts
         </button>
         <button class="dash-setting-btn" onclick="switchTab('categories')">
@@ -3687,18 +3700,88 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 
 <!-- Automation: Create New -->
 <div class="tab-view" id="view-automation-new">
-  <div style="padding:20px 24px; flex:1; display:flex; flex-direction:column; min-height:0;">
-    <div class="page-header" style="flex-shrink:0;">
+  <div style="padding: 24px; max-width: 700px; overflow-y: auto;">
+    <div class="page-header" style="margin-bottom: 24px;">
       <div class="page-header-left">
-        <h1 class="page-header-title">Create Automation</h1>
-        <p style="color:var(--text-muted); font-size:0.82rem;">Set up a new automation rule or sequence.</p>
+        <h1 class="page-header-title">New Automation Sequence</h1>
+        <p class="page-header-subtitle">Configure a new content automation rule</p>
       </div>
+      <button class="btn btn-outline btn-sm" onclick="switchTab('automation-rules')">Cancel</button>
     </div>
-    <div style="padding:32px 0; display:flex; align-items:center; justify-content:center;">
-      <button class="btn btn-orange" onclick="openRuleWizard(); switchTab('automation-rules');" style="font-size:1rem; padding:16px 36px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;margin-right:8px;vertical-align:middle;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Launch Rule Wizard
-      </button>
+
+    <!-- Inline wizard form — all steps visible -->
+    <div class="auto-form-section">
+      <div class="auto-form-label">Rule Name</div>
+      <input id="wizName" class="auto-form-input" type="text" placeholder="e.g. Weekly BMJ Clinical Reviews"/>
+    </div>
+    <div class="auto-form-section">
+      <div class="auto-form-label">Category</div>
+      <select id="wizCategory" class="auto-form-input"></select>
+    </div>
+    <div class="auto-form-section">
+      <div class="auto-form-label">Sources</div>
+      <div id="wizSourcesContainer"></div>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="wizAddSource()">+ Add Source</button>
+    </div>
+    <div class="auto-form-section">
+      <div class="auto-form-label">Schedule (Cron)</div>
+      <select id="wizCronPreset" class="auto-form-input" onchange="wizUpdateCronUI()">
+        <option value="0 7 * * 1">Weekly (Mon 7am)</option>
+        <option value="0 7 * * *">Daily (7am)</option>
+        <option value="0 7 1 * *">Monthly (1st, 7am)</option>
+        <option value="custom">Custom...</option>
+      </select>
+      <input id="wizCronExpr" class="auto-form-input" type="text" placeholder="cron expression" style="display:none;margin-top:6px;"/>
+    </div>
+    <div class="auto-form-section">
+      <div class="auto-form-label">Max Articles per Run</div>
+      <input id="wizMaxArticles" class="auto-form-input" type="number" value="3" min="1" max="10"/>
+    </div>
+    <div class="auto-form-section">
+      <div class="auto-form-label">Require Human Review?</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;cursor:pointer;">
+        <input type="radio" name="wizReview" value="yes" checked/> Yes — hold for approval
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;margin-top:4px;cursor:pointer;">
+        <input type="radio" name="wizReview" value="no"/> No — auto-publish
+      </label>
+    </div>
+    <div class="auto-form-section">
+      <div class="auto-form-label">Telegram Chat ID (for notifications)</div>
+      <input id="wizTgChatId" class="auto-form-input" type="text" placeholder="e.g. 5239151329"/>
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;margin-top:6px;cursor:pointer;">
+        <input type="checkbox" id="wizTgEnabled"/> Enable Telegram notifications
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;margin-top:4px;cursor:pointer;">
+        <input type="checkbox" id="wizTgApprove" checked/> Allow approval via Telegram
+      </label>
+    </div>
+    <div class="auto-form-section">
+      <div class="auto-form-label">Email Notifications</div>
+      <div id="wizEmailChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;"></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input id="wizEmailNew" class="auto-form-input" type="email" placeholder="email@example.com" style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();wizAddEmail();}"/>
+        <button class="btn btn-outline btn-sm" onclick="wizAddEmail()">+ Add</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;margin-top:6px;cursor:pointer;">
+        <input type="checkbox" id="wizEmailEnabled"/> Enable email notifications
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;margin-top:4px;cursor:pointer;">
+        <input type="checkbox" id="wizEmailApprove" checked/> Allow approval via email
+      </label>
+    </div>
+
+    <!-- Hidden fields needed by _wizSubmit -->
+    <input id="wizTemplate" type="hidden" value="clinical-reviews"/>
+    <input id="wizPrompt" type="hidden" value=""/>
+    <input id="wizMinGap" type="hidden" value="4"/>
+    <input id="wizTimeoutHours" type="hidden" value="48"/>
+    <select id="wizOnTimeout" style="display:none;"><option value="approve">approve</option></select>
+    <input type="hidden" name="wizTrigger" value="schedule"/>
+
+    <div style="margin-top: 24px; display: flex; gap: 12px;">
+      <button class="btn btn-orange" onclick="_wizSubmitFlat()">Create Automation</button>
+      <button class="btn btn-outline" onclick="switchTab('automation-rules')">Cancel</button>
     </div>
   </div>
 </div><!-- /view-automation-new -->
@@ -3707,7 +3790,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 <div class="tab-view" id="view-automation-rules">
   <div style="padding:20px 24px; flex:1; display:flex; flex-direction:column; min-height:0;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-shrink:0;">
-      <h1 style="font-size:1.1rem; font-weight:800; color:var(--sla-navy); margin:0;">Automation Rules</h1>
+      <h1 style="font-size:1.1rem; font-weight:800; color:var(--sla-navy); margin:0;">Automations</h1>
       <button class="btn btn-orange btn-sm" onclick="openRuleWizard()">+ New Rule</button>
     </div>
     <!-- Rules sub-view -->
@@ -3723,7 +3806,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 <div class="tab-view" id="view-automation-inbox">
   <div style="padding:20px 24px; flex:1; display:flex; flex-direction:column; min-height:0;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-shrink:0;">
-      <h1 style="font-size:1.1rem; font-weight:800; color:var(--sla-navy); margin:0;">Automation Inbox</h1>
+      <h1 style="font-size:1.1rem; font-weight:800; color:var(--sla-navy); margin:0;">Notifications</h1>
       <span id="inboxBadgeHeader" style="display:none; background:var(--sla-orange); color:#fff; font-size:0.6rem; font-weight:700; padding:2px 8px; margin-left:4px; vertical-align:middle;">0</span>
     </div>
     <!-- Inbox sub-view -->
@@ -4635,8 +4718,8 @@ const TAB_TITLES = {
   llm:          'LLM Management',
   automation:         'Automation',
   'automation-new':   'Create Automation',
-  'automation-rules': 'Automation Rules',
-  'automation-inbox': 'Automation Inbox',
+  'automation-rules': 'Automations',
+  'automation-inbox': 'Notifications',
   categories:         'Content Categories',
 };
 
@@ -4692,10 +4775,15 @@ function switchTab(tab) {
     setTimeout(function() { switchSocialTab('prompts'); }, 80);
     return;
   }
-  // automation-new immediately opens wizard then redirects to rules view
+  // automation-new: show flat form, populate category dropdown
   if (tab === 'automation-new') {
-    openRuleWizard();
-    tab = 'automation-rules';
+    _wizEditId = null; _wizSources = []; _wizEmails = [];
+    var catSel = document.getElementById('wizCategory');
+    if (catSel && typeof CATEGORIES !== 'undefined') {
+      catSel.innerHTML = CATEGORIES.map(function(c) { return '<option value="' + c.id + '">' + (c.label || c.id) + '</option>'; }).join('');
+    }
+    if (typeof _wizRenderSources === 'function') _wizRenderSources();
+    if (typeof _wizRenderEmailChips === 'function') _wizRenderEmailChips();
   }
   var allTabs = ['dashboard','generator','archive','comparison','reports','pipeline','distribution','calendar','monitoring','settings','llm','automation','automation-new','automation-rules','automation-inbox','categories'];
   allTabs.forEach(t => {
@@ -5153,7 +5241,7 @@ function _wizValidateStep(step) {
 
 function wizAddSource(type) {
   var id = 'src_' + Date.now();
-  _wizSources.push({ id: id, type: type, url: '', repo: '', path: '', branch: 'main' });
+  _wizSources.push({ id: id, type: type || 'rss', url: '', repo: '', path: '', branch: 'main' });
   _wizRenderSources();
 }
 
@@ -5164,8 +5252,8 @@ function wizRemoveSource(id) {
 
 function _wizRenderSources() {
   var list = document.getElementById('wizSourcesList');
-  if (!list) return;
-  list.innerHTML = _wizSources.map(function(s) {
+  var flat = document.getElementById('wizSourcesContainer');
+  var html = _wizSources.map(function(s) {
     var label = s.type === 'rss' ? 'RSS' : s.type === 'url' ? 'URL' : 'GitHub';
     var ph = s.type === 'rss' ? 'https://feeds.bmj.com/bmj/recent' : s.type === 'url' ? 'https://www.nice.org.uk/news' : '';
     var inputHtml = s.type === 'github'
@@ -5177,6 +5265,8 @@ function _wizRenderSources() {
       + '<button onclick="wizRemoveSource(\'' + s.id + '\')" style="padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:#ef4444;cursor:pointer;font-size:0.8rem;">&#x2715;</button>'
       + '</div>';
   }).join('');
+  if (list) list.innerHTML = html;
+  if (flat) flat.innerHTML = html;
 }
 
 function wizUpdateTriggerUI() {
@@ -5188,7 +5278,10 @@ function wizUpdateTriggerUI() {
 
 function wizUpdateCronUI() {
   var val = document.getElementById('wizCronPreset').value;
-  document.getElementById('wizCustomCron').style.display = val === 'custom' ? '' : 'none';
+  var modal = document.getElementById('wizCustomCron');
+  var flat = document.getElementById('wizCronExpr');
+  if (modal) modal.style.display = val === 'custom' ? '' : 'none';
+  if (flat) flat.style.display = val === 'custom' ? '' : 'none';
 }
 
 function wizUpdateReviewUI() {
@@ -5319,6 +5412,55 @@ async function _wizSubmit() {
     alert('Failed to save rule: ' + err.message);
   } finally {
     if (btnNext) btnNext.disabled = false;
+  }
+}
+
+async function _wizSubmitFlat() {
+  // _wizSources array is kept in sync by wizAddSource/wizRemoveSource
+  var cronPreset = document.getElementById('wizCronPreset').value;
+  var cronExpr = cronPreset === 'custom' ? (document.getElementById('wizCronExpr').value || '') : cronPreset;
+  var reviewEl = document.querySelector('input[name="wizReview"]:checked');
+  var reviewReq = !reviewEl || reviewEl.value === 'yes';
+  var payload = {
+    name: document.getElementById('wizName').value.trim(),
+    category: document.getElementById('wizCategory').value,
+    sources: _wizSources.map(function(s) { return { type: s.type, url: s.url }; }),
+    trigger: { type: 'schedule', cron: cronExpr },
+    generation: {
+      template: document.getElementById('wizTemplate').value || 'clinical-reviews',
+      maxArticlesPerRun: parseInt(document.getElementById('wizMaxArticles').value || '3'),
+      prompt: document.getElementById('wizPrompt').value.trim(),
+      combineMode: 'one-per-item',
+    },
+    review: {
+      required: reviewReq,
+      timeoutHours: parseInt(document.getElementById('wizTimeoutHours').value || '48'),
+      onTimeout: document.getElementById('wizOnTimeout').value || 'approve',
+    },
+    notifications: {
+      telegram: {
+        enabled: document.getElementById('wizTgEnabled').checked,
+        chatId: document.getElementById('wizTgChatId').value.trim() || null,
+        allowApproval: document.getElementById('wizTgApprove').checked,
+      },
+      email: {
+        enabled: document.getElementById('wizEmailEnabled').checked,
+        to: _wizEmails.slice(),
+        allowApproval: document.getElementById('wizEmailApprove').checked,
+      },
+    },
+  };
+  try {
+    if (_wizEditId) {
+      await apiFetch('/api/automation/rules/' + _wizEditId, { method: 'PATCH', body: JSON.stringify(payload) });
+      showToast('Rule updated');
+    } else {
+      await apiFetch('/api/automation/rules', { method: 'POST', body: JSON.stringify(payload) });
+      showToast('Rule created');
+    }
+    switchTab('automation-rules');
+  } catch (err) {
+    alert('Failed to save rule: ' + err.message);
   }
 }
 
@@ -7062,6 +7204,19 @@ const BUILTIN_CATEGORY_META = {
   'white-papers':     { description: 'Comprehensive research and position papers', sources: ['multiple'], wpCategorySlug: 'content-white-papers', icon: '📄' },
   'infographics':     { description: 'Visual content and data summaries', sources: ['single'], wpCategorySlug: 'content-infographic', icon: '📊' },
 };
+
+// SVG icon markup for each built-in category (dark by default, orange on hover via CSS)
+const CATEGORY_SVG_ICONS = {
+  'clinical-reviews': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><polyline points="9 3 9 9 15 9 15 3"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="9" y1="18" x2="12" y2="18"/><path d="M19 3l-2 2 2 2 2-2-2-2z"/></svg>',
+  'industry-news':    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6z"/></svg>',
+  'op-eds':           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
+  'white-papers':     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
+  'infographics':     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+  '_default':         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+};
+function getCatSvgIcon(catId) {
+  return CATEGORY_SVG_ICONS[catId] || CATEGORY_SVG_ICONS['_default'];
+}
 const CATEGORY_ICONS = ['📄','📰','💡','📊','📋','🔬','💊','🏥','👨‍⚕️','📝','🎯','🩺','💉','🌡️','🔍','📈','🧬','🫀','🧪','💬','🔖','📌','🎓','🏋️','🧠'];
 
 let customCategories = [];
@@ -7342,7 +7497,7 @@ function renderCategoriesPage() {
     const hasWp        = !!(cat.wpCategorySlug);
     const editorId     = cat.builtIn ? 'builtin:' + cat.id : cat.id;
     return `<div class="cat-card" id="catcard-${cat.id}" onclick="openCategoryEditor('${editorId}')">
-      <div class="cat-card-icon">${cat.icon || '📄'}</div>
+      <div class="cat-card-icon">${getCatSvgIcon(cat.id)}</div>
       <div class="cat-card-body">
         <div class="cat-card-name">${escapeHtml(cat.name)}</div>
         <div class="cat-card-desc">${escapeHtml(cat.description || 'No description')}</div>
@@ -8783,15 +8938,15 @@ function loadDashboard() {
     cardsContainer.innerHTML = allDashCats.map(function(cat) {
       var reviews = (ghData[cat.id] && ghData[cat.id].reviews) ? ghData[cat.id].reviews : [];
       return '<div class="dash-cat-card" onclick="startGeneratorForCategory(\'' + cat.id + '\')">' +
-        '<div class="dash-cat-icon"><span class="dash-cat-emoji">' + cat.icon + '</span></div>' +
+        '<div class="dash-cat-icon">' + getCatSvgIcon(cat.id) + '</div>' +
         '<div class="dash-cat-name">' + escapeHtml(cat.name) + '</div>' +
         '<div class="dash-cat-count">' + reviews.length + ' saved</div>' +
         '<button class="dash-cat-btn" onclick="event.stopPropagation();startGeneratorForCategory(\'' + cat.id + '\')">Generate</button>' +
         '</div>';
     }).join('') +
     '<div class="dash-cat-card add-cat" onclick="switchTab(\'categories\')">' +
-      '<div class="dash-cat-icon" style="font-size:1.5rem;">+</div>' +
-      '<div class="dash-cat-name">New Category</div>' +
+      '<div class="dash-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
+      '<div class="dash-cat-name" style="color:inherit;">New Category</div>' +
     '</div>';
   }
 
@@ -8807,6 +8962,12 @@ function loadDashboard() {
   if (document.getElementById('metricGenerated')) document.getElementById('metricGenerated').textContent = written;
   if (document.getElementById('metricPublished')) document.getElementById('metricPublished').textContent = published;
   if (document.getElementById('metricCategories')) document.getElementById('metricCategories').textContent = allDashCats.length;
+
+  // Load automation count
+  fetch('/api/automation/rules').then(r => r.ok ? r.json() : []).then(rules => {
+    var el = document.getElementById('metricAutomations');
+    if (el) el.textContent = Array.isArray(rules) ? rules.length : 0;
+  }).catch(() => {});
 
   // Load automation sequences summary
   var dashAutoList = document.getElementById('dashAutoList');
