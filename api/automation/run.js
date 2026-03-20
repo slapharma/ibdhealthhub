@@ -17,7 +17,9 @@ export function evaluateCron(cronExpression, lastRunAt, now) {
       currentDate: new Date(now),
     });
     const prev = interval.prev();
-    const prevDate = new Date(prev.toISOString());
+    const iso = prev.toISOString();
+    if (!iso) return false;
+    const prevDate = new Date(iso);
     const sinceDate = lastRunAt ? new Date(lastRunAt) : new Date(0);
     return prevDate > sinceDate;
   } catch {
@@ -47,23 +49,27 @@ export function isRuleDue(rule, now) {
 async function processTimeouts(now, fetchFn = fetch) {
   const ids = await kv.lrange('automation:jobs:index', 0, -1);
   for (const id of ids) {
-    const job = await kv.get(`automation:job:${id}`);
-    if (!job || job.status !== 'pending_review') continue;
-    const rule = await kv.get(`automation:rule:${job.ruleId}`);
-    if (!rule) continue;
-    const ageHours = (new Date(now) - new Date(job.createdAt)) / (1000 * 60 * 60);
-    if (ageHours < rule.review.timeoutHours) continue;
+    try {
+      const job = await kv.get(`automation:job:${id}`);
+      if (!job || job.status !== 'pending_review') continue;
+      const rule = await kv.get(`automation:rule:${job.ruleId}`);
+      if (!rule) continue;
+      const ageHours = (new Date(now) - new Date(job.createdAt)) / (1000 * 60 * 60);
+      if (ageHours < rule.review.timeoutHours) continue;
 
-    const onTimeout = rule.review.onTimeout ?? 'approve';
-    if (onTimeout === 'approve' || onTimeout === 'reject') {
-      await fetchFn(`${APP_URL}/api/automation/approve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId: job.id, action: onTimeout, channel: 'timeout' }),
-      });
-    } else {
-      // 'skip' — mark as timed out without actioning
-      await kv.set(`automation:job:${id}`, { ...job, status: 'timed_out', updatedAt: now });
+      const onTimeout = rule.review.onTimeout ?? 'approve';
+      if (onTimeout === 'approve' || onTimeout === 'reject') {
+        await fetchFn(`${APP_URL}/api/automation/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobId: job.id, action: onTimeout, channel: 'timeout' }),
+        });
+      } else {
+        // 'skip' — mark as timed out without actioning
+        await kv.set(`automation:job:${id}`, { ...job, status: 'timed_out', updatedAt: now });
+      }
+    } catch (err) {
+      console.error(`Timeout processing failed for job ${id}:`, err.message);
     }
   }
 }
@@ -96,6 +102,7 @@ export default async function handler(req, res, { fetchFn = fetch } = {}) {
 
       // 4. Generate content (up to maxArticlesPerRun)
       const toProcess = sourceItems.slice(0, rule.generation.maxArticlesPerRun);
+      let ruleProcessedCount = 0;
       for (const item of toProcess) {
         const genRes = await fetchFn(`${APP_URL}/api/content`, {
           method: 'POST',
@@ -140,20 +147,23 @@ export default async function handler(req, res, { fetchFn = fetch } = {}) {
           await kv.set(`automation:job:${job.id}`, { ...job, approvedBy: 'auto', approvedAt: now });
           await kv.lpush('automation:jobs:index', job.id);
         }
+        ruleProcessedCount++;
         results.processed++;
       }
 
-      // 6. Update rule.lastRunAt and stats
-      await kv.set(`automation:rule:${rule.id}`, {
-        ...rule,
-        lastRunAt: now,
-        updatedAt: now,
-        stats: {
-          ...rule.stats,
-          totalRuns: (rule.stats.totalRuns ?? 0) + 1,
-          articlesGenerated: (rule.stats.articlesGenerated ?? 0) + toProcess.length,
-        },
-      });
+      // 6. Update rule.lastRunAt and stats — only if we actually processed items
+      if (ruleProcessedCount > 0) {
+        await kv.set(`automation:rule:${rule.id}`, {
+          ...rule,
+          lastRunAt: now,
+          updatedAt: now,
+          stats: {
+            ...rule.stats,
+            totalRuns: (rule.stats?.totalRuns ?? 0) + 1,
+            articlesGenerated: (rule.stats?.articlesGenerated ?? 0) + ruleProcessedCount,
+          },
+        });
+      }
     } catch (err) {
       results.errors.push(`Rule ${rule.id}: ${err.message}`);
     }
