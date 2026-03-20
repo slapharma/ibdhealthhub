@@ -145,7 +145,7 @@ test('handler logic - POST validation error on missing category', async () => {
     trigger: { type: 'schedule', cron: '0 7 * * 1' },
   };
 
-  assert.rejects(
+  await assert.rejects(
     () => postRuleLogic(invalidData, {}),
     /category is required/
   );

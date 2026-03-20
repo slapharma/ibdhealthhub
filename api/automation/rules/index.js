@@ -1,21 +1,21 @@
 import { kv } from '@vercel/kv';
-import { buildRule, validateRule } from '../rule-schema.js';
+import { buildRule } from '../rule-schema.js';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     const ids = await kv.lrange('automation:rules:index', 0, -1);
     if (!ids.length) return res.status(200).json([]);
     const rules = await Promise.all(ids.map(id => kv.get(`automation:rule:${id}`)));
-    return res.status(200).json(rules.filter(Boolean));
+    return res.status(200).json(rules.filter(Boolean).reverse());
   }
 
   if (req.method === 'POST') {
+    let rule;
     try {
-      validateRule(req.body);
+      rule = buildRule(req.body);
     } catch (err) {
       return res.status(400).json({ error: err.message });
     }
-    const rule = buildRule(req.body);
     await kv.set(`automation:rule:${rule.id}`, rule);
     await kv.lpush('automation:rules:index', rule.id);
     return res.status(201).json(rule);
