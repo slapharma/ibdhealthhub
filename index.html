@@ -2193,7 +2193,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
     </button>
 
     <div class="nav-group-header">Automation</div>
-    <button class="nav-item nav-item-child" onclick="switchTab('automation-new')" id="tab-automation-new">
+    <button class="nav-item nav-item-child" onclick="openRuleWizard()" id="tab-automation-new">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       <span>Create New</span>
     </button>
@@ -2736,7 +2736,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
     <section class="dash-section">
       <div class="dash-section-title">Automation Sequences</div>
       <div class="dash-automation-row">
-        <div class="dash-auto-create-card" onclick="switchTab('automation-new')">
+        <div class="dash-auto-create-card" onclick="openRuleWizard()">
           <div class="dash-auto-create-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
           <div class="dash-auto-create-label">Create New Sequence</div>
         </div>
@@ -3700,122 +3700,160 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 
 <!-- Automation: Create New -->
 <div class="tab-view" id="view-automation-new">
-  <div style="padding: 24px; max-width: 700px; overflow-y: auto;">
-    <div class="page-header" style="margin-bottom: 24px;">
-      <div class="page-header-left">
-        <h1 class="page-header-title">New Automation Sequence</h1>
-        <p class="page-header-subtitle">Configure a new content automation rule</p>
+  <div style="padding:24px; max-width:700px; overflow-y:auto;">
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 id="ruleWizardTitle" style="margin:0; font-size:1.1rem; color:var(--text);">New Automation Rule</h2>
+      <button onclick="closeRuleWizard()" style="background:none; border:none; font-size:0.875rem; cursor:pointer; color:var(--text-muted); padding:6px 12px; border:1px solid var(--border);">Cancel</button>
+    </div>
+    <!-- Step indicator -->
+    <div style="display:flex; gap:4px; margin-bottom:24px;" id="wizardSteps">
+      <div class="wiz-step active" id="wizStep1">&#9312; Sources</div>
+      <div class="wiz-step" id="wizStep2">&#9313; Trigger</div>
+      <div class="wiz-step" id="wizStep3">&#9314; Generation</div>
+      <div class="wiz-step" id="wizStep4">&#9315; Review</div>
+      <div class="wiz-step" id="wizStep5">&#9316; Notify</div>
+    </div>
+    <!-- Step 1: Sources -->
+    <div id="wizPanel1">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Rule Name *</label>
+        <input id="wizName" type="text" maxlength="60" placeholder="e.g. NHS Clinical Weekly Digest" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
       </div>
-      <button class="btn btn-outline btn-sm" onclick="switchTab('automation-rules')">Cancel</button>
-    </div>
-
-    <!-- Inline wizard form — all steps visible -->
-    <div class="auto-form-section">
-      <div class="auto-form-label">Rule Name</div>
-      <input id="wizName" class="auto-form-input" type="text" placeholder="e.g. Weekly BMJ Clinical Reviews"/>
-    </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Category</div>
-      <select id="wizCategory" class="auto-form-input"></select>
-    </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Sources</div>
-      <div id="wizSourcesContainer" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-outline btn-sm" onclick="wizAddSource('rss')">+ RSS Feed</button>
-        <button class="btn btn-outline btn-sm" onclick="wizAddSource('url')">+ URL</button>
-        <button class="btn btn-outline btn-sm" onclick="wizAddSource('github')">+ GitHub</button>
-        <button class="btn btn-outline btn-sm" disabled style="opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Google Drive</button>
-        <button class="btn btn-outline btn-sm" disabled style="opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Dropbox</button>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Category *</label>
+        <select id="wizCategory" style="width:100%;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;"></select>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Sources *</label>
+        <div id="wizSourcesList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="wizAddSource('rss')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ RSS Feed</button>
+          <button onclick="wizAddSource('url')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ URL</button>
+          <button onclick="wizAddSource('github')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ GitHub</button>
+          <button disabled style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Google Drive</button>
+          <button disabled style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Dropbox</button>
+        </div>
       </div>
     </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Trigger</div>
-      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
-        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="schedule" checked onchange="wizUpdateTriggerUI()"> Schedule</label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="event" onchange="wizUpdateTriggerUI()"> Event-driven (when new source items appear)</label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="volume" onchange="wizUpdateTriggerUI()"> Volume-based (when N items accumulate)</label>
+    <!-- Step 2: Trigger -->
+    <div id="wizPanel2" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">When should this rule run?</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="schedule" checked onchange="wizUpdateTriggerUI()"> Schedule</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="event" onchange="wizUpdateTriggerUI()"> Event-driven (when new source items appear)</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizTrigger" value="volume" onchange="wizUpdateTriggerUI()"> Volume-based (when N items accumulate)</label>
+        </div>
       </div>
       <div id="wizTrigSchedule">
-        <div class="auto-form-label" style="margin-top:8px;">Schedule Preset</div>
-        <select id="wizCronPreset" class="auto-form-input" onchange="wizUpdateCronUI()">
-          <option value="0 7 * * 1">Weekly — Mondays at 07:00 UTC</option>
-          <option value="0 7 * * *">Daily — 07:00 UTC</option>
-          <option value="0 7 1,15 * *">Bi-weekly — 1st &amp; 15th</option>
-          <option value="0 7 1 * *">Monthly — 1st of month</option>
-          <option value="custom">Custom cron expression</option>
-        </select>
-        <input id="wizCronExpr" class="auto-form-input" type="text" placeholder="cron expression" style="display:none;margin-top:6px;"/>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Schedule Preset</label>
+          <select id="wizCronPreset" onchange="wizUpdateCronUI()" style="width:100%;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <option value="0 7 * * 1">Weekly &mdash; Mondays at 07:00 UTC</option>
+            <option value="0 7 * * *">Daily &mdash; 07:00 UTC</option>
+            <option value="0 7 1,15 * *">Bi-weekly &mdash; 1st &amp; 15th</option>
+            <option value="0 7 1 * *">Monthly &mdash; 1st of month</option>
+            <option value="custom">Custom cron expression</option>
+          </select>
+        </div>
+        <div id="wizCustomCron" style="display:none;margin-bottom:12px;">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Cron Expression</label>
+          <input id="wizCronExpr" type="text" placeholder="0 7 * * 1" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+        </div>
       </div>
       <div id="wizTrigEvent" style="display:none;">
-        <div class="auto-form-label" style="margin-top:8px;">Minimum gap between runs (hours)</div>
-        <input id="wizMinGap" class="auto-form-input" type="number" value="4" min="1" max="168" style="width:120px;"/>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Minimum gap between runs (hours)</label>
+          <input id="wizMinGap" type="number" value="4" min="1" max="168" style="width:120px;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Max articles per run</label>
+        <input id="wizMaxArticles" type="number" value="3" min="1" max="10" style="width:120px;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
       </div>
     </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Max Articles per Run</div>
-      <input id="wizMaxArticles" class="auto-form-input" type="number" value="3" min="1" max="10" style="width:120px;"/>
-    </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Template</div>
-      <select id="wizTemplate" class="auto-form-input"></select>
-    </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Custom Prompt <span style="font-weight:400;text-transform:none;font-size:0.75rem;color:var(--text-muted);">(optional override)</span></div>
-      <textarea id="wizPrompt" class="auto-form-input" maxlength="2000" rows="3" placeholder="Leave blank to use the category's default template" style="resize:vertical;"></textarea>
-    </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Source Handling</div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;cursor:pointer;"><input type="radio" name="wizCombine" value="one-per-item" checked> One article per source item</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;margin-top:4px;cursor:pointer;"><input type="radio" name="wizCombine" value="combine"> Summarise all into one article</label>
-    </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Require Human Review?</div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;cursor:pointer;">
-        <input type="radio" name="wizReview" value="yes" checked onchange="wizUpdateReviewUI()"/> Yes — hold in Automation Inbox
-      </label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;margin-top:4px;cursor:pointer;">
-        <input type="radio" name="wizReview" value="no" onchange="wizUpdateReviewUI()"/> No — publish automatically
-      </label>
-      <div id="wizReviewOpts" style="margin-top:10px;padding:10px;border:1px solid var(--border);background:var(--bg);">
-        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Auto-approve after <input id="wizTimeoutHours" type="number" value="48" min="1" max="720" style="width:70px;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;"> hours if no response</label>
-        <div class="auto-form-label" style="margin-top:8px;">On timeout:</div>
-        <select id="wizOnTimeout" class="auto-form-input" style="width:220px;">
-          <option value="approve">Approve automatically</option>
-          <option value="reject">Reject</option>
-          <option value="skip">Skip (hold indefinitely)</option>
-        </select>
+    <!-- Step 3: Generation -->
+    <div id="wizPanel3" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Template</label>
+        <select id="wizTemplate" style="width:100%;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;"></select>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Custom prompt <span style="color:var(--text-muted);font-weight:400;">(optional override)</span></label>
+        <textarea id="wizPrompt" maxlength="2000" rows="4" placeholder="Leave blank to use the category's default template" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;resize:vertical;"></textarea>
+      </div>
+      <div>
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Source handling</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizCombine" value="one-per-item" checked> One article per source item</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizCombine" value="combine"> Summarise all into one article</label>
+        </div>
       </div>
     </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Telegram Chat ID (for notifications)</div>
-      <input id="wizTgChatId" class="auto-form-input" type="text" placeholder="e.g. 5239151329"/>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;margin-top:6px;cursor:pointer;">
-        <input type="checkbox" id="wizTgEnabled"/> Enable Telegram notifications
-      </label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;margin-top:4px;cursor:pointer;">
-        <input type="checkbox" id="wizTgApprove" checked/> Allow approval via Telegram
-      </label>
-    </div>
-    <div class="auto-form-section">
-      <div class="auto-form-label">Email Notifications</div>
-      <div id="wizEmailChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;"></div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <input id="wizEmailNew" class="auto-form-input" type="email" placeholder="email@example.com" style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();wizAddEmail();}"/>
-        <button class="btn btn-outline btn-sm" onclick="wizAddEmail()">+ Add</button>
+    <!-- Step 4: Review -->
+    <div id="wizPanel4" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Does this content require human review before publishing?</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizReview" value="yes" checked onchange="wizUpdateReviewUI()"> Yes &mdash; hold in Automation Inbox</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizReview" value="no" onchange="wizUpdateReviewUI()"> No &mdash; publish automatically</label>
+        </div>
       </div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;margin-top:6px;cursor:pointer;">
-        <input type="checkbox" id="wizEmailEnabled"/> Enable email notifications
-      </label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;margin-top:4px;cursor:pointer;">
-        <input type="checkbox" id="wizEmailApprove" checked/> Allow approval via email
-      </label>
+      <div id="wizReviewOpts">
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Auto-approve after <input id="wizTimeoutHours" type="number" value="48" min="1" max="720" style="width:70px;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;"> hours if no response</label>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">On timeout:</label>
+          <select id="wizOnTimeout" style="width:220px;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <option value="approve">Approve automatically</option>
+            <option value="reject">Reject</option>
+            <option value="skip">Skip (hold indefinitely)</option>
+          </select>
+        </div>
+      </div>
     </div>
-
-
-    <div style="margin-top: 24px; display: flex; gap: 12px;">
-      <button class="btn btn-orange" onclick="_wizSubmitFlat()">Create Automation</button>
-      <button class="btn btn-outline" onclick="switchTab('automation-rules')">Cancel</button>
+    <!-- Step 5: Notify -->
+    <div id="wizPanel5" style="display:none;">
+      <div style="border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;font-weight:600;cursor:pointer;margin-bottom:10px;">
+          <input type="checkbox" id="wizTgEnabled" onchange="wizUpdateNotifUI()"> Enable Telegram notifications
+        </label>
+        <div id="wizTgOpts" style="display:none;padding-left:24px;">
+          <div style="margin-bottom:10px;">
+            <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--text);">Chat ID</label>
+            <input id="wizTgChatId" type="text" placeholder="-1001234567890" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;margin-bottom:8px;cursor:pointer;">
+            <input type="checkbox" id="wizTgApprove" checked> Allow approval via Telegram inline buttons
+          </label>
+          <button onclick="wizTestTelegram()" style="padding:5px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:0.78rem;cursor:pointer;">Send test message</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;font-weight:600;cursor:pointer;margin-bottom:10px;">
+          <input type="checkbox" id="wizEmailEnabled" onchange="wizUpdateNotifUI()"> Enable email notifications
+        </label>
+        <div id="wizEmailOpts" style="display:none;padding-left:24px;">
+          <div id="wizEmailChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input id="wizEmailNew" type="email" placeholder="editor@slahealth.co.uk" style="flex:1;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <button onclick="wizAddEmail()" style="padding:8px 14px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;cursor:pointer;">+ Add</button>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+            <input type="checkbox" id="wizEmailApprove" checked> Allow approval via email link
+          </label>
+        </div>
+      </div>
+      <!-- Summary -->
+      <div id="wizSummary" style="display:none;background:var(--bg);border:1px solid var(--border);padding:16px;font-size:0.85rem;line-height:1.8;"></div>
+    </div>
+    <!-- Footer -->
+    <div style="display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid var(--border);">
+      <button id="wizBtnBack" onclick="wizBack()" style="display:none;padding:8px 20px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;cursor:pointer;">&#8592; Back</button>
+      <span></span>
+      <button id="wizBtnNext" onclick="wizNext()" style="padding:8px 20px;border:none;background:var(--sla-orange);color:#fff;font-size:0.875rem;font-weight:600;cursor:pointer;">Next &#8594;</button>
     </div>
   </div>
 </div><!-- /view-automation-new -->
@@ -4810,20 +4848,6 @@ function switchTab(tab) {
     return;
   }
   // automation-new: show flat form, populate category dropdown
-  if (tab === 'automation-new') {
-    _wizEditId = null; _wizSources = []; _wizEmails = [];
-    var catSel = document.getElementById('wizCategory');
-    var tplSel = document.getElementById('wizTemplate');
-    if (typeof CATEGORIES !== 'undefined') {
-      var catOpts = CATEGORIES.map(function(c) { return '<option value="' + escHtml(c.id) + '">' + escHtml(c.label || c.id) + '</option>'; }).join('');
-      if (catSel) catSel.innerHTML = catOpts;
-      if (tplSel) tplSel.innerHTML = catOpts;
-    }
-    if (typeof _wizRenderSources === 'function') _wizRenderSources();
-    if (typeof _wizRenderEmailChips === 'function') _wizRenderEmailChips();
-    wizUpdateTriggerUI();
-    wizUpdateReviewUI();
-  }
   var allTabs = ['dashboard','generator','archive','comparison','reports','pipeline','distribution','calendar','monitoring','settings','llm','automation','automation-new','automation-rules','automation-inbox','categories'];
   allTabs.forEach(t => {
     const v = document.getElementById('view-' + t);
@@ -5207,14 +5231,15 @@ function openRuleWizard(editId) {
   _wizSources = [];
   _wizEmails = [];
 
-  // Populate category dropdowns
+  switchTab('automation-new');
+
+  // Populate category/template dropdowns
   var catSel = document.getElementById('wizCategory');
   var tplSel = document.getElementById('wizTemplate');
-  if (catSel && typeof CATEGORIES !== 'undefined') {
-    catSel.innerHTML = CATEGORIES.map(function(c) { return '<option value="' + escHtml(c.id) + '">' + escHtml(c.label) + '</option>'; }).join('');
-  }
-  if (tplSel && typeof CATEGORIES !== 'undefined') {
-    tplSel.innerHTML = CATEGORIES.map(function(c) { return '<option value="' + escHtml(c.id) + '">' + escHtml(c.label) + '</option>'; }).join('');
+  if (typeof CATEGORIES !== 'undefined') {
+    var catOpts = CATEGORIES.map(function(c) { return '<option value="' + escHtml(c.id) + '">' + escHtml(c.label) + '</option>'; }).join('');
+    if (catSel) catSel.innerHTML = catOpts;
+    if (tplSel) tplSel.innerHTML = catOpts;
   }
 
   document.getElementById('ruleWizardTitle').textContent = editId ? 'Edit Rule' : 'New Automation Rule';
@@ -5227,13 +5252,10 @@ function openRuleWizard(editId) {
   document.getElementById('wizEmailOpts').style.display = 'none';
 
   _wizRenderStep(1);
-
-  var modal = document.getElementById('ruleWizardModal');
-  modal.style.display = 'flex';
 }
 
 function closeRuleWizard() {
-  document.getElementById('ruleWizardModal').style.display = 'none';
+  switchTab('automation-rules');
 }
 
 function _wizRenderStep(step) {
@@ -5291,7 +5313,6 @@ function wizRemoveSource(id) {
 
 function _wizRenderSources() {
   var list = document.getElementById('wizSourcesList');
-  var flat = document.getElementById('wizSourcesContainer');
   var html = _wizSources.map(function(s) {
     var label = s.type === 'rss' ? 'RSS' : s.type === 'url' ? 'URL' : 'GitHub';
     var ph = s.type === 'rss' ? 'https://feeds.bmj.com/bmj/recent' : s.type === 'url' ? 'https://www.nice.org.uk/news' : '';
@@ -5305,7 +5326,6 @@ function _wizRenderSources() {
       + '</div>';
   }).join('');
   if (list) list.innerHTML = html;
-  if (flat) flat.innerHTML = html;
 }
 
 function wizUpdateTriggerUI() {
@@ -5454,62 +5474,6 @@ async function _wizSubmit() {
   }
 }
 
-async function _wizSubmitFlat() {
-  // _wizSources array is kept in sync by wizAddSource/wizRemoveSource
-  var triggerEl = document.querySelector('input[name="wizTrigger"]:checked');
-  var triggerType = triggerEl ? triggerEl.value : 'schedule';
-  var cronPreset = document.getElementById('wizCronPreset') ? document.getElementById('wizCronPreset').value : '';
-  var cronExpr = cronPreset === 'custom' ? (document.getElementById('wizCronExpr').value || '') : cronPreset;
-  var minGapEl = document.getElementById('wizMinGap');
-  var reviewEl = document.querySelector('input[name="wizReview"]:checked');
-  var reviewReq = !reviewEl || reviewEl.value === 'yes';
-  var combineEl = document.querySelector('input[name="wizCombine"]:checked');
-  var combineMode = combineEl ? combineEl.value : 'one-per-item';
-  var trigger = { type: triggerType };
-  if (triggerType === 'schedule') trigger.cron = cronExpr;
-  if (triggerType === 'event' && minGapEl) trigger.minGapHours = parseInt(minGapEl.value || '4');
-  var payload = {
-    name: document.getElementById('wizName').value.trim(),
-    category: document.getElementById('wizCategory').value,
-    sources: _wizSources.map(function(s) { var o = {type:s.type}; if(s.url)o.url=s.url; if(s.repo)o.repo=s.repo; if(s.path)o.path=s.path; if(s.branch)o.branch=s.branch; return o; }),
-    trigger: trigger,
-    generation: {
-      template: document.getElementById('wizTemplate').value || 'clinical-reviews',
-      maxArticlesPerRun: parseInt(document.getElementById('wizMaxArticles').value || '3'),
-      prompt: document.getElementById('wizPrompt').value.trim(),
-      combineMode: combineMode,
-    },
-    review: {
-      required: reviewReq,
-      timeoutHours: parseInt(document.getElementById('wizTimeoutHours').value || '48'),
-      onTimeout: document.getElementById('wizOnTimeout').value || 'approve',
-    },
-    notifications: {
-      telegram: {
-        enabled: document.getElementById('wizTgEnabled').checked,
-        chatId: document.getElementById('wizTgChatId').value.trim() || null,
-        allowApproval: document.getElementById('wizTgApprove').checked,
-      },
-      email: {
-        enabled: document.getElementById('wizEmailEnabled').checked,
-        to: _wizEmails.slice(),
-        allowApproval: document.getElementById('wizEmailApprove').checked,
-      },
-    },
-  };
-  try {
-    if (_wizEditId) {
-      await apiFetch('/api/automation/rules/' + _wizEditId, { method: 'PATCH', body: JSON.stringify(payload) });
-      showToast('Rule updated');
-    } else {
-      await apiFetch('/api/automation/rules', { method: 'POST', body: JSON.stringify(payload) });
-      showToast('Rule created');
-    }
-    switchTab('automation-rules');
-  } catch (err) {
-    alert('Failed to save rule: ' + err.message);
-  }
-}
 
 async function updateInboxBadge() {
   try {
@@ -10398,9 +10362,9 @@ function checkGcalStatus() {
 }
 </script>
 
-<!-- ═══ RULE WIZARD MODAL ═══ -->
-<div id="ruleWizardModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;" onclick="if(event.target===this)closeRuleWizard()">
-  <div style="background:var(--card); border-radius:12px; padding:28px; width:680px; max-width:95vw; max-height:90vh; overflow-y:auto; position:relative;">
+<!-- ═══ RULE WIZARD MODAL (shell kept for legacy references; content moved to view-automation-new) ═══ -->
+<div id="ruleWizardModal" style="display:none;">
+  <div>
 
     <!-- Header -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
