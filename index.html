@@ -2562,27 +2562,34 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
           <select id="modelSelect" class="llm-quick-select" onchange="updateLLMStatus()" style="width:100%;max-width:100%;">
             <optgroup label="── Recommended ──">
               <option value="arcee-ai/trinity-large-preview:free" selected>Arcee AI: Trinity Large Preview ★</option>
-              <option value="google/gemma-3-4b-it:free">Google: Gemma 3 4B ★</option>
-              <option value="google/gemma-3n-e4b-it:free">Google: Gemma 3n 4B ★</option>
-              <option value="google/gemma-3n-e2b-it:free">Google: Gemma 3n 2B ★</option>
+              <option value="google/gemma-3-27b-it:free">Google: Gemma 3 27B ★</option>
+              <option value="google/gemma-3-12b-it:free">Google: Gemma 3 12B ★</option>
+              <option value="minimax/minimax-m1:extended">MiniMax: M1 ★</option>
+              <option value="deepseek/deepseek-r1-0528:free">DeepSeek: R1 0528 ★</option>
+              <option value="qwen/qwen3-235b-a22b:free">Qwen: Qwen3 235B ★</option>
             </optgroup>
             <optgroup label="── All Free Models ──">
               <option value="arcee-ai/trinity-mini:free">Arcee AI: Trinity Mini</option>
-              <option value="google/gemma-3-12b-it:free">Google: Gemma 3 12B</option>
-              <option value="google/gemma-3-27b-it:free">Google: Gemma 3 27B</option>
-              <option value="liquid/lfm-2.5-1.2b-instruct:free">LiquidAI: LFM2.5-1.2B-Instruct</option>
-              <option value="liquid/lfm-2.5-1.2b-thinking:free">LiquidAI: LFM2.5-1.2B-Thinking</option>
-              <option value="meta-llama/llama-3.2-3b-instruct:free">Meta: Llama 3.2 3B Instruct</option>
-              <option value="meta-llama/llama-3.3-70b-instruct:free">Meta: Llama 3.3 70B Instruct</option>
+              <option value="deepseek/deepseek-r1:free">DeepSeek: R1</option>
+              <option value="deepseek/deepseek-v3-0324:free">DeepSeek: V3 0324</option>
+              <option value="google/gemma-3-4b-it:free">Google: Gemma 3 4B</option>
+              <option value="google/gemma-3n-e4b-it:free">Google: Gemma 3n 4B</option>
+              <option value="google/gemma-3n-e2b-it:free">Google: Gemma 3n 2B</option>
+              <option value="liquid/lfm-2.5-1.2b-instruct:free">LiquidAI: LFM2.5 1.2B Instruct</option>
+              <option value="liquid/lfm-2.5-1.2b-thinking:free">LiquidAI: LFM2.5 1.2B Thinking</option>
+              <option value="meta-llama/llama-3.2-3b-instruct:free">Meta: Llama 3.2 3B</option>
+              <option value="meta-llama/llama-3.3-70b-instruct:free">Meta: Llama 3.3 70B</option>
               <option value="mistralai/mistral-small-3.1-24b-instruct:free">Mistral: Mistral Small 3.1 24B</option>
               <option value="nvidia/nemotron-3-nano-30b-a3b:free">NVIDIA: Nemotron 3 Nano 30B</option>
-              <option value="nvidia/nemotron-3-super-120b-a12b:free">NVIDIA: Nemotron 3 Super</option>
+              <option value="nvidia/nemotron-3-super-120b-a12b:free">NVIDIA: Nemotron 3 Super 120B</option>
               <option value="nvidia/nemotron-nano-12b-v2-vl:free">NVIDIA: Nemotron Nano 12B</option>
               <option value="nvidia/nemotron-nano-9b-v2:free">NVIDIA: Nemotron Nano 9B</option>
-              <option value="nousresearch/hermes-3-llama-3.1-405b:free">Nous: Hermes 3 405B Instruct</option>
+              <option value="nousresearch/hermes-3-llama-3.1-405b:free">Nous: Hermes 3 405B</option>
+              <option value="qwen/qwen3-30b-a3b:free">Qwen: Qwen3 30B</option>
+              <option value="qwen/qwen3-14b:free">Qwen: Qwen3 14B</option>
+              <option value="qwen/qwen3-8b:free">Qwen: Qwen3 8B</option>
               <option value="qwen/qwen3-4b:free">Qwen: Qwen3 4B</option>
               <option value="qwen/qwen3-coder:free">Qwen: Qwen3 Coder 480B</option>
-              <option value="qwen/qwen3-next-80b-a3b-instruct:free">Qwen: Qwen3 Next 80B</option>
               <option value="stepfun/step-3.5-flash:free">StepFun: Step 3.5 Flash</option>
               <option value="cognitivecomputations/dolphin-mistral-24b-venice-edition:free">Venice: Uncensored</option>
               <option value="z-ai/glm-4.5-air:free">Z.ai: GLM 4.5 Air</option>
@@ -3625,16 +3632,6 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
             <button class="btn btn-orange btn-sm" onclick="addReviewer()">Add</button>
           </div>
         </div>
-        <div class="settings-toggle-row">
-          <div>
-            <div class="settings-toggle-label">Require all reviewers to approve</div>
-            <div class="settings-toggle-desc">When off, any single approval advances content to Approved</div>
-          </div>
-          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;">
-            <input type="checkbox" id="requireAllApprovals" style="width:14px;height:14px;" />
-            <span style="font-size:0.65rem;font-weight:700;color:var(--text-muted);">All must approve</span>
-          </label>
-        </div>
       </div>
     </div>
 
@@ -4134,25 +4131,34 @@ const contentApi = {
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const FALLBACK_MODELS = [
   'arcee-ai/trinity-large-preview:free',
-  'google/gemma-3-4b-it:free',
-  'google/gemma-3n-e4b-it:free',
-  'google/gemma-3n-e2b-it:free',
-  'arcee-ai/trinity-mini:free',
+  'google/gemma-3-27b-it:free',
   'google/gemma-3-12b-it:free',
-  'meta-llama/llama-3.2-3b-instruct:free',
+  'minimax/minimax-m1:extended',
+  'deepseek/deepseek-r1-0528:free',
+  'qwen/qwen3-235b-a22b:free',
+  'qwen/qwen3-30b-a3b:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'mistralai/mistral-small-3.1-24b-instruct:free',
+  'qwen/qwen3-14b:free',
   'qwen/qwen3-4b:free',
+  'google/gemma-3-4b-it:free',
+  'meta-llama/llama-3.2-3b-instruct:free',
   'liquid/lfm-2.5-1.2b-instruct:free'
 ];
 
 // Models optimised for structured/visual content (Infographics)
 const INFOGRAPHIC_MODELS = [
   'arcee-ai/trinity-large-preview:free',
+  'minimax/minimax-m1:extended',
+  'deepseek/deepseek-r1-0528:free',
+  'qwen/qwen3-235b-a22b:free',
+  'google/gemma-3-27b-it:free',
   'google/gemma-3-12b-it:free',
-  'google/gemma-3-4b-it:free',
+  'qwen/qwen3-30b-a3b:free',
   'qwen/qwen3-14b:free',
   'qwen/qwen3-8b:free',
   'meta-llama/llama-3.3-70b-instruct:free',
-  'deepseek/deepseek-r1-0528:free'
+  'deepseek/deepseek-v3-0324:free'
 ];
 
 // Pexels API key
@@ -9815,6 +9821,7 @@ function renderReviewerList() {
   }
   list.innerHTML = _reviewers.map(r => {
     const initials = r.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    const role = r.role || 'must_approve';
     return `
       <div class="reviewer-row">
         <div class="reviewer-avatar-sm">${initials}</div>
@@ -9822,9 +9829,26 @@ function renderReviewerList() {
           <div class="rname">${escapeHtml(r.name)}</div>
           <div class="remail">${escapeHtml(r.email)}</div>
         </div>
+        <select onchange="updateReviewerRole('${r.id}', this.value)" style="padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.68rem;font-family:'Montserrat',sans-serif;cursor:pointer;">
+          <option value="must_approve" ${role === 'must_approve' ? 'selected' : ''}>Must Approve</option>
+          <option value="reference" ${role === 'reference' ? 'selected' : ''}>Send for Reference</option>
+        </select>
         <button class="btn btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c;" onclick="removeReviewer('${r.id}')">Remove</button>
       </div>`;
   }).join('');
+}
+
+async function updateReviewerRole(id, role) {
+  try {
+    const r = await fetch(`/api/reviewers?id=${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role }),
+    });
+    if (!r.ok) throw new Error((await r.json()).error);
+    const idx = _reviewers.findIndex(r => r.id === id);
+    if (idx !== -1) _reviewers[idx].role = role;
+  } catch (err) { alert('Failed to update reviewer: ' + err.message); }
 }
 
 async function addReviewer() {

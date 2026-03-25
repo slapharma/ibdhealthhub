@@ -7,7 +7,7 @@ export function validateReviewer(data) {
 }
 
 export function buildReviewer(data) {
-  return { id: randomUUID(), name: data.name ?? data.email, email: data.email };
+  return { id: randomUUID(), name: data.name ?? data.email, email: data.email, role: data.role ?? 'must_approve' };
 }
 
 export default async function handler(req, res) {
@@ -22,6 +22,16 @@ export default async function handler(req, res) {
     reviewers.push(reviewer);
     await kv.set('reviewers', reviewers);
     return res.status(201).json(reviewer);
+  }
+  if (req.method === 'PATCH') {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: 'id is required' });
+    const reviewers = await kv.get('reviewers') ?? [];
+    const idx = reviewers.findIndex(r => r.id === id);
+    if (idx === -1) return res.status(404).json({ error: 'Reviewer not found' });
+    if (req.body.role !== undefined) reviewers[idx].role = req.body.role;
+    await kv.set('reviewers', reviewers);
+    return res.json(reviewers[idx]);
   }
   if (req.method === 'DELETE') {
     const { id } = req.query;
