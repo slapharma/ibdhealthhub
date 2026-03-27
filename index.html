@@ -5221,20 +5221,32 @@ var _kitPollInterval = null;
 function loadKitArticleSelect() {
   var sel = document.getElementById('kitArticleSelect');
   if (!sel) return;
-  // Populate from pipeline articles
-  var items = [];
-  if (typeof allSocialItems !== 'undefined' && allSocialItems) items = items.concat(allSocialItems);
-  if (typeof allKvItems !== 'undefined' && allKvItems) items = items.concat(allKvItems);
-  items = items.filter(function(i) { return i && i.id && i.title; });
 
-  // Deduplicate by id
-  var seen = new Set();
-  var unique = items.filter(function(i) { if (seen.has(i.id)) return false; seen.add(i.id); return true; });
+  function _populate(items) {
+    var filtered = items.filter(function(i) { return i && i.id; });
+    var seen = new Set();
+    var unique = filtered.filter(function(i) { if (seen.has(i.id)) return false; seen.add(i.id); return true; });
+    var sorted = unique.slice().sort(function(a, b) { return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0); });
+    sel.innerHTML = '<option value="">— Choose a published article —</option>' +
+      sorted.map(function(i) {
+        return '<option value="' + escHtml(i.id) + '">' + escHtml((i.title || i.id).slice(0, 80)) + '</option>';
+      }).join('');
+  }
 
-  sel.innerHTML = '<option value="">— Choose a published article —</option>' +
-    unique.map(function(i) {
-      return '<option value="' + escHtml(i.id) + '">' + escHtml(i.title || i.id) + '</option>';
-    }).join('');
+  // If we already have articles loaded, populate immediately
+  if (typeof allSocialItems !== 'undefined' && allSocialItems && allSocialItems.length) {
+    _populate(allSocialItems);
+    return;
+  }
+
+  // Otherwise fetch directly — loadDistribution may not have run yet
+  sel.innerHTML = '<option value="">Loading articles…</option>';
+  contentApi.getAll().then(function(items) {
+    if (typeof allSocialItems !== 'undefined') allSocialItems = items;
+    _populate(items);
+  }).catch(function() {
+    sel.innerHTML = '<option value="">— Failed to load articles —</option>';
+  });
 }
 
 function onKitArticleChange(articleId) {
