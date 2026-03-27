@@ -2185,6 +2185,31 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 .social-queue-plat { width:26px; height:26px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .social-queue-title { flex:1; font-size:0.75rem; font-weight:600; color:var(--text); }
 .social-queue-cat { font-size:0.62rem; color:var(--text-muted); }
+
+/* ── Unified generator UI + Trash ── */
+#genCategorySelect { border-radius: 0; font-family: 'Montserrat', sans-serif; }
+#genPromptModeCard .card-body { padding-bottom: 12px; }
+#genPromptLoadPreview { font-size: 0.72rem; color: var(--text); line-height: 1.5; white-space: pre-wrap; }
+#genPromptCustom, #genPromptSaveName { border-radius: 0; font-family: 'Montserrat', sans-serif; }
+#genSrcPane-upload .upload-zone { cursor: pointer; }
+.gen-url-input { border-radius: 6px; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); }
+#genCatOptionsCard { }
+
+.trash-page { max-width: 900px; margin: 0 auto; padding: 24px; }
+.trash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 16px; }
+.trash-card { background: var(--card); border: 1px solid var(--border); padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.trash-card-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.trash-source-badge { font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; padding: 2px 7px; border-radius: 3px; }
+.trash-source-pipeline { background: rgba(27,63,48,0.12); color: var(--sla-navy); }
+.trash-source-archive  { background: rgba(244,121,32,0.12); color: var(--sla-orange); }
+.trash-card-cat  { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.trash-card-date { font-size: 0.65rem; color: var(--text-muted); margin-left: auto; }
+.trash-card-title { font-size: 0.82rem; font-weight: 700; color: var(--text); line-height: 1.35; }
+.trash-card-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+/* Trash move-to-trash button — small, muted red icon */
+.btn-trash-sm { background: none; border: none; cursor: pointer; color: rgba(231,76,60,0.45); padding: 3px 6px; font-size: 0.65rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; border-radius: 0; transition: color 0.15s; font-family: 'Montserrat', sans-serif; }
+.btn-trash-sm:hover { color: #e74c3c; }
+.kcard-trash-row { display: flex; justify-content: flex-end; margin-top: 4px; padding-top: 6px; border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -2265,6 +2290,11 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span>Settings</span>
     </button>
+    <button class="nav-item" onclick="switchTab('trash')" id="tab-trash">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      <span>Trash</span>
+      <span class="nav-badge" id="trashBadge" style="display:none;">0</span>
+    </button>
   </nav>
 
   <div class="sidebar-footer">
@@ -2339,149 +2369,148 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
   <div style="display:flex;flex-direction:column;gap:1.25rem;">
 
     <!-- Category selector card -->
-    <div class="card" style="overflow:hidden;">
+    <div class="card">
       <div class="card-header">
         <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Content Category</h2>
       </div>
       <div class="card-body">
-        <div class="cat-bar" id="catBar-generator" style="border-bottom:none;padding:0;background:none;flex-wrap:wrap;">
-          <button class="cat-bar-btn active" data-cat="clinical-reviews" onclick="switchCategory('clinical-reviews')">Clinical Reviews</button>
-          <button class="cat-bar-btn" data-cat="industry-news" onclick="switchCategory('industry-news')">Industry News</button>
-          <button class="cat-bar-btn" data-cat="op-eds" onclick="switchCategory('op-eds')">Op-Eds</button>
-          <button class="cat-bar-btn" data-cat="white-papers" onclick="switchCategory('white-papers')">White Papers</button>
-          <button class="cat-bar-btn" data-cat="infographics" onclick="switchCategory('infographics')">Infographics</button>
-          <span id="customCatBtns-generator"></span>
+        <select id="genCategorySelect" onchange="onGenCategoryChange()" style="width:100%;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;font-family:'Montserrat',sans-serif;">
+          <option value="clinical-reviews">Clinical Reviews</option>
+          <option value="industry-news">Industry News</option>
+          <option value="op-eds">Op-Eds</option>
+          <option value="white-papers">White Papers</option>
+          <option value="infographics">Infographics</option>
+          <option value="ibd-living">IBD Living</option>
+        </select>
+        <!-- Custom categories injected by activateCustomCategories() -->
+        <span id="customCatBtns-generator" style="display:none;"></span>
+      </div>
+    </div>
+
+    <!-- Prompt Mode card -->
+    <div class="card" id="genPromptModeCard">
+      <div class="card-header">
+        <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Prompt</h2>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem;cursor:pointer;">
+            <input type="radio" name="genPromptMode" value="default" checked onchange="onGenPromptModeChange()">
+            Use category default
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem;cursor:pointer;">
+            <input type="radio" name="genPromptMode" value="load" onchange="onGenPromptModeChange()">
+            Load saved prompt
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem;cursor:pointer;">
+            <input type="radio" name="genPromptMode" value="new" onchange="onGenPromptModeChange()">
+            Write custom prompt
+          </label>
+        </div>
+        <!-- Load pane -->
+        <div id="genPromptLoadPane" style="display:none;">
+          <select id="genPromptSelect" onchange="onGenPromptSelectChange()" style="width:100%;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;font-family:'Montserrat',sans-serif;">
+            <option value="">— Select a saved prompt —</option>
+          </select>
+          <div id="genPromptLoadPreview" style="margin-top:8px;font-size:0.72rem;color:var(--text-muted);display:none;max-height:80px;overflow-y:auto;border:1px solid var(--border);padding:8px;"></div>
+        </div>
+        <!-- New pane -->
+        <div id="genPromptNewPane" style="display:none;">
+          <textarea id="genPromptCustom" rows="5" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;font-family:'Montserrat',sans-serif;resize:vertical;" oninput="syncPromptToEditor()"></textarea>
+          <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
+            <input type="text" id="genPromptSaveName" style="flex:1;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.78rem;font-family:'Montserrat',sans-serif;" placeholder="Name this prompt…">
+            <button class="btn btn-orange btn-sm" onclick="saveGenPrompt()">Save</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Dynamic Category Input Panel -->
+    <!-- Unified Source card -->
     <div class="card" id="sourceInputCard">
       <div class="card-header">
-        <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span id="uploadCardTitle">Source Document</span></h2>
+        <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span id="uploadCardTitle">Source</span></h2>
       </div>
       <div class="card-body">
+        <div class="source-tabs">
+          <button class="source-tab-btn active" id="genSrcTab-upload" onclick="switchGenSourceTab('upload')">Upload</button>
+          <button class="source-tab-btn" id="genSrcTab-paste" onclick="switchGenSourceTab('paste')">Paste Text</button>
+          <button class="source-tab-btn" id="genSrcTab-urls" onclick="switchGenSourceTab('urls')">URLs</button>
+        </div>
 
-        <!-- CLINICAL REVIEWS: single file upload (default) -->
-        <div class="cat-input-panel active" id="panel-clinical-reviews">
-          <div class="upload-zone" id="uploadZone">
-            <input type="file" id="pdfInput" accept=".pdf,.txt" onchange="handleFileSelect(event)" />
+        <!-- Upload pane -->
+        <div class="source-pane active" id="genSrcPane-upload">
+          <div class="upload-zone" id="uploadZone" onclick="document.getElementById('genFileInput').click()">
+            <input type="file" id="genFileInput" accept=".pdf,.txt" multiple style="display:none;" onchange="handleGenFileSelect(event)" />
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p><strong>Drop PDF or TXT here</strong>, or click to browse</p>
-            <p style="font-size:0.68rem;margin-top:4px;">Supported: PDF, plain text (.txt)</p>
+            <p><strong>Drop PDF or TXT files here</strong>, or click to browse</p>
+            <p style="font-size:0.68rem;margin-top:4px;">Supports multiple files</p>
           </div>
-          <div class="file-info" id="fileInfo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;color:var(--success);flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span class="file-name" id="fileName"></span>
-            <span class="file-size" id="fileSize"></span>
-            <button class="file-remove" onclick="removeFile()" title="Remove file">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+          <div class="multi-doc-list" id="genDocList"></div>
+        </div>
+
+        <!-- Paste pane -->
+        <div class="source-pane" id="genSrcPane-paste">
+          <textarea id="genPasteText" rows="7" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:0.78rem;resize:vertical;box-sizing:border-box;" oninput="onGenPasteInput()" onpaste="setTimeout(onGenPasteInput,10)"></textarea>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+            <span id="genPasteWordCount" style="font-size:0.65rem;color:var(--text-muted);"></span>
+            <button class="btn btn-outline btn-xs" id="genPasteClearBtn" onclick="clearGenPaste()" style="display:none;">Clear</button>
           </div>
         </div>
 
-        <!-- INDUSTRY NEWS: paste text or add link -->
-        <div class="cat-input-panel" id="panel-industry-news">
-          <div class="source-tabs">
-            <button class="source-tab-btn active" onclick="switchSourceTab('news','paste')" id="news-tab-paste">Paste Text</button>
-            <button class="source-tab-btn" onclick="switchSourceTab('news','link')" id="news-tab-link">Add Link</button>
+        <!-- URLs pane -->
+        <div class="source-pane" id="genSrcPane-urls">
+          <div style="display:flex;flex-direction:column;gap:6px;" id="genUrlList">
+            <div style="display:flex;gap:6px;"><input type="url" class="gen-url-input" style="flex:1;padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Montserrat',sans-serif;" /><button class="btn btn-outline btn-xs" onclick="fetchGenUrl(this)">Fetch</button></div>
+            <div style="display:flex;gap:6px;"><input type="url" class="gen-url-input" style="flex:1;padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Montserrat',sans-serif;" /><button class="btn btn-outline btn-xs" onclick="fetchGenUrl(this)">Fetch</button></div>
+            <div style="display:flex;gap:6px;"><input type="url" class="gen-url-input" style="flex:1;padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Montserrat',sans-serif;" /><button class="btn btn-outline btn-xs" onclick="fetchGenUrl(this)">Fetch</button></div>
+            <div style="display:flex;gap:6px;"><input type="url" class="gen-url-input" style="flex:1;padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Montserrat',sans-serif;" /><button class="btn btn-outline btn-xs" onclick="fetchGenUrl(this)">Fetch</button></div>
+            <div style="display:flex;gap:6px;"><input type="url" class="gen-url-input" style="flex:1;padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;font-family:'Montserrat',sans-serif;" /><button class="btn btn-outline btn-xs" onclick="fetchGenUrl(this)">Fetch</button></div>
           </div>
-          <div class="source-pane active" id="news-pane-paste">
-            <textarea id="newsPasteText" rows="7" placeholder="Paste the news article, press release, or source text here..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:0.78rem;resize:vertical;box-sizing:border-box;" oninput="updateExtractedFromNews()" onpaste="setTimeout(updateExtractedFromNews,10)" onkeyup="updateExtractedFromNews()"></textarea>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;gap:8px;">
-              <span id="newsPasteWordCount" style="font-size:0.65rem;color:var(--text-muted);"></span>
-              <div style="display:flex;gap:6px;">
-                <button class="btn btn-outline btn-xs" id="newsPasteClearBtn" onclick="clearNewsPaste()" style="display:none;">Clear</button>
-                <button class="btn btn-navy btn-sm" id="newsPasteConfirmBtn" onclick="updateExtractedFromNews()" style="display:none;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="20 6 9 17 4 12"/></svg>
-                  Use this content
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="source-pane" id="news-pane-link">
-            <div style="display:flex;gap:6px;margin-bottom:8px;">
-              <input type="url" id="newsLinkInput" placeholder="https://example.com/article" style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:0.75rem;" />
-              <button class="btn btn-navy btn-sm" onclick="fetchNewsLink()">Fetch</button>
-            </div>
-            <div id="newsLinkStatus" class="alert hidden" style="margin-bottom:0;"></div>
-            <div id="newsLinkPreview" style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;display:none;"></div>
-          </div>
+          <div id="genUrlStatus" style="font-size:0.7rem;color:var(--text-muted);margin-top:6px;"></div>
         </div>
 
-        <!-- OP-EDS: multi-doc + tone -->
-        <div class="cat-input-panel" id="panel-op-eds">
-          <div class="option-row" style="margin-bottom:12px;">
-            <label>Tone</label>
-            <div class="tone-btn-group">
-              <button class="tone-btn active" onclick="setTone('practitioner')" id="tone-practitioner">Practitioner</button>
-              <button class="tone-btn" onclick="setTone('patient')" id="tone-patient">Patient-Facing</button>
-            </div>
-          </div>
-          <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Source Documents</div>
-          <div class="upload-zone" id="opedUploadZone" style="padding:14px;" onclick="document.getElementById('opedFileInput').click()">
-            <input type="file" id="opedFileInput" accept=".pdf,.txt" multiple style="display:none;" onchange="handleMultiFileSelect(event,'op-eds')" />
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p style="font-size:0.78rem;"><strong>Drop files or click to browse</strong></p>
-            <p style="font-size:0.65rem;margin-top:3px;">Multiple PDFs or TXT files supported</p>
-          </div>
-          <div class="multi-doc-list" id="opedDocList"></div>
-        </div>
+        <div id="extractionStatus" class="alert hidden" style="margin-top:8px;margin-bottom:0;"></div>
+      </div>
+    </div>
 
-        <!-- WHITE PAPERS: multi-doc + source links + word count + design -->
-        <div class="cat-input-panel" id="panel-white-papers">
-          <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Source Documents</div>
-          <div class="upload-zone" id="wpUploadZone" style="padding:14px;" onclick="document.getElementById('wpFileInput').click()">
-            <input type="file" id="wpFileInput" accept=".pdf,.txt" multiple style="display:none;" onchange="handleMultiFileSelect(event,'white-papers')" />
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p style="font-size:0.78rem;"><strong>Drop files or click to browse</strong></p>
-            <p style="font-size:0.65rem;margin-top:3px;">Multiple PDFs or TXT files supported</p>
+    <!-- Category-specific options card (shown conditionally) -->
+    <div class="card" id="genCatOptionsCard" style="display:none;">
+      <div class="card-header">
+        <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93L17.66 6.34M6.34 17.66L4.93 19.07M19.07 19.07L17.66 17.66M6.34 6.34L4.93 4.93M20 12H22M2 12H4M12 2V4M12 20V22"/></svg>Category Options</h2>
+      </div>
+      <div class="card-body">
+        <!-- Tone (op-eds) -->
+        <div id="genOptTone" style="display:none;margin-bottom:12px;">
+          <label style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Tone</label>
+          <div class="tone-btn-group">
+            <button class="tone-btn active" onclick="setTone('practitioner')" id="tone-practitioner">Practitioner</button>
+            <button class="tone-btn" onclick="setTone('patient')" id="tone-patient">Patient-Facing</button>
           </div>
-          <div class="multi-doc-list" id="wpDocList"></div>
-          <div style="margin-top:12px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-              <span style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Source Links</span>
-              <button class="btn btn-outline btn-xs" onclick="addSourceLink()" style="font-size:0.62rem;padding:3px 8px;">+ Add Link</button>
-            </div>
-            <div class="source-links-list" id="wpSourceLinks"></div>
-          </div>
-          <div class="option-row" style="margin-top:12px;">
+        </div>
+        <!-- Word Count (white-papers) -->
+        <div id="genOptWordCount" style="display:none;margin-bottom:12px;">
+          <div class="option-row">
             <label>Word Count</label>
             <input type="number" id="wpWordCount" value="2000" min="500" max="10000" step="250" style="max-width:110px;" />
             <span style="font-size:0.68rem;color:var(--text-muted);">words (approx.)</span>
           </div>
-          <div style="margin-top:8px;">
-            <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Design Style</div>
-            <div class="design-options-grid" id="wpDesignGrid">
-              <button class="design-option-btn active" onclick="setDesignOption(this,'Executive Summary')" data-design="Executive Summary">Executive Summary<br><span style="font-weight:400;font-size:0.62rem;">Concise, decision-focused</span></button>
-              <button class="design-option-btn" onclick="setDesignOption(this,'Technical Deep-Dive')" data-design="Technical Deep-Dive">Technical Deep-Dive<br><span style="font-weight:400;font-size:0.62rem;">Data-rich, detailed</span></button>
-              <button class="design-option-btn" onclick="setDesignOption(this,'Narrative Report')" data-design="Narrative Report">Narrative Report<br><span style="font-weight:400;font-size:0.62rem;">Story-driven, accessible</span></button>
-              <button class="design-option-btn" onclick="setDesignOption(this,'Regulatory Briefing')" data-design="Regulatory Briefing">Regulatory Briefing<br><span style="font-weight:400;font-size:0.62rem;">Formal, compliance-ready</span></button>
-            </div>
+        </div>
+        <!-- Design Style (white-papers) -->
+        <div id="genOptDesign" style="display:none;margin-bottom:12px;">
+          <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Design Style</div>
+          <div class="design-options-grid" id="wpDesignGrid">
+            <button class="design-option-btn active" onclick="setDesignOption(this,'Executive Summary')" data-design="Executive Summary">Executive Summary<br><span style="font-weight:400;font-size:0.62rem;">Concise, decision-focused</span></button>
+            <button class="design-option-btn" onclick="setDesignOption(this,'Technical Deep-Dive')" data-design="Technical Deep-Dive">Technical Deep-Dive<br><span style="font-weight:400;font-size:0.62rem;">Data-rich, detailed</span></button>
+            <button class="design-option-btn" onclick="setDesignOption(this,'Narrative Report')" data-design="Narrative Report">Narrative Report<br><span style="font-weight:400;font-size:0.62rem;">Story-driven, accessible</span></button>
+            <button class="design-option-btn" onclick="setDesignOption(this,'Regulatory Briefing')" data-design="Regulatory Briefing">Regulatory Briefing<br><span style="font-weight:400;font-size:0.62rem;">Formal, compliance-ready</span></button>
           </div>
         </div>
-
-        <!-- INFOGRAPHICS: single file upload (model restricted in JS) -->
-        <div class="cat-input-panel" id="panel-infographics">
-          <div class="alert" style="background:rgba(244,121,32,0.08);border:1px solid rgba(244,121,32,0.25);color:var(--sla-orange);font-size:0.72rem;padding:8px 12px;border-radius:6px;margin-bottom:10px;">
-            <strong>Note:</strong> Infographic generation uses models optimised for structured visual content descriptions. The model selector is pre-filtered to the most capable options.
-          </div>
-          <div class="upload-zone" id="infographicUploadZone">
-            <input type="file" id="infographicFileInput" accept=".pdf,.txt" onchange="handleInfographicFileSelect(event)" />
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p><strong>Drop PDF or TXT here</strong>, or click to browse</p>
-          </div>
-          <div class="file-info" id="infographicFileInfo" style="display:none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;color:var(--success);flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span class="file-name" id="infographicFileName"></span>
-            <span class="file-size" id="infographicFileSize"></span>
-            <button class="file-remove" onclick="removeInfographicFile()" title="Remove file">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+        <!-- Infographic notice -->
+        <div id="genOptInfographic" style="display:none;">
+          <div class="alert" style="background:rgba(244,121,32,0.08);border:1px solid rgba(244,121,32,0.25);color:var(--sla-orange);font-size:0.72rem;padding:8px 12px;border-radius:6px;margin-bottom:0;">
+            <strong>Note:</strong> Infographic generation uses models optimised for structured visual content. The model selector is pre-filtered to the most capable options.
           </div>
         </div>
-
-        <div id="extractionStatus" class="alert hidden" style="margin-top:8px;margin-bottom:0;"></div>
       </div>
     </div>
 
@@ -3008,6 +3037,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
   <button class="cat-bar-btn" data-cat="op-eds" onclick="switchCategory('op-eds')">Op-Eds</button>
   <button class="cat-bar-btn" data-cat="white-papers" onclick="switchCategory('white-papers')">White Papers</button>
   <button class="cat-bar-btn" data-cat="infographics" onclick="switchCategory('infographics')">Infographics</button>
+  <button class="cat-bar-btn" data-cat="ibd-living" onclick="switchCategory('ibd-living')">IBD Living</button>
   <span id="customCatBtns-archive"></span>
 </div>
   <div class="archive-container">
@@ -3491,6 +3521,35 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
             <div class="llm-save-row" style="margin-top:8px;">
             </div>
           </div>
+          <!-- IBD Living -->
+          <div class="llm-cat-card">
+            <div class="llm-cat-name">IBD Living</div>
+            <select id="llm-cat-ibd-living" class="llm-quick-select" onchange="saveCategoryModel('ibd-living',this.value);showToast('✓ Saved for IBD Living')">
+              <option value="">— Use global default —</option>
+              <optgroup label="── Recommended (Free) ──">
+                <option value="arcee-ai/trinity-large-preview:free">Arcee AI: Trinity Large ★</option>
+                <option value="google/gemma-3-4b-it:free">Google: Gemma 3 4B ★</option>
+                <option value="google/gemma-3n-e4b-it:free">Google: Gemma 3n 4B ★</option>
+              </optgroup>
+              <optgroup label="── Free Models ──">
+                <option value="meta-llama/llama-3.3-70b-instruct:free">Meta: Llama 3.3 70B</option>
+                <option value="mistralai/mistral-small-3.1-24b-instruct:free">Mistral Small 3.1 24B</option>
+                <option value="qwen/qwen3-4b:free">Qwen: Qwen3 4B</option>
+                <option value="google/gemma-3-12b-it:free">Google: Gemma 3 12B</option>
+                <option value="nousresearch/hermes-3-llama-3.1-405b:free">Nous: Hermes 3 405B</option>
+              </optgroup>
+              <optgroup label="── Premium (key required) ──">
+                <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
+                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="gpt-4o">GPT-4o (OpenAI)</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
+                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Google)</option>
+              </optgroup>
+            </select>
+            <div class="llm-save-row" style="margin-top:8px;">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -3803,7 +3862,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
     <div id="wizPanel1">
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Rule Name *</label>
-        <input id="wizName" type="text" maxlength="60" placeholder="e.g. NHS Clinical Weekly Digest" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+        <input id="wizName" type="text" maxlength="60" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
       </div>
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Category *</label>
@@ -3816,6 +3875,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
           <button onclick="wizAddSource('rss')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ RSS Feed</button>
           <button onclick="wizAddSource('url')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ URL</button>
           <button onclick="wizAddSource('github')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ GitHub</button>
+          <button onclick="wizAddSource('upload')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ Upload</button>
           <button disabled style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Google Drive</button>
           <button disabled style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Dropbox</button>
         </div>
@@ -3844,7 +3904,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
         </div>
         <div id="wizCustomCron" style="display:none;margin-bottom:12px;">
           <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Cron Expression</label>
-          <input id="wizCronExpr" type="text" placeholder="0 7 * * 1" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+          <input id="wizCronExpr" type="text" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
         </div>
       </div>
       <div id="wizTrigEvent" style="display:none;">
@@ -3865,8 +3925,35 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
         <select id="wizTemplate" style="width:100%;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;"></select>
       </div>
       <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">AI Model <span style="color:var(--text-muted);font-weight:400;">(optional — overrides category default)</span></label>
+        <select id="wizModel" style="width:100%;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+          <option value="">— Use category default model —</option>
+          <optgroup label="── Recommended (Free) ──">
+            <option value="arcee-ai/trinity-large-preview:free">Arcee AI: Trinity Large ★</option>
+            <option value="minimax/minimax-m1:extended">MiniMax M1 ★</option>
+            <option value="deepseek/deepseek-r1-0528:free">DeepSeek R1 0528 ★</option>
+            <option value="qwen/qwen3-235b-a22b:free">Qwen3 235B ★</option>
+            <option value="google/gemma-3-27b-it:free">Google: Gemma 3 27B ★</option>
+            <option value="google/gemma-3-12b-it:free">Google: Gemma 3 12B ★</option>
+          </optgroup>
+          <optgroup label="── Free Models ──">
+            <option value="meta-llama/llama-3.3-70b-instruct:free">Meta: Llama 3.3 70B</option>
+            <option value="mistralai/mistral-small-3.1-24b-instruct:free">Mistral Small 3.1 24B</option>
+            <option value="qwen/qwen3-30b-a3b:free">Qwen3 30B</option>
+            <option value="qwen/qwen3-14b:free">Qwen3 14B</option>
+            <option value="deepseek/deepseek-r1:free">DeepSeek R1</option>
+          </optgroup>
+          <optgroup label="── Premium (key required) ──">
+            <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
+            <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+            <option value="gpt-4o">GPT-4o (OpenAI)</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div style="margin-bottom:16px;">
         <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Custom prompt <span style="color:var(--text-muted);font-weight:400;">(optional override)</span></label>
-        <textarea id="wizPrompt" maxlength="2000" rows="4" placeholder="Leave blank to use the category's default template" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;resize:vertical;"></textarea>
+        <textarea id="wizPrompt" maxlength="2000" rows="4"style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;resize:vertical;"></textarea>
       </div>
       <div>
         <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Source handling</label>
@@ -3908,7 +3995,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
         <div id="wizTgOpts" style="display:none;padding-left:24px;">
           <div style="margin-bottom:10px;">
             <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--text);">Chat ID</label>
-            <input id="wizTgChatId" type="text" placeholder="-1001234567890" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <input id="wizTgChatId" type="text"style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
           </div>
           <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;margin-bottom:8px;cursor:pointer;">
             <input type="checkbox" id="wizTgApprove" checked> Allow approval via Telegram inline buttons
@@ -3923,7 +4010,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
         <div id="wizEmailOpts" style="display:none;padding-left:24px;">
           <div id="wizEmailChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
           <div style="display:flex;gap:8px;margin-bottom:8px;">
-            <input id="wizEmailNew" type="email" placeholder="editor@slahealth.co.uk" style="flex:1;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <input id="wizEmailNew" type="email"style="flex:1;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;">
             <button onclick="wizAddEmail()" style="padding:8px 14px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;cursor:pointer;">+ Add</button>
           </div>
           <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
@@ -3962,11 +4049,16 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 <!-- Automation: Inbox -->
 <div class="tab-view" id="view-automation-inbox">
   <div style="padding:20px 24px; flex:1; display:flex; flex-direction:column; min-height:0;">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-shrink:0;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-shrink:0;">
       <h1 style="font-size:1.1rem; font-weight:800; color:var(--sla-navy); margin:0;">Notifications</h1>
       <span id="inboxBadgeHeader" style="display:none; background:var(--sla-orange); color:#fff; font-size:0.6rem; font-weight:700; padding:2px 8px; margin-left:4px; vertical-align:middle;">0</span>
     </div>
-    <!-- Inbox sub-view -->
+    <!-- Sub-tab bar -->
+    <div style="display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:16px; flex-shrink:0;">
+      <button id="inboxSubtab-pending" onclick="switchInboxTab('pending')" style="padding:6px 16px; font-size:0.72rem; font-weight:700; font-family:'Montserrat',sans-serif; border:none; background:none; cursor:pointer; color:var(--sla-navy); border-bottom:2px solid var(--sla-orange); margin-bottom:-2px;">Pending</button>
+      <button id="inboxSubtab-history" onclick="switchInboxTab('history')" style="padding:6px 16px; font-size:0.72rem; font-weight:700; font-family:'Montserrat',sans-serif; border:none; background:none; cursor:pointer; color:var(--text-muted); border-bottom:2px solid transparent; margin-bottom:-2px;">History</button>
+    </div>
+    <!-- Pending sub-view -->
     <div id="autoSubInbox" style="flex:1; min-height:0;">
       <div style="display:flex; gap:0; height:100%; border:1px solid var(--border); overflow:hidden;">
         <div id="autoInboxList" style="width:280px; flex-shrink:0; border-right:1px solid var(--border); overflow-y:auto; background:var(--card);">
@@ -3977,6 +4069,12 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
             Select an item from the inbox to review
           </div>
         </div>
+      </div>
+    </div>
+    <!-- History sub-view -->
+    <div id="autoSubHistory" style="flex:1; min-height:0; overflow-y:auto; display:none; border:1px solid var(--border); background:var(--card);">
+      <div id="autoHistoryList">
+        <p style="color:var(--text-muted); padding:16px;">No history yet.</p>
       </div>
     </div>
   </div>
@@ -4115,6 +4213,34 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
   </div><!-- /cats-page -->
 </div><!-- /tab-view categories -->
 
+<!-- ══════════════════════════════ TRASH ══════════════════════════════ -->
+<div class="tab-view" id="view-trash">
+  <div class="trash-page">
+    <div class="page-header" style="grid-column:1/-1;">
+      <div class="page-header-left">
+        <h1 class="page-header-title">Trash</h1>
+        <p class="page-header-subtitle">Articles moved to trash are not deleted — restore them or permanently delete.</p>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-outline btn-sm" onclick="loadTrash()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh
+        </button>
+        <button class="btn btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c;" onclick="emptyTrash()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          Empty Trash
+        </button>
+      </div>
+    </div>
+    <div id="trashEmpty" style="display:none;padding:60px 20px;text-align:center;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="width:48px;height:48px;color:var(--text-muted);margin-bottom:12px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--text-muted);">Trash is empty</div>
+      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Articles you move to trash will appear here.</div>
+    </div>
+    <div id="trashGrid" class="trash-grid"></div>
+  </div>
+</div><!-- /tab-view trash -->
+
 <!-- SCHEDULE MODAL -->
 <!-- CALENDAR EVENT POPUP -->
 <div id="calEventPopupOverlay" style="display:none;position:fixed;inset:0;z-index:799;" onclick="closeCalPopup()"></div>
@@ -4167,6 +4293,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
           <option value="industry-news">Gastroenterology Updates</option>
           <option value="op-eds">Opinion &amp; Commentary</option>
           <option value="white-papers">White Papers &amp; Guides</option>
+          <option value="ibd-living">IBD Living</option>
         </select>
       </div>
       <div id="schedCategoryDisplay" style="display:none;font-size:0.72rem;color:var(--text-muted);display:none;align-items:center;gap:7px;">
@@ -4262,7 +4389,8 @@ const CATEGORIES = [
   { id: 'industry-news',    label: 'Industry News' },
   { id: 'op-eds',           label: 'Op-Eds' },
   { id: 'white-papers',     label: 'White Papers' },
-  { id: 'infographics',     label: 'Infographics' }
+  { id: 'infographics',     label: 'Infographics' },
+  { id: 'ibd-living',       label: 'IBD Living' }
 ];
 
 const DEFAULT_PROMPT = `You are a medical writer creating a Scientific Publication Summary for the purpose of an IBD content hub website (SLA Health) — a structured, objective summary of a single published clinical trial intended for a physician audience (specialist or general practitioner level). Your role is purely curatorial: you present what the paper reports, nothing more. You do not add clinical commentary, personal opinion, practice recommendations, or conclusions beyond those stated by the authors.
@@ -4681,6 +4809,7 @@ async function ghLoadAll() {
   renderPromptLibrary();
   renderArchive();
   renderReports();
+  updateTrashBadge();
 }
 
 async function ghSaveReviews(catId, commitMsg) {
@@ -4732,6 +4861,9 @@ async function ghSaveComparisons(catId, commitMsg) {
 // ═══════════════════════════════════════════════════════════
 function switchCategory(catId) {
   currentCategory = catId;
+  // Sync generator dropdown
+  var genSel = document.getElementById('genCategorySelect');
+  if (genSel && genSel.value !== catId) genSel.value = catId;
   selectedArchiveIds.clear();
   activePromptId = null;
 
@@ -4757,18 +4889,8 @@ function switchCategory(catId) {
   currentFile    = null;
   heroImageUrl   = null;
   heroImageType  = null;
-  // Reset multi-doc lists for op-eds and white-papers
-  if (catId === 'op-eds' || catId === 'white-papers') {
-    multiDocs[catId] = [];
-    renderMultiDocList(catId);
-  }
   document.getElementById('articleOutput').classList.remove('visible');
   document.getElementById('emptyState').style.display = '';
-  // Only reset uploadZone/fileInfo for clinical-reviews (other categories have their own panels)
-  if (catId === 'clinical-reviews') {
-    document.getElementById('fileInfo').style.display = 'none';
-    document.getElementById('uploadZone').style.display = '';
-  }
   hideAlert('extractionStatus');
   hideAlert('generateAlert');
   document.getElementById('modelInUse').classList.remove('visible');
@@ -4776,23 +4898,11 @@ function switchCategory(catId) {
   document.getElementById('wordCount').textContent = '';
   document.getElementById('modelUsedBadge').style.display = 'none';
 
-  // Activate the correct input panel
-  document.querySelectorAll('.cat-input-panel').forEach(p => p.classList.remove('active'));
-  const panel = document.getElementById('panel-' + catId);
-  if (panel) panel.classList.add('active');
-
   // Update model dropdown for infographics
   updateModelSelectForCategory(catId);
 
-  // Update upload card title
-  const titles = {
-    'clinical-reviews': 'Source Document',
-    'industry-news':    'Source Content',
-    'op-eds':           'Source Documents & Options',
-    'white-papers':     'Source Documents & Options',
-    'infographics':     'Source Document'
-  };
-  document.getElementById('uploadCardTitle').textContent = titles[catId] || 'Source';
+  // Update category options card visibility
+  updateGenCatOptions(catId);
 
   renderPromptLibrary();
   renderArchive();
@@ -4800,6 +4910,188 @@ function switchCategory(catId) {
   updateCompareBar();
   updateAllCounts();
   updateCategoryHeader(catId);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UNIFIED GENERATOR UI
+// ═══════════════════════════════════════════════════════════
+
+function onGenCategoryChange() {
+  var sel = document.getElementById('genCategorySelect');
+  if (!sel) return;
+  switchCategory(sel.value);
+  loadGenCategoryPrompts(sel.value);
+}
+
+function updateGenCatOptions(catId) {
+  var card  = document.getElementById('genCatOptionsCard');
+  var toneEl = document.getElementById('genOptTone');
+  var wcEl   = document.getElementById('genOptWordCount');
+  var dsEl   = document.getElementById('genOptDesign');
+  var infEl  = document.getElementById('genOptInfographic');
+  if (!card) return;
+  var showTone = catId === 'op-eds';
+  var showWP   = catId === 'white-papers';
+  var showInf  = catId === 'infographics';
+  if (toneEl) toneEl.style.display = showTone ? '' : 'none';
+  if (wcEl)   wcEl.style.display   = showWP   ? '' : 'none';
+  if (dsEl)   dsEl.style.display   = showWP   ? '' : 'none';
+  if (infEl)  infEl.style.display  = showInf  ? '' : 'none';
+  card.style.display = (showTone || showWP || showInf) ? '' : 'none';
+}
+
+function switchGenSourceTab(tab) {
+  ['upload','paste','urls'].forEach(function(t) {
+    var btn  = document.getElementById('genSrcTab-' + t);
+    var pane = document.getElementById('genSrcPane-' + t);
+    if (btn)  btn.classList.toggle('active', t === tab);
+    if (pane) pane.classList.toggle('active', t === tab);
+  });
+  if (tab !== 'paste') {
+    extractedText = '';
+    updateGenerateButton();
+  }
+}
+
+function onGenPromptModeChange() {
+  var mode = (document.querySelector('input[name="genPromptMode"]:checked') || {}).value || 'default';
+  var loadPane = document.getElementById('genPromptLoadPane');
+  var newPane  = document.getElementById('genPromptNewPane');
+  if (loadPane) loadPane.style.display = mode === 'load' ? '' : 'none';
+  if (newPane)  newPane.style.display  = mode === 'new'  ? '' : 'none';
+  if (mode === 'default') {
+    resetToDefault();
+  } else if (mode === 'load') {
+    loadGenCategoryPrompts(currentCategory);
+  }
+}
+
+function loadGenCategoryPrompts(catId) {
+  var sel = document.getElementById('genPromptSelect');
+  if (!sel) return;
+  var ghPrompts = (ghData[catId] && ghData[catId].prompts) ? ghData[catId].prompts : [];
+  var lsPrompts = getPromptsForCat ? (getPromptsForCat(catId) || []) : [];
+  var all = ghPrompts.concat(lsPrompts);
+  sel.innerHTML = '<option value="">— Select a saved prompt —</option>';
+  all.forEach(function(p, i) {
+    var opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = p.name || ('Prompt ' + (i + 1));
+    opt._promptBody = p.text || p.prompt || p.body || '';
+    sel.appendChild(opt);
+  });
+  var preview = document.getElementById('genPromptLoadPreview');
+  if (preview) preview.style.display = 'none';
+}
+
+function onGenPromptSelectChange() {
+  var sel = document.getElementById('genPromptSelect');
+  var preview = document.getElementById('genPromptLoadPreview');
+  if (!sel || sel.value === '') { if (preview) preview.style.display = 'none'; return; }
+  var opt = sel.options[sel.selectedIndex];
+  var body = opt._promptBody || '';
+  if (preview) {
+    preview.textContent = body.substring(0, 300) + (body.length > 300 ? '…' : '');
+    preview.style.display = body ? '' : 'none';
+  }
+  var ta = document.getElementById('promptTextarea');
+  if (ta) ta.value = body;
+}
+
+function syncPromptToEditor() {
+  var src  = document.getElementById('genPromptCustom');
+  var dest = document.getElementById('promptTextarea');
+  if (src && dest) dest.value = src.value;
+}
+
+async function saveGenPrompt() {
+  var name = (document.getElementById('genPromptSaveName') || {}).value;
+  var body = (document.getElementById('genPromptCustom') || {}).value;
+  if (!name || !name.trim()) { showToast('Enter a name for this prompt first.'); return; }
+  if (!body || !body.trim()) { showToast('Prompt is empty.'); return; }
+  var nameInput = document.getElementById('promptNameInput');
+  var ta = document.getElementById('promptTextarea');
+  if (nameInput) nameInput.value = name.trim();
+  if (ta) ta.value = body.trim();
+  await savePromptAs();
+  if (document.getElementById('genPromptSaveName')) document.getElementById('genPromptSaveName').value = '';
+  loadGenCategoryPrompts(currentCategory);
+}
+
+async function handleGenFileSelect(evt) {
+  var files = Array.from(evt.target.files || []);
+  if (!files.length) return;
+  var list = document.getElementById('genDocList');
+  if (list) list.innerHTML = '<div style="padding:6px;font-size:0.72rem;color:var(--text-muted);">Reading files…</div>';
+  var texts = [];
+  for (var i = 0; i < files.length; i++) {
+    var f = files[i];
+    try {
+      var t = f.name.toLowerCase().endsWith('.pdf') ? await extractPDFText(f) : await readTextFile(f);
+      texts.push('--- ' + f.name + ' ---\n' + t);
+    } catch(e) {
+      texts.push('--- ' + f.name + ' [error: ' + e.message + '] ---');
+    }
+  }
+  extractedText = texts.join('\n\n');
+  if (list) {
+    list.innerHTML = files.map(function(f) {
+      return '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:0.75rem;">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:var(--success);flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+        + escHtml(f.name) + '</div>';
+    }).join('');
+  }
+  updateGenerateButton();
+  if (extractedText && typeof heroLeftPopulateKeywords === 'function') heroLeftPopulateKeywords();
+}
+
+function onGenPasteInput() {
+  var ta = document.getElementById('genPasteText');
+  var wc = document.getElementById('genPasteWordCount');
+  var cb = document.getElementById('genPasteClearBtn');
+  if (!ta) return;
+  extractedText = ta.value.trim();
+  var words = extractedText ? extractedText.split(/\s+/).filter(Boolean).length : 0;
+  if (wc) wc.textContent = words ? words.toLocaleString() + ' words' : '';
+  if (cb) cb.style.display = extractedText ? '' : 'none';
+  updateGenerateButton();
+  if (extractedText && typeof heroLeftPopulateKeywords === 'function') heroLeftPopulateKeywords();
+}
+
+function clearGenPaste() {
+  var ta = document.getElementById('genPasteText');
+  if (ta) ta.value = '';
+  extractedText = '';
+  var wc = document.getElementById('genPasteWordCount');
+  var cb = document.getElementById('genPasteClearBtn');
+  if (wc) wc.textContent = '';
+  if (cb) cb.style.display = 'none';
+  updateGenerateButton();
+}
+
+async function fetchGenUrl(btn) {
+  var row = btn.parentElement;
+  var input = row ? row.querySelector('input') : null;
+  var url = input ? input.value.trim() : '';
+  var statusEl = document.getElementById('genUrlStatus');
+  if (!url) { if (statusEl) statusEl.textContent = 'Enter a URL first.'; return; }
+  btn.disabled = true;
+  btn.textContent = '…';
+  if (statusEl) statusEl.textContent = 'Fetching…';
+  try {
+    var res = await apiFetch('/api/fetch-url', { method: 'POST', body: JSON.stringify({ url: url }) });
+    var fetched = (res.text || res.content || '').trim();
+    if (!fetched) throw new Error('No content returned');
+    extractedText = (extractedText ? extractedText + '\n\n' : '') + 'Source URL: ' + url + '\n\n' + fetched;
+    if (statusEl) statusEl.textContent = '✓ Fetched: ' + url;
+    updateGenerateButton();
+    if (typeof heroLeftPopulateKeywords === 'function') heroLeftPopulateKeywords();
+  } catch(e) {
+    if (statusEl) statusEl.textContent = '✗ Failed: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Fetch';
+  }
 }
 
 const CATEGORY_META = {
@@ -4887,6 +5179,7 @@ const TAB_TITLES = {
   'automation-rules': 'Automations',
   'automation-inbox': 'Notifications',
   categories:         'Content Categories',
+  trash:              'Trash',
 };
 
 function closeMobileNav() {
@@ -5326,7 +5619,7 @@ function switchTab(tab) {
     return;
   }
   // automation-new: show flat form, populate category dropdown
-  var allTabs = ['dashboard','generator','archive','comparison','reports','pipeline','distribution','calendar','monitoring','settings','llm','automation','automation-new','automation-rules','automation-inbox','categories'];
+  var allTabs = ['dashboard','generator','archive','comparison','reports','pipeline','distribution','calendar','monitoring','settings','llm','automation','automation-new','automation-rules','automation-inbox','categories','trash'];
   allTabs.forEach(t => {
     const v = document.getElementById('view-' + t);
     const b = document.getElementById('tab-' + t);
@@ -5346,6 +5639,7 @@ function switchTab(tab) {
   if (tab === 'automation-rules')  loadAutoRules();
   if (tab === 'automation-inbox')  loadAutoInbox();
   if (tab === 'categories')        renderCategoriesPage();
+  if (tab === 'trash')             loadTrash();
 
   // Update topbar title
   const tt = document.getElementById('topbarTitle');
@@ -5353,7 +5647,7 @@ function switchTab(tab) {
 
   // Hide category header on non-content tabs
   const catHdr = document.getElementById('categoryHeader');
-  const hideCat = ['dashboard','calendar','pipeline','monitoring','distribution','reports','settings','prompts','llm','automation','automation-new','automation-rules','automation-inbox','categories'].includes(tab);
+  const hideCat = ['dashboard','calendar','pipeline','monitoring','distribution','reports','settings','prompts','llm','automation','automation-new','automation-rules','automation-inbox','categories','trash'].includes(tab);
   if (catHdr) catHdr.style.display = hideCat ? 'none' : '';
 }
 
@@ -5662,6 +5956,7 @@ function renderRuleCard(rule) {
     '</div>' +
     '<div class="auto-rule-actions">' +
       '<button style="' + btnStyle + '" title="' + (rule.enabled ? 'Pause rule' : 'Resume rule') + '" onclick="toggleAutoRule(\'' + escHtml(rule.id) + '\',' + (!rule.enabled) + ')">' + (rule.enabled ? '&#9646;&#9646;' : '&#9654;') + '</button>' +
+      '<button style="' + btnStyle + 'color:var(--sla-orange);border-color:var(--sla-orange);" title="Run now" onclick="runRuleNow(\'' + escHtml(rule.id) + '\')">&#9654; Run</button>' +
       '<button style="' + btnStyle + '" title="Clone rule" onclick="cloneAutoRule(\'' + escHtml(rule.id) + '\')">&#10697;</button>' +
       '<button style="' + btnStyle + '" title="Edit rule" onclick="openRuleWizard(\'' + escHtml(rule.id) + '\')">&#9998;</button>' +
       '<button style="' + btnStyle + 'color:#ef4444;border-color:#ef4444;" title="Delete rule" onclick="deleteAutoRuleConfirm(\'' + escHtml(rule.id) + '\',\'' + escHtml(rule.name) + '\')">&#128465;</button>' +
@@ -5697,13 +5992,25 @@ function deleteAutoRuleConfirm(id, name) {
     .catch(function(err) { showToast('Delete failed: ' + err.message); });
 }
 
+async function runRuleNow(id) {
+  if (!confirm('Trigger this rule now?\n\nIt will fetch sources and create new content jobs immediately, bypassing the schedule.')) return;
+  try {
+    var result = await apiFetch('/api/automation/run', { method: 'POST', body: JSON.stringify({ ruleId: id }) });
+    var msg = result && result.processed > 0
+      ? 'Rule triggered — ' + result.processed + ' job' + (result.processed !== 1 ? 's' : '') + ' created. Check Notifications.'
+      : 'Rule ran — no new items found in sources.';
+    showToast(msg);
+    loadAutoRules();
+  } catch (err) { showToast('Run failed: ' + err.message); }
+}
+
 // ── Rule Wizard ───────────────────────────────────────────────────────────────
 var _wizStep = 1;
 var _wizEditId = null;
 var _wizSources = [];
 var _wizEmails = [];
 
-function openRuleWizard(editId) {
+async function openRuleWizard(editId) {
   _wizStep = 1;
   _wizEditId = editId || null;
   _wizSources = [];
@@ -5728,6 +6035,92 @@ function openRuleWizard(editId) {
   document.getElementById('wizEmailEnabled').checked = false;
   document.getElementById('wizTgOpts').style.display = 'none';
   document.getElementById('wizEmailOpts').style.display = 'none';
+  var wizModelSel = document.getElementById('wizModel');
+  if (wizModelSel) wizModelSel.value = '';
+
+  // If editing, load existing rule data and populate all fields
+  if (editId) {
+    try {
+      var rule = await apiFetch('/api/automation/rules/' + editId);
+      document.getElementById('wizName').value = rule.name || '';
+      if (catSel && rule.category) catSel.value = rule.category;
+      if (tplSel && rule.generation && rule.generation.template) tplSel.value = rule.generation.template;
+
+      // Sources
+      if (rule.sources && rule.sources.length) {
+        _wizSources = rule.sources.map(function(s, i) {
+          return { id: 'src_' + Date.now() + '_' + i, type: s.type || 'rss', url: s.url || '', repo: s.repo || '', path: s.path || '', branch: s.branch || 'main' };
+        });
+        _wizRenderSources();
+      }
+
+      // Trigger
+      if (rule.trigger) {
+        var trigType = rule.trigger.type || 'schedule';
+        var trigRadio = document.querySelector('input[name="wizTrigger"][value="' + trigType + '"]');
+        if (trigRadio) { trigRadio.checked = true; wizUpdateTriggerUI(); }
+        if (trigType === 'schedule' && rule.trigger.cron) {
+          var presets = ['0 7 * * 1', '0 7 * * *', '0 7 1,15 * *', '0 7 1 * *'];
+          var cronPresetEl = document.getElementById('wizCronPreset');
+          if (presets.includes(rule.trigger.cron)) {
+            cronPresetEl.value = rule.trigger.cron;
+          } else {
+            cronPresetEl.value = 'custom';
+            document.getElementById('wizCronExpr').value = rule.trigger.cron;
+          }
+          wizUpdateCronUI();
+        }
+        if (rule.trigger.minGapHours) {
+          var minGapEl = document.getElementById('wizMinGap');
+          if (minGapEl) minGapEl.value = rule.trigger.minGapHours;
+        }
+      }
+
+      // Generation
+      if (rule.generation) {
+        var maxArtEl = document.getElementById('wizMaxArticles');
+        if (maxArtEl && rule.generation.maxArticlesPerRun) maxArtEl.value = rule.generation.maxArticlesPerRun;
+        var promptEl = document.getElementById('wizPrompt');
+        if (promptEl && rule.generation.prompt) promptEl.value = rule.generation.prompt;
+        if (wizModelSel && rule.generation.model) wizModelSel.value = rule.generation.model;
+        if (rule.generation.combineMode) {
+          var combineRadio = document.querySelector('input[name="wizCombine"][value="' + rule.generation.combineMode + '"]');
+          if (combineRadio) combineRadio.checked = true;
+        }
+      }
+
+      // Review
+      if (rule.review) {
+        var reviewVal = rule.review.required ? 'yes' : 'no';
+        var reviewRadio = document.querySelector('input[name="wizReview"][value="' + reviewVal + '"]');
+        if (reviewRadio) { reviewRadio.checked = true; wizUpdateReviewUI(); }
+        var timeoutEl = document.getElementById('wizTimeoutHours');
+        if (timeoutEl && rule.review.timeoutHours) timeoutEl.value = rule.review.timeoutHours;
+        var onTimeoutEl = document.getElementById('wizOnTimeout');
+        if (onTimeoutEl && rule.review.onTimeout) onTimeoutEl.value = rule.review.onTimeout;
+      }
+
+      // Notifications
+      if (rule.notifications) {
+        var tg = rule.notifications.telegram;
+        if (tg) {
+          document.getElementById('wizTgEnabled').checked = !!tg.enabled;
+          wizUpdateNotifUI();
+          if (tg.chatId) document.getElementById('wizTgChatId').value = tg.chatId;
+          if (tg.allowApproval !== undefined) document.getElementById('wizTgApprove').checked = !!tg.allowApproval;
+        }
+        var em = rule.notifications.email;
+        if (em) {
+          document.getElementById('wizEmailEnabled').checked = !!em.enabled;
+          wizUpdateNotifUI();
+          if (em.to && em.to.length) { _wizEmails = em.to.slice(); _wizRenderEmails(); }
+          if (em.allowApproval !== undefined) document.getElementById('wizEmailApprove').checked = !!em.allowApproval;
+        }
+      }
+    } catch (err) {
+      showToast('Failed to load rule: ' + err.message);
+    }
+  }
 
   _wizRenderStep(1);
 }
@@ -5749,7 +6142,7 @@ function _wizRenderStep(step) {
   var btnBack = document.getElementById('wizBtnBack');
   var btnNext = document.getElementById('wizBtnNext');
   if (btnBack) btnBack.style.display = step > 1 ? '' : 'none';
-  if (btnNext) btnNext.textContent = step === 5 ? 'Create Rule' : 'Next \u2192';
+  if (btnNext) btnNext.textContent = step === 5 ? (_wizEditId ? 'Save Rule' : 'Create Rule') : 'Next \u2192';
   if (step === 5) _wizBuildSummary();
 }
 
@@ -5792,11 +6185,16 @@ function wizRemoveSource(id) {
 function _wizRenderSources() {
   var list = document.getElementById('wizSourcesList');
   var html = _wizSources.map(function(s) {
-    var label = s.type === 'rss' ? 'RSS' : s.type === 'url' ? 'URL' : 'GitHub';
+    var label = s.type === 'rss' ? 'RSS' : s.type === 'url' ? 'URL' : s.type === 'upload' ? 'Upload' : 'GitHub';
     var ph = s.type === 'rss' ? 'https://feeds.bmj.com/bmj/recent' : s.type === 'url' ? 'https://www.nice.org.uk/news' : '';
-    var inputHtml = s.type === 'github'
-      ? '<input placeholder="owner/repo" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.repo=el.value;})(this)" value="' + escHtml(s.repo) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;"> <input placeholder="path (optional)" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.path=el.value;})(this)" value="' + escHtml(s.path) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">'
-      : '<input type="url" placeholder="' + ph + '" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.url=el.value;})(this)" value="' + escHtml(s.url) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">';
+    var inputHtml;
+    if (s.type === 'github') {
+      inputHtml = '<input placeholder="owner/repo" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.repo=el.value;})(this)" value="' + escHtml(s.repo) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;"> <input placeholder="path (optional)" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.path=el.value;})(this)" value="' + escHtml(s.path) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">';
+    } else if (s.type === 'upload') {
+      inputHtml = '<input type="file" accept=".pdf,.doc,.docx,.txt,.html" onchange="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src&&el.files[0])src.url=el.files[0].name;})(this)" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">';
+    } else {
+      inputHtml = '<input type="url" placeholder="' + ph + '" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.url=el.value;})(this)" value="' + escHtml(s.url) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">';
+    }
     return '<div style="display:flex;align-items:center;gap:8px;">'
       + '<span style="min-width:52px;font-size:0.75rem;font-weight:600;color:var(--text-muted);">' + label + '</span>'
       + inputHtml
@@ -5913,6 +6311,7 @@ async function _wizSubmit() {
       maxArticlesPerRun: parseInt(document.getElementById('wizMaxArticles').value || '3'),
       prompt: document.getElementById('wizPrompt').value.trim(),
       combineMode: combineEl ? combineEl.value : 'one-per-item',
+      model: document.getElementById('wizModel').value || null,
     },
     review: {
       required: reviewReq,
@@ -6049,6 +6448,59 @@ async function rejectAutoJob(jobId) {
   } catch (err) { showToast('Failed: ' + err.message); }
 }
 
+function switchInboxTab(tab) {
+  ['pending', 'history'].forEach(function(t) {
+    var btn = document.getElementById('inboxSubtab-' + t);
+    var view = document.getElementById(t === 'pending' ? 'autoSubInbox' : 'autoSubHistory');
+    var isActive = t === tab;
+    if (btn) {
+      btn.style.color = isActive ? 'var(--sla-navy)' : 'var(--text-muted)';
+      btn.style.borderBottomColor = isActive ? 'var(--sla-orange)' : 'transparent';
+    }
+    if (view) view.style.display = isActive ? (t === 'pending' ? 'block' : 'block') : 'none';
+  });
+  if (tab === 'history') loadAutoHistory();
+}
+
+async function loadAutoHistory() {
+  var list = document.getElementById('autoHistoryList');
+  if (!list) return;
+  list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">Loading...</p>';
+  try {
+    var [completed, rejected] = await Promise.all([
+      apiFetch('/api/automation/jobs?status=completed'),
+      apiFetch('/api/automation/jobs?status=rejected'),
+    ]);
+    var jobs = [...(completed || []), ...(rejected || [])].sort(function(a, b) {
+      var ta = b.updatedAt || b.createdAt || '';
+      var tb = a.updatedAt || a.createdAt || '';
+      return ta > tb ? 1 : ta < tb ? -1 : 0;
+    });
+    if (!jobs.length) {
+      list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">No history yet.</p>';
+      return;
+    }
+    list.innerHTML = jobs.map(renderHistoryCard).join('');
+  } catch (err) {
+    list.innerHTML = '<p style="color:#ef4444;padding:16px;">' + escHtml(err.message) + '</p>';
+  }
+}
+
+function renderHistoryCard(job) {
+  var isCompleted = job.status === 'completed';
+  var statusColor = isCompleted ? '#16a34a' : '#ef4444';
+  var statusLabel = isCompleted ? 'Published' : 'Rejected';
+  var age = job.updatedAt ? timeAgo(job.updatedAt) : (job.createdAt ? timeAgo(job.createdAt) : '');
+  return '<div style="padding:12px 16px;border-bottom:1px solid var(--border);">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+      '<span style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:' + statusColor + ';">' + statusLabel + '</span>' +
+      '<span style="font-size:0.62rem;color:var(--text-muted);">' + escHtml(age) + '</span>' +
+    '</div>' +
+    '<div style="font-weight:600;font-size:0.82rem;color:var(--text);">' + escHtml(job.contentId || 'Article') + '</div>' +
+    (job.ruleId ? '<div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px;">Rule: ' + escHtml(job.ruleId) + '</div>' : '') +
+  '</div>';
+}
+
 function loadLLMPage() {
   // Structured God-Prompt fields
   var fields = {
@@ -6082,7 +6534,7 @@ function loadLLMPage() {
   });
 
   // Category model defaults
-  var CATS = ['clinical-reviews','industry-news','op-eds','white-papers','infographics'];
+  var CATS = ['clinical-reviews','industry-news','op-eds','white-papers','infographics','ibd-living'];
   CATS.forEach(function(catId) {
     var sel = document.getElementById('llm-cat-' + catId);
     if (sel) { var v = getCategoryModel(catId); if (v) sel.value = v; }
@@ -6163,39 +6615,20 @@ function removeFile() {
 //  GENERATION
 // ═══════════════════════════════════════════════════════════
 function updateGenerateButton() {
-  let hasSource = false;
-  if (currentCategory === 'industry-news') {
-    hasSource = !!extractedText.trim();
-  } else if (currentCategory === 'op-eds') {
-    hasSource = multiDocs['op-eds'].length > 0;
-  } else if (currentCategory === 'white-papers') {
-    hasSource = multiDocs['white-papers'].length > 0;
-  } else if (currentCategory === 'infographics') {
-    hasSource = !!extractedText.trim();
-  } else {
-    hasSource = !!extractedText.trim();
-  }
-  document.getElementById('generateBtn').disabled = !hasSource || isGenerating; // key always available via default
-  // Auto-populate hero image keywords whenever source text is available
-  if (hasSource && extractedText) heroLeftPopulateKeywords();
+  const hasSource = !!extractedText.trim();
+  document.getElementById('generateBtn').disabled = !hasSource || isGenerating;
+  if (hasSource) heroLeftPopulateKeywords();
 }
 
 async function generateReview() {
   if (isGenerating) return;
   // getApiKey() always returns at least the built-in default key
 
-  // Build the source text based on category
+  // Build source text from unified source input
   let sourceText = extractedText;
-  if (currentCategory === 'op-eds') {
-    if (!multiDocs['op-eds'].length) { showAlert('generateAlert', 'Please upload at least one source document.', 'error'); return; }
-    sourceText = multiDocs['op-eds'].map((d,i) => `--- Document ${i+1}: ${d.name} ---\n${d.text}`).join('\n\n');
-  } else if (currentCategory === 'white-papers') {
-    if (!multiDocs['white-papers'].length) { showAlert('generateAlert', 'Please upload at least one source document.', 'error'); return; }
-    sourceText = multiDocs['white-papers'].map((d,i) => `--- Document ${i+1}: ${d.name} ---\n${d.text}`).join('\n\n');
-    const links = wpSourceLinks.filter(l => l.trim());
-    if (links.length) sourceText += '\n\nSource Links:\n' + links.map(l => '- ' + l).join('\n');
-  } else if (!sourceText) {
-    showAlert('generateAlert', 'Please provide source content first.', 'error'); return;
+  if (!sourceText.trim()) {
+    showAlert('generateAlert', 'Please provide source content first.', 'error');
+    return;
   }
 
   // Build extra instructions for category options
@@ -6206,6 +6639,16 @@ async function generateReview() {
   } else if (currentCategory === 'white-papers') {
     const wc = document.getElementById('wpWordCount')?.value || 2000;
     extraInstructions = `\n\nTarget length: approximately ${wc} words.\nDesign style: ${selectedDesign}.`;
+  }
+
+  // Ensure promptTextarea is populated if user is in 'default' mode
+  var promptMode = (document.querySelector('input[name="genPromptMode"]:checked') || {}).value || 'default';
+  if (promptMode === 'default') {
+    var ptArea = document.getElementById('promptTextarea');
+    if (ptArea && !ptArea.value.trim()) {
+      var cfg = categoryConfigs ? categoryConfigs[currentCategory] : null;
+      if (cfg && cfg.defaultPrompt) ptArea.value = cfg.defaultPrompt;
+    }
   }
 
   const basePrompt = document.getElementById('promptTextarea').value.trim();
@@ -6547,7 +6990,7 @@ async function saveReviewToArchive() {
 }
 
 function renderArchive() {
-  const archive = getArchive();
+  const archive = getArchive().filter(r => !r.trashed);
   const grid    = document.getElementById('archiveGrid');
   const empty   = document.getElementById('archiveEmpty');
   grid.innerHTML = '';
@@ -6590,8 +7033,8 @@ function renderArchive() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           ${isQueued ? 'In Review' : 'Send for Review'}
         </button>
-        <button class="btn btn-danger-outline btn-xs" onclick="deleteArchiveItem('${r.id}')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+        <button class="btn btn-trash-sm" onclick="moveArchiveToTrash('${r.id}')" title="Move to Trash">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>`;
     grid.appendChild(card);
@@ -6700,12 +7143,24 @@ async function viewArticleFromPipeline(itemId) {
 
 async function deleteArchiveItem(id) {
   const r = getArchive().find(x => x.id === id);
-  if (!r || !confirm(`Delete "${r.title}"?`)) return;
+  if (!r || !confirm(`Permanently delete "${r.title}"? This cannot be undone.`)) return;
   ghData[currentCategory].reviews = ghData[currentCategory].reviews.filter(x => x.id !== id);
   selectedArchiveIds.delete(id);
   renderArchive();
   updateCompareBar();
   try { await ghSaveReviews(currentCategory, `Delete item: ${r.title.slice(0,60)}`); } catch(e) { alert('Deleted locally but GitHub sync failed: ' + e.message); }
+}
+
+async function moveArchiveToTrash(id) {
+  const r = getArchive().find(x => x.id === id);
+  if (!r) return;
+  r.trashed = true;
+  selectedArchiveIds.delete(id);
+  renderArchive();
+  updateCompareBar();
+  try { await ghSaveReviews(currentCategory, `Trash item: ${r.title.slice(0,60)}`); } catch(e) {}
+  showToast('Moved to trash — restore from Trash page');
+  updateTrashBadge();
 }
 
 function downloadArchiveWord(id) {
@@ -7692,6 +8147,7 @@ const BUILTIN_CATEGORY_META = {
   'op-eds':           { description: 'Expert opinions and editorials on healthcare topics', sources: ['multiple'], wpCategorySlug: 'content-expert-opinions', icon: '💡' },
   'white-papers':     { description: 'Comprehensive research and position papers', sources: ['multiple'], wpCategorySlug: 'content-white-papers', icon: '📄' },
   'infographics':     { description: 'Visual content and data summaries', sources: ['single'], wpCategorySlug: 'content-infographic', icon: '📊' },
+  'ibd-living':       { description: 'Patient-focused content for people living with IBD', sources: ['links', 'paste'], wpCategorySlug: 'ibd-living', icon: '🫀' },
 };
 
 // SVG icon markup for each built-in category (dark by default, orange on hover via CSS)
@@ -7701,6 +8157,7 @@ const CATEGORY_SVG_ICONS = {
   'op-eds':           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
   'white-papers':     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
   'infographics':     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+  'ibd-living':       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
   '_default':         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
 };
 function getCatSvgIcon(catId) {
@@ -7790,30 +8247,29 @@ function activateCustomCategories() {
     try { ghData[cat.id].prompts     = JSON.parse(localStorage.getItem('sla_gh_prompts_' + cat.id)     || '[]'); } catch(_) {}
     try { ghData[cat.id].comparisons = JSON.parse(localStorage.getItem('sla_gh_comparisons_' + cat.id) || '[]'); } catch(_) {}
   });
-  // Inject custom buttons into all cat-bar elements
-  ['generator', 'archive'].forEach(barId => {
-    const placeholder = document.getElementById('customCatBtns-' + barId);
-    if (!placeholder) return;
-    // Clear old buttons from the placeholder's parent
-    placeholder.querySelectorAll('.cat-bar-btn').forEach(b => b.remove());
+  // Inject custom options into the generator category dropdown
+  var genSel = document.getElementById('genCategorySelect');
+  if (genSel) {
+    genSel.querySelectorAll('option[data-custom]').forEach(o => o.remove());
     customCategories.forEach(cat => {
-      const btn = document.createElement('button');
+      var opt = document.createElement('option');
+      opt.value = cat.id;
+      opt.textContent = (cat.icon || '') + ' ' + cat.name;
+      opt.dataset.custom = '1';
+      genSel.appendChild(opt);
+    });
+  }
+  // Inject custom buttons into archive cat-bar
+  var archivePlaceholder = document.getElementById('customCatBtns-archive');
+  if (archivePlaceholder) {
+    archivePlaceholder.querySelectorAll('.cat-bar-btn').forEach(b => b.remove());
+    customCategories.forEach(cat => {
+      var btn = document.createElement('button');
       btn.className = 'cat-bar-btn';
       btn.dataset.cat = cat.id;
       btn.textContent = (cat.icon || '📄') + ' ' + cat.name;
       btn.onclick = () => switchCategory(cat.id);
-      placeholder.appendChild(btn);
-    });
-  });
-  // Inject input panels for custom categories
-  const panelContainer = document.getElementById('panel-clinical-reviews')?.parentElement;
-  if (panelContainer) {
-    customCategories.forEach(cat => {
-      if (!document.getElementById('panel-' + cat.id)) {
-        const tmp = document.createElement('div');
-        tmp.innerHTML = createCustomCategoryPanel(cat);
-        panelContainer.appendChild(tmp.firstElementChild);
-      }
+      archivePlaceholder.appendChild(btn);
     });
   }
 }
@@ -7864,8 +8320,8 @@ function createCustomCategoryPanel(cat) {
 
 function switchCustomSourceTab(catId, tab) {
   const cat = customCategories.find(c => c.id === catId);
-  if (!cat) return;
-  (cat.sources || ['paste']).forEach(s => {
+  const sources = cat ? (cat.sources || ['paste']) : (categoryConfigs[catId]?.sources || ['paste']);
+  sources.forEach(s => {
     const btn  = document.getElementById('ctab-' + catId + '-' + s);
     const pane = document.getElementById('cpane-' + catId + '-' + s);
     if (btn)  btn.classList.toggle('active', s === tab);
@@ -8434,6 +8890,7 @@ window.addEventListener('DOMContentLoaded', () => {
   loadCustomCategories();
   activateCustomCategories();
   updateCategoryHeader('clinical-reviews');
+  updateGenCatOptions('clinical-reviews');
   // Hash deep-link: /#pipeline, /#generator, etc. (used by review confirmation pages)
   var hashTab = window.location.hash.replace('#', '');
   var validTabs = ['dashboard','generator','archive','pipeline','distribution','calendar','monitoring','settings','prompts','llm','automation','automation-new','automation-rules','automation-inbox','categories']; // 'prompts' auto-redirects to distribution
@@ -8460,13 +8917,16 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   const zone = document.getElementById('uploadZone');
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault(); zone.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) processFile(file);
-  });
+  if (zone) {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) {
+        handleGenFileSelect({ target: { files: e.dataTransfer.files } });
+      }
+    });
+  }
 
   // Load custom categories from GitHub first (cross-browser sync),
   // then load all category data — order matters because ghLoadAll() iterates CATEGORIES,
@@ -8847,6 +9307,8 @@ async function loadDistribution() {
   let items = [];
   try { items = await contentApi.getAll(); } catch(e) { items = publishingQueue || []; }
   allSocialItems = items;
+  // Refresh Kit Builder article select now that data is loaded
+  if (typeof loadKitArticleSelect === 'function') loadKitArticleSelect();
 
   // Populate select dropdown
   if (select) {
@@ -9715,6 +10177,7 @@ const CATEGORY_LABELS = {
   'op-eds':           'Op-Ed',
   'white-papers':     'White Paper',
   'infographics':     'Infographic',
+  'ibd-living':       'IBD Living',
 };
 
 // ── Pipeline layout ──────────────────────────────
@@ -9829,6 +10292,7 @@ function renderListRow(item) {
     <span class="pipeline-list-date">${dateStr}</span>
     <div class="pipeline-list-actions">
       <button class="btn btn-outline btn-xs" onclick="viewArticleFromPipeline('${item.id}')">View Article</button>
+      <button class="btn-trash-sm" onclick="movePipelineToTrash('${item.id}')">Trash</button>
     </div>
   </div>`;
 }
@@ -9905,8 +10369,7 @@ function renderKanbanCard(item) {
       <button class="btn btn-approve-pipeline btn-sm" onclick="approveDirect('${item.id}')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;"><polyline points="20 6 9 17 4 12"/></svg>
         Approve
-      </button>
-      <button class="btn btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c;" onclick="deletePipelineItem('${item.id}')">Delete</button>`;
+      </button>`;
   }
 
   return `
@@ -9925,6 +10388,9 @@ function renderKanbanCard(item) {
           View Article
         </button>
         ${actions}
+      </div>
+      <div class="kcard-trash-row">
+        <button class="btn-trash-sm" onclick="movePipelineToTrash('${item.id}')">Move to Trash</button>
       </div>
     </div>`;
 }
@@ -10168,9 +10634,16 @@ async function publishNow(contentId) {
 }
 
 async function deletePipelineItem(contentId) {
-  if (!confirm('Delete this content item permanently?')) return;
+  if (!confirm('Permanently delete this item? This cannot be undone.')) return;
   await contentApi.remove(contentId);
   loadPipeline();
+}
+
+async function movePipelineToTrash(contentId) {
+  await contentApi.update(contentId, { status: 'trash' });
+  loadPipeline();
+  showToast('Moved to trash — restore from Trash page');
+  updateTrashBadge();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -10294,20 +10767,67 @@ function renderReviewerList() {
   list.innerHTML = _reviewers.map(r => {
     const initials = r.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
     const role = r.role || 'must_approve';
+    const pencilSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>`;
     return `
-      <div class="reviewer-row">
+      <div class="reviewer-row" id="rev-row-${r.id}">
         <div class="reviewer-avatar-sm">${initials}</div>
-        <div class="reviewer-info">
+        <div class="reviewer-info" id="rev-info-${r.id}">
           <div class="rname">${escapeHtml(r.name)}</div>
           <div class="remail">${escapeHtml(r.email)}</div>
         </div>
-        <select onchange="updateReviewerRole('${r.id}', this.value)" style="padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.68rem;font-family:'Montserrat',sans-serif;cursor:pointer;">
+        <div class="reviewer-info" id="rev-edit-${r.id}" style="display:none;flex:1;">
+          <input id="rev-edit-name-${r.id}" value="${escapeHtml(r.name)}" placeholder="Name" style="width:100%;margin-bottom:4px;padding:4px 6px;border:1px solid var(--border);font-family:'Montserrat',sans-serif;font-size:0.72rem;background:var(--bg);color:var(--text);" />
+          <input id="rev-edit-email-${r.id}" value="${escapeHtml(r.email)}" placeholder="Email" type="email" style="width:100%;padding:4px 6px;border:1px solid var(--border);font-family:'Montserrat',sans-serif;font-size:0.72rem;background:var(--bg);color:var(--text);" />
+        </div>
+        <select onchange="updateReviewerRole('${r.id}', this.value)" id="rev-role-sel-${r.id}" style="padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.68rem;font-family:'Montserrat',sans-serif;cursor:pointer;">
           <option value="must_approve" ${role === 'must_approve' ? 'selected' : ''}>Must Approve</option>
           <option value="reference" ${role === 'reference' ? 'selected' : ''}>Send for Reference</option>
         </select>
-        <button class="btn btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c;" onclick="removeReviewer('${r.id}')">Remove</button>
+        <button class="btn btn-outline btn-sm" id="rev-edit-btn-${r.id}" onclick="startEditReviewer('${r.id}')" title="Edit name/email">${pencilSvg}</button>
+        <button class="btn btn-orange btn-sm" id="rev-save-btn-${r.id}" onclick="saveReviewerEdit('${r.id}')" style="display:none;">Save</button>
+        <button class="btn btn-outline btn-sm" id="rev-cancel-btn-${r.id}" onclick="cancelEditReviewer('${r.id}')" style="display:none;">Cancel</button>
+        <button class="btn btn-outline btn-sm" id="rev-remove-btn-${r.id}" style="color:#e74c3c;border-color:#e74c3c;" onclick="removeReviewer('${r.id}')">Remove</button>
       </div>`;
   }).join('');
+}
+
+function startEditReviewer(id) {
+  document.getElementById('rev-info-' + id).style.display = 'none';
+  document.getElementById('rev-edit-' + id).style.display = 'block';
+  document.getElementById('rev-edit-btn-' + id).style.display = 'none';
+  document.getElementById('rev-save-btn-' + id).style.display = '';
+  document.getElementById('rev-cancel-btn-' + id).style.display = '';
+  document.getElementById('rev-remove-btn-' + id).style.display = 'none';
+  document.getElementById('rev-role-sel-' + id).style.display = 'none';
+  document.getElementById('rev-edit-name-' + id).focus();
+}
+
+function cancelEditReviewer(id) {
+  document.getElementById('rev-info-' + id).style.display = '';
+  document.getElementById('rev-edit-' + id).style.display = 'none';
+  document.getElementById('rev-edit-btn-' + id).style.display = '';
+  document.getElementById('rev-save-btn-' + id).style.display = 'none';
+  document.getElementById('rev-cancel-btn-' + id).style.display = 'none';
+  document.getElementById('rev-remove-btn-' + id).style.display = '';
+  document.getElementById('rev-role-sel-' + id).style.display = '';
+}
+
+async function saveReviewerEdit(id) {
+  const name = document.getElementById('rev-edit-name-' + id).value.trim();
+  const email = document.getElementById('rev-edit-email-' + id).value.trim();
+  if (!email) { alert('Email is required'); return; }
+  try {
+    const r = await fetch(`/api/reviewers?id=${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name || email, email }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    const idx = _reviewers.findIndex(rv => rv.id === id);
+    if (idx !== -1) { _reviewers[idx].name = data.name; _reviewers[idx].email = data.email; }
+    renderReviewerList();
+  } catch (err) { alert('Failed to update reviewer: ' + err.message); }
 }
 
 async function updateReviewerRole(id, role) {
@@ -10841,6 +11361,166 @@ function connectGoogleCalendar() {
   }, { once: true });
 }
 
+// ═══════════════════════════════════════════════════════════
+//  TRASH
+// ═══════════════════════════════════════════════════════════
+
+async function loadTrash() {
+  const grid  = document.getElementById('trashGrid');
+  const empty = document.getElementById('trashEmpty');
+  if (!grid) return;
+  grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:0.75rem;">Loading…</div>';
+
+  // Pipeline trashed items
+  const allPipeline = await contentApi.getAll();
+  const pipelineTrashed = allPipeline.filter(i => i.status === 'trash');
+
+  // Archive trashed items — aggregate across all categories
+  const archiveTrashed = [];
+  CATEGORIES.forEach(cat => {
+    (ghData[cat.id]?.reviews || []).filter(r => r.trashed).forEach(r => {
+      archiveTrashed.push({ ...r, _cat: cat.id });
+    });
+  });
+
+  const total = pipelineTrashed.length + archiveTrashed.length;
+  updateTrashBadge(total);
+
+  if (total === 0) {
+    grid.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const rows = [
+    ...pipelineTrashed.map(item => renderTrashCard(item, 'pipeline', null)),
+    ...archiveTrashed.map(item => renderTrashCard(item, 'archive', item._cat)),
+  ];
+  grid.innerHTML = rows.join('');
+}
+
+function renderTrashCard(item, type, catId) {
+  const title   = escapeHtml(item.title || 'Untitled');
+  const catLabel = escapeHtml(CATEGORY_LABELS[item.category || catId] || item.category || catId || '—');
+  const dateStr  = item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+  const source   = type === 'pipeline' ? `<span class="trash-source-badge trash-source-pipeline">Pipeline</span>` : `<span class="trash-source-badge trash-source-archive">Library</span>`;
+  const catArg   = catId ? `'${catId}'` : 'null';
+  return `<div class="trash-card">
+    <div class="trash-card-top">
+      ${source}
+      <span class="trash-card-cat">${catLabel}</span>
+      <span class="trash-card-date">${dateStr}</span>
+    </div>
+    <div class="trash-card-title">${title}</div>
+    <div class="trash-card-actions">
+      <button class="btn btn-outline btn-sm" onclick="viewTrashedArticle('${item.id}','${type}',${catArg})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        View
+      </button>
+      <button class="btn btn-orange btn-sm" onclick="restoreFromTrash('${item.id}','${type}',${catArg})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 9a9 9 0 1 0 .49-3.5"/></svg>
+        Restore
+      </button>
+      <button class="btn btn-outline btn-sm" style="color:#e74c3c;border-color:#e74c3c;" onclick="permanentlyDeleteFromTrash('${item.id}','${type}',${catArg})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+        Delete Forever
+      </button>
+    </div>
+  </div>`;
+}
+
+async function restoreFromTrash(id, type, catId) {
+  if (type === 'pipeline') {
+    await contentApi.update(id, { status: 'draft' });
+  } else {
+    const cat = ghData[catId];
+    if (!cat) return;
+    const item = cat.reviews.find(r => r.id === id);
+    if (!item) return;
+    item.trashed = false;
+    try { await ghSaveReviews(catId, `Restore from trash: ${item.title?.slice(0,60)}`); } catch(e) {}
+  }
+  showToast('Restored to ' + (type === 'pipeline' ? 'Pipeline as Draft' : 'Library'));
+  loadTrash();
+}
+
+async function permanentlyDeleteFromTrash(id, type, catId) {
+  if (!confirm('Permanently delete this item? This cannot be undone.')) return;
+  if (type === 'pipeline') {
+    await contentApi.remove(id);
+  } else {
+    const cat = ghData[catId];
+    if (!cat) return;
+    const item = cat.reviews.find(r => r.id === id);
+    cat.reviews = cat.reviews.filter(r => r.id !== id);
+    try { await ghSaveReviews(catId, `Permanently delete: ${item?.title?.slice(0,60) || id}`); } catch(e) {}
+  }
+  loadTrash();
+}
+
+async function viewTrashedArticle(id, type, catId) {
+  if (type === 'pipeline') {
+    const items = await contentApi.getAll();
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    rawArticleText = item.body || '';
+    document.getElementById('articleContent').innerHTML = formatArticleHTML(rawArticleText);
+    document.getElementById('articleOutput').classList.add('visible');
+    document.getElementById('emptyState').style.display = 'none';
+    switchTab('generator');
+  } else {
+    const cat = ghData[catId];
+    if (!cat) return;
+    const r = cat.reviews.find(x => x.id === id);
+    if (!r) return;
+    rawArticleText = r.text;
+    document.getElementById('articleContent').innerHTML = formatArticleHTML(r.text);
+    document.getElementById('articleOutput').classList.add('visible');
+    document.getElementById('emptyState').style.display = 'none';
+    switchTab('generator');
+  }
+}
+
+async function emptyTrash() {
+  if (!confirm('Permanently delete ALL items in trash? This cannot be undone.')) return;
+
+  const allPipeline = await contentApi.getAll();
+  const pipelineTrashed = allPipeline.filter(i => i.status === 'trash');
+  await Promise.all(pipelineTrashed.map(i => contentApi.remove(i.id)));
+
+  const saves = [];
+  CATEGORIES.forEach(cat => {
+    const catData = ghData[cat.id];
+    if (!catData) return;
+    const before = catData.reviews.length;
+    catData.reviews = catData.reviews.filter(r => !r.trashed);
+    if (catData.reviews.length !== before) saves.push(ghSaveReviews(cat.id, 'Empty trash'));
+  });
+  await Promise.all(saves);
+
+  showToast('Trash emptied');
+  loadTrash();
+}
+
+function updateTrashBadge(count) {
+  const badge = document.getElementById('trashBadge');
+  if (!badge) return;
+  if (count === undefined) {
+    // Async count
+    contentApi.getAll().then(items => {
+      const p = items.filter(i => i.status === 'trash').length;
+      const a = CATEGORIES.reduce((s, cat) => s + (ghData[cat.id]?.reviews || []).filter(r => r.trashed).length, 0);
+      const total = p + a;
+      badge.textContent = total;
+      badge.style.display = total > 0 ? '' : 'none';
+    });
+  } else {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? '' : 'none';
+  }
+}
+
 function checkGcalStatus() {
   // Lightweight check — if /api/calendar/sync responds we assume tokens exist
   const statusEl = document.getElementById('gcalStatus');
@@ -10946,7 +11626,7 @@ function checkGcalStatus() {
       </div>
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Custom prompt <span style="color:var(--text-muted);font-weight:400;">(optional override)</span></label>
-        <textarea id="wizPrompt" maxlength="2000" rows="4" placeholder="Leave blank to use the category's default template" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;resize:vertical;"></textarea>
+        <textarea id="wizPrompt" maxlength="2000" rows="4"style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;resize:vertical;"></textarea>
       </div>
       <div>
         <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Source handling</label>
@@ -10990,7 +11670,7 @@ function checkGcalStatus() {
         <div id="wizTgOpts" style="display:none;padding-left:24px;">
           <div style="margin-bottom:10px;">
             <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--text);">Chat ID</label>
-            <input id="wizTgChatId" type="text" placeholder="-1001234567890" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <input id="wizTgChatId" type="text"style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
           </div>
           <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;margin-bottom:8px;cursor:pointer;">
             <input type="checkbox" id="wizTgApprove" checked> Allow approval via Telegram inline buttons
@@ -11005,7 +11685,7 @@ function checkGcalStatus() {
         <div id="wizEmailOpts" style="display:none;padding-left:24px;">
           <div id="wizEmailChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
           <div style="display:flex;gap:8px;margin-bottom:8px;">
-            <input id="wizEmailNew" type="email" placeholder="editor@slahealth.co.uk" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
+            <input id="wizEmailNew" type="email"style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;">
             <button onclick="wizAddEmail()" style="padding:8px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;cursor:pointer;">+ Add</button>
           </div>
           <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">

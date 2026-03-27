@@ -30,6 +30,12 @@ export default async function handler(req, res) {
     const idx = reviewers.findIndex(r => r.id === id);
     if (idx === -1) return res.status(404).json({ error: 'Reviewer not found' });
     if (req.body.role !== undefined) reviewers[idx].role = req.body.role;
+    if (req.body.name !== undefined) reviewers[idx].name = req.body.name;
+    if (req.body.email !== undefined) {
+      const newEmail = req.body.email;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) return res.status(400).json({ error: 'email is invalid' });
+      reviewers[idx].email = newEmail;
+    }
     await kv.set('reviewers', reviewers);
     return res.json(reviewers[idx]);
   }

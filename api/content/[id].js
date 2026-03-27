@@ -1,12 +1,13 @@
 import { kv } from '@vercel/kv';
 
 const VALID_TRANSITIONS = {
-  draft:      ['in_review', 'approved', 'draft'],   // approved = bypass review
-  in_review:  ['approved', 'rejected', 'draft'],
-  rejected:   ['draft'],
-  approved:   ['scheduled', 'published', 'draft'],  // draft = unapprove
-  scheduled:  ['published', 'approved'],
-  published:  [],
+  draft:      ['in_review', 'approved', 'draft', 'trash'],
+  in_review:  ['approved', 'rejected', 'draft', 'trash'],
+  rejected:   ['draft', 'trash'],
+  approved:   ['scheduled', 'published', 'draft', 'trash'],
+  scheduled:  ['published', 'approved', 'trash'],
+  published:  ['trash'],
+  trash:      ['draft'],  // restore
 };
 
 export function applyStatusTransition(current, next) {
