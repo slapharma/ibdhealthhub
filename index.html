@@ -2868,54 +2868,83 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
     </button>
   </div>
 
-  <!-- ── Pane: Generate ── -->
-  <div class="social-pane active" id="socialPane-generate">
+  <div class="social-pane active" id="socialPane-kit">
 
-    <!-- Control Panel -->
-    <div class="social-cp">
-      <div class="social-cp-title">Social Post Generator</div>
-      <div class="social-cp-subtitle">Choose an article to generate platform-optimised posts across all channels</div>
-
-      <div class="social-cp-select-wrap">
-        <select class="social-cp-select" id="socialArticleSelect" onchange="selectSocialArticle(this.value)">
-          <option value="">— Choose an article —</option>
+  <!-- ① Configure Kit -->
+  <div class="kit-configure-bar">
+    <div class="kit-section-label" style="margin-bottom:10px;">① Configure Kit</div>
+    <div class="kit-configure-grid">
+      <div>
+        <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Article</div>
+        <div style="position:relative;">
+          <select id="kitArticleSelect" onchange="onKitArticleChange(this.value)" style="width:100%;padding:8px 32px 8px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:0.78rem;font-weight:600;appearance:none;">
+            <option value="">— Choose a published article —</option>
+          </select>
+          <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Content Pillar</div>
+        <select id="kitPillar" style="width:100%;padding:8px 10px;border:2px solid var(--sla-teal);background:rgba(0,201,167,0.04);color:var(--sla-navy);font-family:'Montserrat',sans-serif;font-size:0.78rem;font-weight:700;">
+          <option value="educate">Educate</option>
+          <option value="entertain">Entertain / Relate</option>
+          <option value="sell">Sell</option>
         </select>
-        <svg class="social-cp-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-
-      <div class="social-cp-meta" id="socialCpMeta" style="display:none;">
-        <div class="social-cp-meta-info">
-          <div class="social-cp-meta-title" id="socialCpMetaTitle">—</div>
-          <div class="social-cp-meta-cat" id="socialCpMetaCat">—</div>
-        </div>
-        <span class="social-cp-meta-badge pending" id="socialCpMetaBadge"></span>
+      <div>
+        <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">CTA Goal</div>
+        <select id="kitCtaGoal" style="width:100%;padding:8px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:0.78rem;font-weight:600;">
+          <option value="grow">Grow — gain followers</option>
+          <option value="engage">Engage — comments</option>
+          <option value="convert">Convert — DMs / bookings</option>
+          <option value="save">Save — share content</option>
+        </select>
       </div>
-
-      <div class="social-cp-main-row">
-        <div class="social-cp-chips-col">
-          <div class="social-cp-plat-label">Generate posts for · click to toggle · adjust count</div>
-          <div class="social-cp-chips" id="socialCpChips"></div>
-        </div>
-        <div class="social-cp-btns-col">
-          <button class="btn social-cp-gen-btn primary" id="socialCpGenBtn" onclick="generateSocialFromControl(false)" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            Generate Selected
-          </button>
-          <button class="btn social-cp-gen-btn secondary" id="socialCpGenAllBtn" onclick="generateSocialFromControl(true)" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            All Platforms
-          </button>
-        </div>
+      <div>
+        <button class="btn btn-orange" id="kitGenerateBtn" onclick="generateKit()" disabled
+          style="padding:9px 20px;font-size:0.75rem;font-weight:800;white-space:nowrap;">
+          ⚡ Generate Kit
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- Article Library -->
-    <div class="social-library-label">All Articles</div>
-    <div class="social-article-list" id="socialArticleList">
-      <div class="social-empty">Loading library…</div>
+  <!-- Kit status banner (hidden until kit generated) -->
+  <div id="kitStatusBanner" style="display:none;"></div>
+
+  <!-- ② Review & Edit Kit -->
+  <div class="kit-section-label" id="kitReviewLabel" style="display:none;">② Review &amp; Edit Kit</div>
+  <div id="kitAccordion" style="margin-bottom:6px;"></div>
+
+  <!-- Deploy bar (hidden until kit generated) -->
+  <div class="kit-deploy-bar" id="kitDeployBar" style="display:none;">
+    <div class="kit-deploy-status" id="kitDeployStatus">0 of 6 approved</div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn" onclick="approveAllKit()" style="padding:8px 16px;font-size:0.72rem;font-weight:700;">Approve All</button>
+      <button class="btn btn-orange" id="kitDeployBtn" onclick="deployKit()" disabled
+        style="padding:9px 22px;font-size:0.74rem;font-weight:800;">🚀 Deploy Kit</button>
     </div>
+  </div>
 
-  </div><!-- /socialPane-generate -->
+</div><!-- /socialPane-kit -->
+
+<!-- Queue pane -->
+<div class="social-pane" id="socialPane-queue">
+  <div id="socialQueueList" style="margin-top:4px;">
+    <div class="social-empty">No posts queued yet.</div>
+  </div>
+</div>
+
+<!-- Posted pane -->
+<div class="social-pane" id="socialPane-posted">
+  <div id="socialPostedList" style="margin-top:4px;">
+    <div class="social-empty">No posts sent yet.</div>
+  </div>
+</div>
+
+<!-- Connections pane -->
+<div class="social-pane" id="socialPane-connections">
+</div>
 
   <!-- ── Pane: Prompt Library ── -->
   <div class="social-pane" id="socialPane-prompts">
