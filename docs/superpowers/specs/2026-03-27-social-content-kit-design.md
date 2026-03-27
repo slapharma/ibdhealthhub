@@ -27,13 +27,13 @@ Rebuild the SLAHEALTH Social Distribution tab to apply Ava's personal brand meth
 ## Ava's Framework — Applied
 
 ### Content Pillars (user selects at kit creation)
-| Pillar | Purpose | Ratio |
+| Pillar | Purpose | Target share |
 |---|---|---|
-| **Educate** | Clinical authority, attract followers | 70% |
-| **Entertain/Relate** | Trust, personality, human story | 70% |
+| **Educate** | Clinical authority, attract followers | combined 70% |
+| **Entertain/Relate** | Trust, personality, human story | combined 70% |
 | **Sell** | Testimonials, results, offer reveals | 30% |
 
-The 70/30 ratio is enforced in the Queue tab — if > 30% of queued posts are tagged Sell, a warning badge appears.
+Ava's ratio: **70% Educate + Entertain combined, 30% Sell**. The Queue tab shows a warning badge if > 30% of currently queued posts are tagged Sell.
 
 ### Hook Archetypes (auto-selected per platform, varies across kit)
 - `curiosity_gap` — "The one thing IBD patients aren't being told…"
@@ -71,18 +71,19 @@ The 70/30 ratio is enforced in the Queue tab — if > 30% of queued posts are ta
 - Reel Script: HOOK (3s) / BODY (20–25s) / CTA (5s), written for on-camera delivery
   - Short sentences ≤10 words, stage directions in brackets, conversational English
 - Static image: 4:5 ratio via OpenRouter `google/gemini-2.5-flash-image` (~$0.003)
-- Video: 9:16, 15s via FAL.ai `fal-ai/kling-video/v2.1` (~$0.44)
+- Video: 9:16, 10s via FAL.ai `fal-ai/kling-video/v2.1` (~$0.44)
 - API: Instagram Graph API — image post + Reel upload
 
 ### TikTok
 - Caption: ≤300 chars + 3–5 hashtags
 - Hook-first, casual tone
 - Reel Script: same HOOK/BODY/CTA format as Instagram
-- Video: 9:16, 15s via FAL.ai Kling (~$0.44)
+- Video: 9:16, 10s via FAL.ai Kling (~$0.44)
 - API: TikTok Content Posting API — video upload
 
 ### LinkedIn
 - Post: ≤1300 chars, professional tone, data-backed insight lead, business outcome CTA
+- 3–5 hashtags (professional, industry-specific)
 - Static image: 1:1 via OpenRouter `sourceful/riverflow-v2-fast` (~$0.02)
 - API: LinkedIn Posts API (UGC Post) — text + image
 
@@ -91,6 +92,7 @@ The 70/30 ratio is enforced in the Queue tab — if > 30% of queued posts are ta
 - Concise, punchy, 1–2 hashtags per post
 - No image required (optional)
 - API: Twitter v2 API — post thread
+- `platformPostId` stores the **first tweet's ID** in the chain (the thread root)
 
 ### Facebook
 - Post: ≤2000 chars, conversational, ends with a question to drive comments
@@ -123,7 +125,7 @@ The 70/30 ratio is enforced in the Queue tab — if > 30% of queued posts are ta
       hookArchetype: string,
       reelScript: { hook: string, body: string, cta: string, durationEst: number },
       image: { url: string, model: string, prompt: string, aspectRatio: "4:5" },
-      video: { url: string, model: string, prompt: string, durationSec: 15 },
+      video: { url: string, model: string, prompt: string, durationSec: 10 },
       approved: boolean,
       scheduledAt: ISO8601 | null,
       postedAt: ISO8601 | null,
@@ -134,7 +136,7 @@ The 70/30 ratio is enforced in the Queue tab — if > 30% of queued posts are ta
       hashtags: string[],
       hookArchetype: string,
       reelScript: { hook: string, body: string, cta: string, durationEst: number },
-      video: { url: string, model: string, prompt: string, durationSec: 15 },
+      video: { url: string, model: string, prompt: string, durationSec: 10 },
       approved: boolean,
       scheduledAt: ISO8601 | null,
       postedAt: ISO8601 | null,
@@ -142,6 +144,7 @@ The 70/30 ratio is enforced in the Queue tab — if > 30% of queued posts are ta
     },
     linkedin: {
       caption: string,
+      hashtags: string[],           // 3–5 professional hashtags
       hookArchetype: string,
       image: { url: string, model: string, prompt: string, aspectRatio: "1:1" },
       approved: boolean,
@@ -176,14 +179,17 @@ The 70/30 ratio is enforced in the Queue tab — if > 30% of queued posts are ta
 ### KV Key Layout
 
 ```
-social:kit:{articleId}          → ContentKit object
-social:kits:index               → list [ articleId, ... ] newest-first
+social:kit:{kitId}              → ContentKit object  (key uses kit.id, not articleId)
+social:kits:index               → list [ kitId, ... ] newest-first
+social:kits:by-article:{articleId} → kitId  (one active kit per article)
 social:queue                    → sorted set, score=scheduledAtEpochMs, member=postRefId
 social:postref:{id}             → { kitId, platform, scheduledAt, status }
 social:posted:index             → list [ postRefId, ... ] newest-first
 ```
 
-Platform credentials remain in localStorage (`sla_social_conn_{platform}`) — client-side auth tokens must not be stored server-side.
+**Regeneration behaviour:** Generating a new kit for an article that already has one overwrites `social:kits:by-article:{articleId}` with the new kitId. The old kit object remains in KV but is no longer reachable from the index and is not shown in the UI.
+
+**Platform credentials:** Stored as Vercel environment variables (see Environment Variables section). The existing `sla_social_conn_{platform}` localStorage keys are used only for the Connections UI to display connection status and the user's chosen account label. Access tokens used by the cron job and post handler are read from `process.env`.
 
 ---
 
@@ -197,7 +203,7 @@ Single Vercel catch-all function routing to handlers in `lib/social/handlers/`.
 | GET | `/social/kits` | `kits-index.js` | List all kits (newest first) |
 | GET | `/social/kits/:id` | `kits-id.js` | Fetch single kit |
 | PATCH | `/social/kits/:id` | `kits-id.js` | Edit text, toggle approved, set scheduledAt |
-| POST | `/social/deploy` | `deploy.js` | Write all approved platforms to schedule queue |
+| POST | `/social/deploy` | `deploy.js` | Write all approved platforms to schedule queue using their current `scheduledAt` values (honours any manual edits made via PATCH before deploy) |
 | POST | `/social/post` | `post.js` | Fire one platform post immediately (called by cron or manual) |
 | GET | `/social/schedule` | `schedule.js` | Return pending queue sorted by scheduledAt |
 | POST | `/social/cron` | `cron.js` | Cron entry — drain due posts from queue |
@@ -256,7 +262,7 @@ POST /social/generate { articleId, pillar, ctaGoal }
 └─ 7. Return kit to client
 ```
 
-Media generation (step 4) runs concurrently but does not block the response. The API returns the kit immediately with `image: null` / `video: null`; the client polls or the kit is updated via a second PATCH once media resolves.
+Media generation (step 4) runs concurrently but does not block the kit response. The API returns the kit immediately with `image: null` / `video: null`. Once media generation resolves within the same serverless invocation (images are fast; ~1–3s), the handler issues a self-PATCH to update the kit in KV before returning. If a video is still pending at response time (FAL.ai can take 30–60s), the client polls `GET /social/kits/:id` every 5 seconds (max 20 attempts / 100s) until `video.url` is populated. If polling times out, the video tile shows a "Retry" button that triggers a fresh `POST /social/generate` for media only.
 
 ---
 
@@ -270,12 +276,12 @@ Media generation (step 4) runs concurrently but does not block the response. The
 3. Receive base64 data URL; store URL in kit
 
 ### Video
-1. Call free LLM to write a 15-second visual scene description from the Reel script
+1. Call free LLM to write a visual scene description from the Reel script (≤200 words)
 2. POST to `https://fal.run/fal-ai/kling-video/v2.1/standard/text-to-video`
-   - `duration: "5"` (minimum Kling unit, ~3 clips stitched = 15s)
+   - `duration: "10"` (10-second clip, ~$0.29; sufficient for a social Reel)
    - `aspect_ratio: "9:16"`
-3. Poll FAL.ai job URL until complete
-4. Store video URL in kit via PATCH
+3. Poll FAL.ai job status URL (returned in initial response) every 3s until `status === "COMPLETED"`
+4. Store `output.video.url` in `kit.platforms.{platform}.video.url` via PATCH to `/social/kits/:id`
 
 ---
 
@@ -290,12 +296,15 @@ Media generation (step 4) runs concurrently but does not block the response. The
 }
 ```
 
+The cron route (`POST /api/social/cron`) is protected by a shared secret. Vercel passes cron requests with the header `x-vercel-cron: 1`; the handler additionally checks `Authorization: Bearer {CRON_SECRET}` (set in Vercel env vars) to prevent unauthorised triggering. Requests missing this header receive 401.
+
 The cron handler:
-1. `ZRANGEBYSCORE social:queue 0 {nowEpochMs}` — fetch all due postRefs
-2. For each postRef: `ZREM social:queue {postRefId}` (atomic remove)
-3. Load kit, call `platforms/index.js` dispatcher with stored credentials
-4. On success: set `postedAt`, `platformPostId`; prepend to `social:posted:index`
-5. On failure: re-enqueue with 30-minute retry delay; log error
+1. Verify `x-vercel-cron: 1` header OR `Authorization: Bearer {CRON_SECRET}` — reject with 401 otherwise
+2. `ZRANGEBYSCORE social:queue 0 {nowEpochMs}` — fetch all due postRef IDs
+3. For each postRef: `ZREM social:queue {postRefId}` atomically before posting (prevents double-fire)
+4. Load kit from KV, call `platforms/index.js` dispatcher — credentials read from `process.env`
+5. On success: PATCH kit to set `platforms.{platform}.postedAt` and `platformPostId`; prepend ID to `social:posted:index`
+6. On failure: re-enqueue postRef with `score = nowEpochMs + 1800000` (30-minute retry); log error to console (visible in Vercel function logs)
 
 ---
 
@@ -332,6 +341,7 @@ Duration estimate in seconds
 ```
 OPENROUTER_API_KEY=        ← image generation (OpenRouter)
 FAL_KEY=                   ← video generation (FAL.ai)
+CRON_SECRET=               ← shared secret for /social/cron auth (generate: openssl rand -hex 32)
 
 # Platform posting APIs (added to existing set)
 INSTAGRAM_ACCESS_TOKEN=
@@ -362,10 +372,11 @@ Current known functions (pre-build):
 | 5 | `api/github/[...slug].js` |
 | 6 | `api/publish.js` |
 | 7–8 | `api/cron/*.js` (existing) |
-| **9** | **`api/social/[...slug].js`** ← new |
-| **10** | **`api/social/cron.js`** ← new cron entry point |
+| **9** | **`api/social/[...slug].js`** ← new (handles ALL social routes including `/social/cron`) |
 
-Remaining headroom: 2 of 12. Acceptable.
+The `/api/social/cron` cron path is handled by `api/social/[...slug].js` — the slug value is the string `"cron"`. No separate `api/social/cron.js` file is created (that would intercept the catch-all and violate CLAUDE.md routing rules).
+
+Remaining headroom: **3 of 12**. Acceptable.
 
 ---
 
