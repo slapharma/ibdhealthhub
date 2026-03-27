@@ -4906,16 +4906,400 @@ function toggleSidebar() {
 
 // ── Social page sub-tab switching ────────────────────────────────────────────
 function switchSocialTab(tab) {
-  ['generate', 'prompts'].forEach(function(t) {
-    var btn  = document.getElementById('socialTabBtn-' + t);
+  var tabs = ['kit', 'queue', 'posted', 'prompts', 'connections'];
+  tabs.forEach(function(t) {
+    var btn = document.getElementById('socialTabBtn-' + t);
     var pane = document.getElementById('socialPane-' + t);
-    if (btn)  btn.classList.toggle('active', t === tab);
-    if (pane) { pane.style.display = (t === tab) ? 'block' : 'none'; pane.classList.toggle('active', t === tab); }
+    if (btn) btn.classList.toggle('active', t === tab);
+    if (pane) pane.classList.toggle('active', t === tab);
   });
-  if (tab === 'prompts') {
-    loadSocialPromptsTab();
-    updateSocialPromptsStats();
+  if (tab === 'kit') loadKitArticleSelect();
+  if (tab === 'queue') loadSocialQueue();
+  if (tab === 'posted') loadSocialPosted();
+  if (tab === 'prompts') loadSocialPromptsTab();
+  if (tab === 'connections') renderSocialConnections();
+}
+
+// ── Kit Builder state ─────────────────────────────────────────────────────────
+var _currentKit = null;
+var _currentKitArticleId = null;
+var _kitPollInterval = null;
+
+function loadKitArticleSelect() {
+  var sel = document.getElementById('kitArticleSelect');
+  if (!sel) return;
+  // Populate from pipeline articles
+  var items = [];
+  if (typeof allSocialItems !== 'undefined' && allSocialItems) items = items.concat(allSocialItems);
+  if (typeof allKvItems !== 'undefined' && allKvItems) items = items.concat(allKvItems);
+  items = items.filter(function(i) { return i && i.id && i.title; });
+
+  // Deduplicate by id
+  var seen = new Set();
+  var unique = items.filter(function(i) { if (seen.has(i.id)) return false; seen.add(i.id); return true; });
+
+  sel.innerHTML = '<option value="">— Choose a published article —</option>' +
+    unique.map(function(i) {
+      return '<option value="' + escHtml(i.id) + '">' + escHtml(i.title || i.id) + '</option>';
+    }).join('');
+}
+
+function onKitArticleChange(articleId) {
+  var btn = document.getElementById('kitGenerateBtn');
+  if (btn) btn.disabled = !articleId;
+  _currentKitArticleId = articleId || null;
+}
+
+async function generateKit() {
+  var articleId = _currentKitArticleId;
+  var pillar = document.getElementById('kitPillar').value;
+  var ctaGoal = document.getElementById('kitCtaGoal').value;
+  if (!articleId) { showToast('Choose an article first'); return; }
+
+  var btn = document.getElementById('kitGenerateBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Generating\u2026'; }
+
+  var banner = document.getElementById('kitStatusBanner');
+  if (banner) { banner.style.display = ''; banner.innerHTML = '<div style="padding:10px 14px;background:rgba(0,201,167,0.08);border:1px solid var(--sla-teal);font-size:0.78rem;color:var(--sla-navy);margin-bottom:8px;">\u26a1 Generating content kit \u2014 this takes 20\u201340 seconds\u2026</div>'; }
+
+  try {
+    var kit = await apiFetch('/api/social/generate', {
+      method: 'POST',
+      body: JSON.stringify({ articleId: articleId, pillar: pillar, ctaGoal: ctaGoal }),
+    });
+    _currentKit = kit;
+    renderKitAccordion(kit);
+    pollKitMedia(kit.id);
+    showToast('Kit generated \u2014 review and approve each platform');
+  } catch (err) {
+    showToast('Generation failed: ' + err.message);
+    if (banner) banner.innerHTML = '<div style="padding:10px 14px;background:rgba(239,68,68,0.06);border:1px solid #ef4444;font-size:0.78rem;color:#ef4444;margin-bottom:8px;">Generation failed: ' + escHtml(err.message) + '</div>';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '\u26a1 Generate Kit'; }
   }
+}
+
+var SOCIAL_PLAT_ORDER = ['instagram', 'tiktok', 'linkedin', 'twitter', 'facebook', 'substack'];
+
+var SOCIAL_PLAT_LABELS = {
+  instagram: 'Instagram', tiktok: 'TikTok', linkedin: 'LinkedIn',
+  twitter: 'X / Twitter', facebook: 'Facebook', substack: 'Substack',
+};
+
+function renderKitAccordion(kit) {
+  var accordion = document.getElementById('kitAccordion');
+  var label = document.getElementById('kitReviewLabel');
+  var deployBar = document.getElementById('kitDeployBar');
+  if (!accordion) return;
+  if (label) label.style.display = '';
+  if (deployBar) deployBar.style.display = '';
+
+  accordion.innerHTML = SOCIAL_PLAT_ORDER.map(function(platform) {
+    return renderKitRow(kit, platform, false);
+  }).join('');
+  updateKitDeployBar();
+}
+
+function renderKitRow(kit, platform, expanded) {
+  var data = (kit.platforms || {})[platform] || {};
+  var label = SOCIAL_PLAT_LABELS[platform] || platform;
+  var isSubstack = platform === 'substack';
+  var hasImage = !!(data.image && data.image.url);
+  var hasVideo = !!(data.video && data.video.url);
+  var videoLoading = !!(data.video && data.video.requestId && !data.video.url);
+  var approved = !!data.approved;
+  var hookLabel = data.hookArchetype ? data.hookArchetype.replace(/_/g, ' ') : '';
+
+  return '<div class="kit-accordion-row" id="kit-row-' + platform + '">' +
+    '<div class="kit-accordion-head' + (expanded ? ' open' : '') + '" onclick="toggleKitRow(\'' + platform + '\')">' +
+      '<div class="kit-plat-icon">' + getPlatSvg(platform) + '</div>' +
+      '<div class="kit-plat-name">' + escHtml(label) + '</div>' +
+      '<span class="kit-badge gen">Generated \u2713</span>' +
+      (hookLabel ? '<span class="kit-badge hook">' + escHtml(hookLabel) + ' hook</span>' : '') +
+      (hasImage ? '<span class="kit-badge media">Image \u2713</span>' : '') +
+      (hasVideo ? '<span class="kit-badge media">Video \u2713</span>' : '') +
+      (videoLoading ? '<span class="kit-badge gen-pending">Video generating\u2026</span>' : '') +
+      (isSubstack
+        ? '<button class="btn-kit-approve" onclick="copySubstackTeaser(event)" style="margin-left:auto;">\ud83d\udccb Copy Teaser</button>'
+        : '<button class="btn-kit-approve' + (approved ? ' approved' : '') + '" id="kit-approve-' + platform + '" onclick="toggleKitApprove(event,\'' + platform + '\')">' + (approved ? 'APPROVED \u2713' : 'Approve') + '</button>'
+      ) +
+      (!isSubstack && data.scheduledAt ? '<span class="kit-sched-time" onclick="editKitSchedule(event,\'' + platform + '\')">' + formatKitTime(data.scheduledAt) + '</span>' : '') +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;flex-shrink:0;margin-left:4px;"><polyline points="6 9 12 15 18 9"/></svg>' +
+    '</div>' +
+    (expanded ? renderKitRowBody(platform, data) : '') +
+  '</div>';
+}
+
+function renderKitRowBody(platform, data) {
+  var isThreadPlatform = platform === 'twitter';
+  var hasScript = ['instagram', 'tiktok'].includes(platform);
+  var hasMedia = ['instagram', 'tiktok', 'linkedin', 'facebook'].includes(platform);
+  var isSubstack = platform === 'substack';
+
+  var col1 = '<div>' +
+    '<div class="kit-col-label">' + (isThreadPlatform ? 'Thread (3 tweets)' : isSubstack ? 'Teaser' : 'Caption') + '</div>' +
+    (isThreadPlatform
+      ? (data.thread || []).map(function(t, i) {
+          return '<div class="kit-col-label" style="margin-top:8px;">Tweet ' + (i+1) + '</div><textarea class="kit-text-area" oninput="onKitTextChange(\'' + platform + '\',\'thread\',' + i + ',this.value)">' + escHtml(t) + '</textarea>';
+        }).join('')
+      : '<textarea class="kit-text-area" oninput="onKitTextChange(\'' + platform + '\',\'caption\',null,this.value)">' + escHtml(data.caption || data.teaser || '') + '</textarea>'
+    ) +
+    (!isThreadPlatform && !isSubstack && data.hashtags && data.hashtags.length
+      ? '<div style="margin-top:6px;font-size:0.65rem;color:var(--text-muted);">' + escHtml(data.hashtags.join(' ')) + '</div>'
+      : '') +
+  '</div>';
+
+  var col2 = hasScript && data.reelScript
+    ? '<div>' +
+        '<div class="kit-col-label">Reel Script</div>' +
+        '<div class="kit-script-box">' +
+          '<span class="kit-script-label hook">HOOK</span><div style="margin-bottom:8px;">' + escHtml(data.reelScript.hook || '') + '</div>' +
+          '<span class="kit-script-label body">BODY</span><div style="margin-bottom:8px;">' + escHtml(data.reelScript.body || '') + '</div>' +
+          '<span class="kit-script-label cta">CTA</span><div>' + escHtml(data.reelScript.cta || '') + '</div>' +
+          '<div style="font-size:0.58rem;color:var(--text-muted);margin-top:6px;">Est. ' + (data.reelScript.durationEst || '\u2014') + 's</div>' +
+        '</div>' +
+      '</div>'
+    : '<div></div>';
+
+  var col3 = hasMedia
+    ? '<div>' +
+        '<div class="kit-col-label">Media</div>' +
+        renderKitMediaTile(platform, 'image', data.image) +
+        (['instagram', 'tiktok'].includes(platform) ? renderKitMediaTile(platform, 'video', data.video) : '') +
+      '</div>'
+    : '<div></div>';
+
+  return '<div class="kit-accordion-body">' + col1 + col2 + col3 + '</div>';
+}
+
+function renderKitMediaTile(platform, type, mediaData) {
+  var ready = !!(mediaData && mediaData.url);
+  var loading = !!(mediaData && mediaData.requestId && !mediaData.url);
+  var icon = type === 'video' ? '\ud83c\udfa6' : '\ud83d\uddbc';
+  var label = type === 'video' ? 'Video 9:16 \u00b7 10s' : (platform === 'instagram' || platform === 'tiktok' ? 'Image 4:5' : 'Image 1:1');
+  var model = mediaData && mediaData.model ? mediaData.model : '\u2014';
+
+  return '<div class="kit-media-tile' + (ready ? ' ready' : '') + '">' +
+    '<div class="kit-media-tile-icon">' + icon + '</div>' +
+    '<div class="kit-media-tile-title">' + label + '</div>' +
+    '<div class="kit-media-tile-sub">' + (loading ? 'Generating\u2026' : ready ? escHtml(model) : 'Not generated') + '</div>' +
+    '<div class="kit-media-actions">' +
+      (ready ? '<button class="btn btn-sm" onclick="viewKitMedia(\'' + platform + '\',\'' + type + '\')">View</button>' : '') +
+      '<button class="btn btn-sm" onclick="regenKitMedia(\'' + platform + '\',\'' + type + '\')">' + (ready ? 'Regen' : loading ? '\u2026' : 'Generate') + '</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function getPlatSvg(platform) {
+  if (typeof PLAT_SVG !== 'undefined' && PLAT_SVG[platform]) return PLAT_SVG[platform];
+  return '<svg viewBox="0 0 24 24" width="20" height="20"></svg>';
+}
+
+function formatKitTime(iso) {
+  if (!iso) return '\u2014';
+  var d = new Date(iso);
+  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return days[d.getUTCDay()] + ' ' + String(d.getUTCHours()).padStart(2,'0') + ':' + String(d.getUTCMinutes()).padStart(2,'0');
+}
+
+function toggleKitRow(platform) {
+  var row = document.getElementById('kit-row-' + platform);
+  if (!row || !_currentKit) return;
+  var head = row.querySelector('.kit-accordion-head');
+  var isOpen = head.classList.contains('open');
+  head.classList.toggle('open', !isOpen);
+  var existing = row.querySelector('.kit-accordion-body');
+  if (existing) { existing.remove(); }
+  if (!isOpen) {
+    row.insertAdjacentHTML('beforeend', renderKitRowBody(platform, (_currentKit.platforms || {})[platform] || {}));
+  }
+}
+
+function toggleKitApprove(event, platform) {
+  event.stopPropagation();
+  if (!_currentKit) return;
+  var data = _currentKit.platforms[platform] || {};
+  data.approved = !data.approved;
+  _currentKit.platforms[platform] = data;
+  var btn = document.getElementById('kit-approve-' + platform);
+  if (btn) {
+    btn.textContent = data.approved ? 'APPROVED \u2713' : 'Approve';
+    btn.classList.toggle('approved', data.approved);
+  }
+  updateKitDeployBar();
+  apiFetch('/api/social/kits/' + _currentKit.id, {
+    method: 'PATCH',
+    body: JSON.stringify({ platforms: { [platform]: { approved: data.approved } } }),
+  }).catch(function(e) { console.warn('kit patch failed:', e); });
+}
+
+function approveAllKit() {
+  if (!_currentKit) return;
+  SOCIAL_PLAT_ORDER.forEach(function(platform) {
+    if (platform === 'substack') return;
+    if (_currentKit.platforms[platform]) {
+      _currentKit.platforms[platform].approved = true;
+      var btn = document.getElementById('kit-approve-' + platform);
+      if (btn) { btn.textContent = 'APPROVED \u2713'; btn.classList.add('approved'); }
+    }
+  });
+  updateKitDeployBar();
+  apiFetch('/api/social/kits/' + _currentKit.id, {
+    method: 'PATCH',
+    body: JSON.stringify({ platforms: Object.fromEntries(
+      SOCIAL_PLAT_ORDER.filter(function(p) { return p !== 'substack'; }).map(function(p) { return [p, { approved: true }]; })
+    )}),
+  }).catch(function(e) { console.warn('kit patch failed:', e); });
+}
+
+function updateKitDeployBar() {
+  if (!_currentKit) return;
+  var approved = SOCIAL_PLAT_ORDER.filter(function(p) {
+    return p !== 'substack' && _currentKit.platforms[p] && _currentKit.platforms[p].approved;
+  }).length;
+  var total = SOCIAL_PLAT_ORDER.filter(function(p) { return p !== 'substack'; }).length;
+  var status = document.getElementById('kitDeployStatus');
+  var btn = document.getElementById('kitDeployBtn');
+  if (status) status.textContent = approved + ' of ' + total + ' approved \u00b7 will auto-schedule across next 7 days';
+  if (btn) btn.disabled = approved === 0;
+}
+
+async function deployKit() {
+  if (!_currentKit) return;
+  var btn = document.getElementById('kitDeployBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Deploying\u2026'; }
+  try {
+    var result = await apiFetch('/api/social/deploy', {
+      method: 'POST',
+      body: JSON.stringify({ kitId: _currentKit.id }),
+    });
+    showToast(result.count + ' posts scheduled successfully');
+    switchSocialTab('queue');
+  } catch (err) {
+    showToast('Deploy failed: ' + err.message);
+    if (btn) { btn.disabled = false; btn.textContent = '\ud83d\ude80 Deploy Kit'; }
+  }
+}
+
+function copySubstackTeaser(event) {
+  event.stopPropagation();
+  if (!_currentKit || !_currentKit.platforms.substack) return;
+  var teaser = _currentKit.platforms.substack.teaser || '';
+  navigator.clipboard.writeText(teaser).then(function() {
+    showToast('Substack teaser copied to clipboard');
+  });
+}
+
+function onKitTextChange(platform, field, index, value) {
+  if (!_currentKit || !_currentKit.platforms[platform]) return;
+  if (field === 'thread' && index !== null) {
+    _currentKit.platforms[platform].thread[index] = value;
+  } else {
+    _currentKit.platforms[platform][field] = value;
+  }
+}
+
+function pollKitMedia(kitId) {
+  if (_kitPollInterval) clearInterval(_kitPollInterval);
+  var attempts = 0;
+  _kitPollInterval = setInterval(async function() {
+    attempts++;
+    if (attempts > 20) { clearInterval(_kitPollInterval); return; }
+    try {
+      var kit = await apiFetch('/api/social/kits/' + kitId);
+      var allVideosReady = ['instagram', 'tiktok'].every(function(p) {
+        var v = kit.platforms[p] && kit.platforms[p].video;
+        return !v || v.url;
+      });
+      if (allVideosReady) {
+        clearInterval(_kitPollInterval);
+        _currentKit = kit;
+        renderKitAccordion(kit);
+      }
+    } catch (e) { /* ignore poll errors */ }
+  }, 5000);
+}
+
+async function loadSocialQueue() {
+  var list = document.getElementById('socialQueueList');
+  if (!list) return;
+  list.innerHTML = '<div class="social-empty">Loading\u2026</div>';
+  try {
+    var items = await apiFetch('/api/social/schedule');
+    if (!items || !items.length) { list.innerHTML = '<div class="social-empty">No posts queued.</div>'; return; }
+    var badge = document.getElementById('socialQueueBadge');
+    if (badge) { badge.textContent = items.length; badge.style.display = ''; }
+    list.innerHTML = '<div class="social-queue-list">' +
+      items.map(function(ref) {
+        return '<div class="social-queue-card">' +
+          '<div class="social-queue-time">' + formatKitTime(ref.scheduledAt) + '</div>' +
+          '<div class="social-queue-plat">' + getPlatSvg(ref.platform) + '</div>' +
+          '<div>' +
+            '<div class="social-queue-title">' + escHtml(ref.kitId) + '</div>' +
+            '<div class="social-queue-cat">' + escHtml(ref.platform) + ' \u00b7 ' + escHtml(ref.status) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  } catch (err) {
+    list.innerHTML = '<div class="social-empty" style="color:#ef4444;">Failed to load queue: ' + escHtml(err.message) + '</div>';
+  }
+}
+
+async function loadSocialPosted() {
+  var list = document.getElementById('socialPostedList');
+  if (!list) return;
+  list.innerHTML = '<div class="social-empty">Posted history coming soon.</div>';
+}
+
+function viewKitMedia(platform, type) {
+  if (!_currentKit) return;
+  var data = (_currentKit.platforms[platform] || {})[type];
+  if (!data || !data.url) { showToast('Media not ready yet'); return; }
+  window.open(data.url, '_blank');
+}
+
+async function regenKitMedia(platform, type) {
+  if (!_currentKit) return;
+  showToast('Regenerating ' + type + ' for ' + platform + '\u2026');
+  try {
+    var kit = await apiFetch('/api/social/generate', {
+      method: 'POST',
+      body: JSON.stringify({
+        articleId: _currentKit.articleId,
+        pillar: _currentKit.pillar,
+        ctaGoal: _currentKit.ctaGoal,
+        kitId: _currentKit.id,
+        mediaOnly: true,
+        mediaPlatform: platform,
+        mediaType: type,
+      }),
+    });
+    _currentKit = kit;
+    renderKitAccordion(kit);
+    showToast('Media regenerated');
+  } catch (err) {
+    showToast('Regen failed: ' + err.message);
+  }
+}
+
+function editKitSchedule(event, platform) {
+  event.stopPropagation();
+  if (!_currentKit) return;
+  var data = _currentKit.platforms[platform] || {};
+  var current = data.scheduledAt ? new Date(data.scheduledAt).toISOString().slice(0,16) : '';
+  var newVal = prompt('Set scheduled time (UTC) for ' + SOCIAL_PLAT_LABELS[platform] + ':', current);
+  if (!newVal) return;
+  var newDate = new Date(newVal);
+  if (isNaN(newDate.getTime())) { showToast('Invalid date'); return; }
+  _currentKit.platforms[platform].scheduledAt = newDate.toISOString();
+  apiFetch('/api/social/kits/' + _currentKit.id, {
+    method: 'PATCH',
+    body: JSON.stringify({ platforms: { [platform]: { scheduledAt: newDate.toISOString() } } }),
+  }).then(function() {
+    renderKitAccordion(_currentKit);
+    showToast('Schedule updated');
+  }).catch(function(e) { showToast('Update failed: ' + e.message); });
 }
 
 function updateSocialPromptsStats() {
@@ -4957,7 +5341,7 @@ function switchTab(tab) {
   if (tab === 'dashboard')         loadDashboard();
   if (tab === 'calendar')          loadCalendar();
   if (tab === 'monitoring')        loadMonitoring();
-  if (tab === 'distribution')      loadDistribution && loadDistribution();
+  if (tab === 'distribution')      { loadDistribution && loadDistribution(); switchSocialTab('kit'); }
   if (tab === 'automation')        loadAutomation();
   if (tab === 'automation-rules')  loadAutoRules();
   if (tab === 'automation-inbox')  loadAutoInbox();
