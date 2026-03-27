@@ -5,6 +5,7 @@
   },
   "crons": [
     { "path": "/api/cron/publish",     "schedule": "0 8 * * *"   },
-    { "path": "/api/automation/run",   "schedule": "0 7 * * *"    }
+    { "path": "/api/automation/run",   "schedule": "0 7 * * *"    },
+    { "path": "/api/social/cron",      "schedule": "*/5 * * * *"  }
   ]
 }
