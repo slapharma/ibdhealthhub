@@ -1,0 +1,49 @@
+<h2>3 Architectural Approaches</h2>
+<p class="subtitle">How should the new social system be structured? Pick the one that fits how you work.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Platform-First Queue</h3>
+      <p>Each platform is its own lane. Generate posts per-platform, edit individually, schedule each one. Image/video generation is triggered per post slot when needed.</p>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Maximum per-platform control</li><li>Easy to override one platform without touching others</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More clicks per article (6 platforms = 6 separate workflows)</li><li>Doesn't match Ava's batch approach</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Content Kit (Recommended)</h3>
+      <p>One article → one "Content Kit" generated in a single batch: all platform captions + image prompts + Reel script + auto-suggested schedule. Review the kit, approve it, it deploys itself across the week.</p>
+      <div style="margin-top:10px;background:#f0fdf8;border-left:3px solid #00c9a7;padding:8px 12px;font-size:0.82rem;">
+        <strong>Matches Ava's methodology:</strong> batch content creation, Instagram-first with cross-post cascade, optimal timing built in.
+      </div>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul><li>One approval → all 6 platforms scheduled</li><li>Content pillar auto-tagged (Educate/Entertain/Sell)</li><li>Ava's hook archetypes baked into generation</li><li>Minimal friction — matches existing article-centric UI</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Less granular per-platform control at generation time (edit after)</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Campaign Builder</h3>
+      <p>Decouple generation from articles. Build standalone social campaigns — pick a topic, choose pillar (Educate/Entertain/Sell), generate a month's worth of content at once using Ava's calendar framework.</p>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Most powerful for pure social strategy</li><li>Full Ava 4-week calendar framework</li><li>Content independent of article pipeline</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Biggest rebuild — doesn't reuse existing article flow</li><li>More complex to learn and operate</li><li>SLAHEALTH content is article-driven — this fights that</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:24px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:0.82rem;color:var(--text-muted);">
+  <strong>All three approaches include:</strong> Ava's HOOK/BODY/CTA generation, content pillar tagging, image generation via OpenRouter (Gemini Flash / Riverflow), video via FAL.ai (Kling 9:16), and API posting to all 6 platforms.
+</div>

@@ -2407,6 +2407,11 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
             Write custom prompt
           </label>
         </div>
+        <!-- Default preview pane (shown when "Use category default" is selected) -->
+        <div id="genPromptDefaultPane">
+          <div style="font-size:0.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Default prompt for this category:</div>
+          <div id="genPromptDefaultPreview" style="font-size:0.68rem;color:var(--text);line-height:1.5;max-height:110px;overflow-y:auto;border:1px solid var(--border);padding:8px;background:var(--bg);white-space:pre-wrap;opacity:0.85;"></div>
+        </div>
         <!-- Load pane -->
         <div id="genPromptLoadPane" style="display:none;">
           <select id="genPromptSelect" onchange="onGenPromptSelectChange()" style="width:100%;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;font-family:'Montserrat',sans-serif;">
@@ -2527,6 +2532,14 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
           <button class="hero-mode-btn active" id="heroModeSearchBtn" onclick="setHeroLeftMode('search')" title="Auto-extract keywords from source and search Pexels">🔍 Auto-Search</button>
           <button class="hero-mode-btn" id="heroModeAiBtn" onclick="setHeroLeftMode('ai')" title="Auto-generate image from source context using AI">✨ Auto-Generate</button>
         </div>
+        <!-- AI model selector (visible only in AI mode) -->
+        <div id="heroAiModelRow" style="display:none;margin-bottom:8px;">
+          <label style="font-size:0.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px;">Image Model</label>
+          <select id="heroAiModelSelect" style="width:100%;padding:5px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.75rem;font-family:'Montserrat',sans-serif;">
+            <option value="google/gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
+            <option value="sourceful/riverflow-v2-fast">Riverflow v2 Fast</option>
+          </select>
+        </div>
         <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:3px;" id="heroLeftHint">Keywords extracted from source (max 6):</div>
         <div id="heroLeftKeywordChips" class="keyword-chips"></div>
         <div style="display:flex;gap:6px;margin-top:4px;">
@@ -2565,8 +2578,8 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
       </div>
     </div>
 
-    <!-- Prompt Editor -->
-    <div class="card prompt-editor-card">
+    <!-- Prompt Editor (hidden — elements preserved for JS compatibility) -->
+    <div class="card prompt-editor-card" style="display:none;">
       <div class="card-header">
         <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Prompt Editor</h2>
         <button class="btn btn-outline btn-xs" id="promptToggle" onclick="togglePromptEditor()" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#fff;">Collapse</button>
@@ -4883,6 +4896,10 @@ function switchCategory(catId) {
   document.getElementById('btnUpdateActive').style.display = 'none';
   hideActiveBadge();
 
+  // Refresh the default prompt preview if it's visible
+  var _defPreview = document.getElementById('genPromptDefaultPreview');
+  if (_defPreview) _defPreview.textContent = getCatDefaultPrompt(catId) || '';
+
   // Reset generation state
   rawArticleText = '';
   extractedText  = '';
@@ -4955,11 +4972,18 @@ function switchGenSourceTab(tab) {
 
 function onGenPromptModeChange() {
   var mode = (document.querySelector('input[name="genPromptMode"]:checked') || {}).value || 'default';
-  var loadPane = document.getElementById('genPromptLoadPane');
-  var newPane  = document.getElementById('genPromptNewPane');
-  if (loadPane) loadPane.style.display = mode === 'load' ? '' : 'none';
-  if (newPane)  newPane.style.display  = mode === 'new'  ? '' : 'none';
+  var loadPane    = document.getElementById('genPromptLoadPane');
+  var newPane     = document.getElementById('genPromptNewPane');
+  var defaultPane = document.getElementById('genPromptDefaultPane');
+  if (loadPane)    loadPane.style.display    = mode === 'load'    ? '' : 'none';
+  if (newPane)     newPane.style.display     = mode === 'new'     ? '' : 'none';
+  if (defaultPane) defaultPane.style.display = mode === 'default' ? '' : 'none';
   if (mode === 'default') {
+    var preview = document.getElementById('genPromptDefaultPreview');
+    if (preview && typeof getCatDefaultPrompt === 'function') {
+      var text = getCatDefaultPrompt(currentCategory) || '';
+      preview.textContent = text;
+    }
     resetToDefault();
   } else if (mode === 'load') {
     loadGenCategoryPrompts(currentCategory);
@@ -5223,11 +5247,11 @@ function loadKitArticleSelect() {
   if (!sel) return;
 
   function _populate(items) {
-    var filtered = items.filter(function(i) { return i && i.id; });
+    var filtered = items.filter(function(i) { return i && i.id && i.status !== 'trash' && i.status !== 'published'; });
     var seen = new Set();
     var unique = filtered.filter(function(i) { if (seen.has(i.id)) return false; seen.add(i.id); return true; });
     var sorted = unique.slice().sort(function(a, b) { return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0); });
-    sel.innerHTML = '<option value="">— Choose a published article —</option>' +
+    sel.innerHTML = '<option value="">— Choose a pipeline article —</option>' +
       sorted.map(function(i) {
         return '<option value="' + escHtml(i.id) + '">' + escHtml((i.title || i.id).slice(0, 80)) + '</option>';
       }).join('');
@@ -6023,6 +6047,7 @@ var _wizSources = [];
 var _wizEmails = [];
 
 async function openRuleWizard(editId) {
+  console.log('[wizard] openRuleWizard called, editId=', editId, typeof editId);
   _wizStep = 1;
   _wizEditId = editId || null;
   _wizSources = [];
@@ -6053,7 +6078,9 @@ async function openRuleWizard(editId) {
   // If editing, load existing rule data and populate all fields
   if (editId) {
     try {
+      console.log('[wizard] fetching rule:', '/api/automation/rules/' + editId);
       var rule = await apiFetch('/api/automation/rules/' + editId);
+      console.log('[wizard] rule loaded:', JSON.stringify(rule));
       document.getElementById('wizName').value = rule.name || '';
       if (catSel && rule.category) catSel.value = rule.category;
       if (tplSel && rule.generation && rule.generation.template) tplSel.value = rule.generation.template;
@@ -6125,11 +6152,12 @@ async function openRuleWizard(editId) {
         if (em) {
           document.getElementById('wizEmailEnabled').checked = !!em.enabled;
           wizUpdateNotifUI();
-          if (em.to && em.to.length) { _wizEmails = em.to.slice(); _wizRenderEmails(); }
+          if (em.to && em.to.length) { _wizEmails = em.to.slice(); _wizRenderEmailChips(); }
           if (em.allowApproval !== undefined) document.getElementById('wizEmailApprove').checked = !!em.allowApproval;
         }
       }
     } catch (err) {
+      console.error('[wizard] error loading rule:', err);
       showToast('Failed to load rule: ' + err.message);
     }
   }
@@ -8898,6 +8926,9 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('sidebar-collapsed');
   }
   document.getElementById('promptTextarea').value = DEFAULT_PROMPT;
+  // Seed the default prompt preview shown in the Prompt card
+  var _initPreview = document.getElementById('genPromptDefaultPreview');
+  if (_initPreview) _initPreview.textContent = DEFAULT_PROMPT;
   loadApiKeyUI();
   loadCustomCategories();
   activateCustomCategories();
@@ -9710,12 +9741,14 @@ function setHeroLeftMode(mode) {
   const aiBtn     = document.getElementById('heroModeAiBtn');
   const actionBtn = document.getElementById('heroLeftActionBtn');
   const hint      = document.getElementById('heroLeftHint');
+  const modelRow  = document.getElementById('heroAiModelRow');
   if (searchBtn) searchBtn.classList.toggle('active', mode === 'search');
   if (aiBtn)     aiBtn.classList.toggle('active', mode === 'ai');
   if (actionBtn) actionBtn.textContent = mode === 'search' ? 'Search' : 'Generate';
   if (hint)      hint.textContent = mode === 'search'
     ? 'Keywords extracted from source (max 6):'
     : 'Image will be auto-generated using source document context:';
+  if (modelRow)  modelRow.style.display = mode === 'ai' ? '' : 'none';
 }
 
 function extractKeywordsFromText(text, max) {
@@ -9807,23 +9840,28 @@ async function heroLeftGenerate() {
   if (!text) { showHeroLeftStatus('error', 'Upload a source document first.'); return; }
   const btn = document.getElementById('heroLeftActionBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
-  showHeroLeftStatus('info', 'Generating image with AI…');
+  const model = (document.getElementById('heroAiModelSelect') || {}).value || 'google/gemini-2.5-flash-image';
+  showHeroLeftStatus('info', 'Generating image with AI… this can take 15–30 seconds');
   const kws = extractKeywordsFromText(text, 6);
-  const prompt = kws.join(', ') + ', medical healthcare professional, clinical setting, high quality';
+  const prompt = kws.join(', ') + ', medical healthcare professional, clinical setting, high quality, SLAHEALTH brand navy and teal';
   try {
-    const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=1200&height=675&model=flux&nologo=true&enhance=true';
-    // Verify it loads
-    await new Promise(function(resolve, reject){
-      const img = new Image();
-      img.onload  = resolve;
-      img.onerror = function(){ reject(new Error('Image failed to load')); };
-      img.src = url;
+    const resp = await fetch('/api/social/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, model }),
     });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ error: resp.status }));
+      throw new Error(err.error || resp.status);
+    }
+    const data = await resp.json();
+    const url = data.url;
+    if (!url) throw new Error('No image returned from API');
     heroImageUrl  = url;
     heroImageType = 'ai';
-    heroLeftSelectImageDirect(url, 'AI Generated', null);
+    heroLeftSelectImageDirect(url, 'AI Generated (' + model.split('/').pop() + ')', null);
     showHeroLeftStatus('', '');
-    // Sync to right panel AI pane
+    // Sync to right panel AI pane if present
     const rightImg = document.getElementById('heroAiImage');
     const rightPh  = document.getElementById('heroAiPlaceholder');
     if (rightImg) { rightImg.src = url; rightImg.style.display = 'block'; }

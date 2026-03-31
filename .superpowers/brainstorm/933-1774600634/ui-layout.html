@@ -1,0 +1,181 @@
+<h2>Social Tab — UI Layout</h2>
+<p class="subtitle">Section 2 of 3: How the rebuilt Social Distribution tab is structured. The sub-tabs replace the current Generate / Prompt Library split.</p>
+
+<div style="margin-bottom:24px;">
+
+  <!-- Simulated top nav context -->
+  <div style="background:#1b3f30;padding:6px 16px;border-radius:8px 8px 0 0;display:flex;gap:20px;font-size:0.65rem;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;">
+    <span>Pipeline</span><span>Library</span><span style="color:#00c9a7;border-bottom:2px solid #00c9a7;padding-bottom:4px;">Social</span><span>Calendar</span><span>Automation</span>
+  </div>
+
+  <!-- Social sub-tab bar -->
+  <div style="background:#fff;border:1px solid #dde3e0;border-top:none;display:flex;gap:0;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;">
+    <div style="padding:9px 18px;color:#00c9a7;border-bottom:2px solid #00c9a7;">⚡ Kit Builder</div>
+    <div style="padding:9px 18px;color:#888;">📋 Queue</div>
+    <div style="padding:9px 18px;color:#888;">✅ Posted</div>
+    <div style="padding:9px 18px;color:#888;">📝 Prompt Library</div>
+    <div style="padding:9px 18px;color:#888;">🔗 Connections</div>
+  </div>
+
+  <!-- KIT BUILDER PANE -->
+  <div style="background:#f8faf9;border:1px solid #dde3e0;border-top:none;padding:16px;border-radius:0 0 8px 8px;">
+
+    <!-- Step 1: Article + Pillar + CTA selector bar -->
+    <div style="background:#fff;border:1px solid #dde3e0;border-left:4px solid #00c9a7;padding:14px 16px;margin-bottom:14px;border-radius:0 6px 6px 0;">
+      <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1b3f30;margin-bottom:10px;">① Configure Kit</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;">
+        <div>
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:#888;margin-bottom:4px;">Article</div>
+          <div style="border:1px solid #dde3e0;padding:7px 10px;font-size:0.78rem;color:#1b3f30;font-weight:600;background:#f8faf9;">IBD Biologics Review 2026 — Clinical Update ▾</div>
+        </div>
+        <div>
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:#888;margin-bottom:4px;">Content Pillar</div>
+          <div style="border:2px solid #00c9a7;padding:7px 10px;font-size:0.78rem;color:#1b3f30;font-weight:700;background:#f0fdf8;">🎓 Educate ▾</div>
+        </div>
+        <div>
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:#888;margin-bottom:4px;">CTA Goal</div>
+          <div style="border:1px solid #dde3e0;padding:7px 10px;font-size:0.78rem;color:#1b3f30;font-weight:600;background:#f8faf9;">📈 Grow ▾</div>
+        </div>
+        <div style="padding-bottom:0;">
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:transparent;margin-bottom:4px;">.</div>
+          <div style="background:linear-gradient(135deg,#00c9a7,#009e85);color:#fff;padding:8px 16px;font-size:0.75rem;font-weight:800;cursor:pointer;border-radius:4px;white-space:nowrap;">⚡ Generate Kit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Kit Review - 6 platform accordion -->
+    <div style="font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1b3f30;margin-bottom:8px;">② Review &amp; Edit Kit</div>
+
+    <!-- Instagram row - expanded -->
+    <div style="background:#fff;border:1px solid #dde3e0;margin-bottom:6px;border-radius:6px;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f4f2;">
+        <div style="width:28px;height:28px;background:#f8faf9;border:1px solid #dde3e0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;">📸</div>
+        <div style="font-weight:700;font-size:0.78rem;flex:1;">Instagram</div>
+        <div style="font-size:0.62rem;background:#f0fdf8;color:#009e85;padding:2px 8px;border-radius:20px;font-weight:700;">Generated ✓</div>
+        <div style="font-size:0.62rem;color:#888;">Hook: Curiosity Gap</div>
+        <div style="font-size:0.62rem;background:#e8f5f0;color:#1b3f30;padding:2px 8px;border-radius:4px;">Image ✓</div>
+        <div style="font-size:0.62rem;background:#e8f5f0;color:#1b3f30;padding:2px 8px;border-radius:4px;">Video ✓</div>
+        <div style="background:#00c9a7;color:#fff;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:4px;">APPROVED</div>
+        <div style="font-size:0.62rem;color:#888;">Fri 7:00am ▾</div>
+      </div>
+      <div style="padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:#888;margin-bottom:4px;">Caption</div>
+          <div style="font-size:0.72rem;line-height:1.5;color:#1b3f30;border:1px solid #dde3e0;padding:8px;border-radius:4px;min-height:60px;">The one thing IBD patients aren't being told about biologic switching... 🧬
+
+New 2026 data shows 34% better outcomes when timing is optimised. Here's what the evidence says ↓
+
+Follow @slahealth for weekly clinical insights</div>
+          <div style="font-size:0.58rem;color:#888;margin-top:4px;">#IBD #Biologics #GastroTwitter +5</div>
+        </div>
+        <div>
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:#888;margin-bottom:4px;">Reel Script</div>
+          <div style="font-size:0.68rem;line-height:1.6;border:1px solid #dde3e0;padding:8px;border-radius:4px;background:#fffbf0;">
+            <div style="color:#e07b00;font-weight:800;font-size:0.6rem;">HOOK (3s)</div>
+            <div style="margin-bottom:6px;">"Did you know most IBD patients are being switched too late?"</div>
+            <div style="color:#1b3f30;font-weight:800;font-size:0.6rem;">BODY (20s)</div>
+            <div style="margin-bottom:6px;">[Hold up 3 fingers] Three signs the timing is off: One — symptom creep after 6 months...</div>
+            <div style="color:#00c9a7;font-weight:800;font-size:0.6rem;">CTA (5s)</div>
+            <div>"Follow for more clinical updates every week. 28s est."</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;color:#888;margin-bottom:4px;">Media</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#f0fdf8;border:1px solid #00c9a7;border-radius:4px;padding:8px;font-size:0.68rem;text-align:center;">
+              <div style="font-size:1.4rem;margin-bottom:2px;">🖼️</div>
+              <div style="font-weight:700;font-size:0.62rem;">Static Image (4:5)</div>
+              <div style="color:#888;font-size:0.58rem;">Gemini Flash · $0.003</div>
+              <div style="margin-top:4px;display:flex;gap:4px;justify-content:center;">
+                <span style="background:#00c9a7;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.58rem;cursor:pointer;">View</span>
+                <span style="background:#f8faf9;border:1px solid #dde3e0;padding:2px 6px;border-radius:3px;font-size:0.58rem;cursor:pointer;">Regen</span>
+              </div>
+            </div>
+            <div style="background:#f0fdf8;border:1px solid #00c9a7;border-radius:4px;padding:8px;font-size:0.68rem;text-align:center;">
+              <div style="font-size:1.4rem;margin-bottom:2px;">🎬</div>
+              <div style="font-weight:700;font-size:0.62rem;">Video 9:16 (15s)</div>
+              <div style="color:#888;font-size:0.58rem;">FAL Kling · ~$0.44</div>
+              <div style="margin-top:4px;display:flex;gap:4px;justify-content:center;">
+                <span style="background:#00c9a7;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.58rem;cursor:pointer;">View</span>
+                <span style="background:#f8faf9;border:1px solid #dde3e0;padding:2px 6px;border-radius:3px;font-size:0.58rem;cursor:pointer;">Regen</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TikTok row - collapsed -->
+    <div style="background:#fff;border:1px solid #dde3e0;margin-bottom:6px;border-radius:6px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+        <div style="width:28px;height:28px;background:#f8faf9;border:1px solid #dde3e0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;">🎵</div>
+        <div style="font-weight:700;font-size:0.78rem;flex:1;">TikTok</div>
+        <div style="font-size:0.62rem;background:#f0fdf8;color:#009e85;padding:2px 8px;border-radius:20px;font-weight:700;">Generated ✓</div>
+        <div style="font-size:0.62rem;color:#888;">Hook: Bold Claim</div>
+        <div style="font-size:0.62rem;background:#e8f5f0;color:#1b3f30;padding:2px 8px;border-radius:4px;">Video ✓</div>
+        <div style="background:#f8faf9;border:1px solid #dde3e0;color:#1b3f30;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:4px;cursor:pointer;">Approve</div>
+        <div style="font-size:0.62rem;color:#888;">Sat 7:00am ▾</div>
+        <div style="font-size:0.7rem;color:#888;cursor:pointer;">▸ expand</div>
+      </div>
+    </div>
+
+    <!-- LinkedIn row - collapsed -->
+    <div style="background:#fff;border:1px solid #dde3e0;margin-bottom:6px;border-radius:6px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+        <div style="width:28px;height:28px;background:#f8faf9;border:1px solid #dde3e0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;">💼</div>
+        <div style="font-weight:700;font-size:0.78rem;flex:1;">LinkedIn</div>
+        <div style="font-size:0.62rem;background:#f0fdf8;color:#009e85;padding:2px 8px;border-radius:20px;font-weight:700;">Generated ✓</div>
+        <div style="font-size:0.62rem;color:#888;">Hook: List/Number</div>
+        <div style="font-size:0.62rem;background:#e8f5f0;color:#1b3f30;padding:2px 8px;border-radius:4px;">Image ✓</div>
+        <div style="background:#f8faf9;border:1px solid #dde3e0;color:#1b3f30;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:4px;cursor:pointer;">Approve</div>
+        <div style="font-size:0.62rem;color:#888;">Tue 9:00am ▾</div>
+        <div style="font-size:0.7rem;color:#888;cursor:pointer;">▸ expand</div>
+      </div>
+    </div>
+
+    <!-- X/Twitter, Facebook, Substack collapsed -->
+    <div style="background:#fff;border:1px solid #dde3e0;margin-bottom:6px;border-radius:6px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+        <div style="width:28px;height:28px;background:#f8faf9;border:1px solid #dde3e0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;">𝕏</div>
+        <div style="font-weight:700;font-size:0.78rem;flex:1;">X / Twitter</div>
+        <div style="font-size:0.62rem;background:#f0fdf8;color:#009e85;padding:2px 8px;border-radius:20px;font-weight:700;">Generated ✓</div>
+        <div style="font-size:0.62rem;color:#888;">Hook: Curiosity Gap</div>
+        <div style="background:#f8faf9;border:1px solid #dde3e0;color:#1b3f30;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:4px;cursor:pointer;">Approve</div>
+        <div style="font-size:0.62rem;color:#888;">Mon 8:00am ▾</div>
+        <div style="font-size:0.7rem;color:#888;cursor:pointer;">▸ expand</div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #dde3e0;margin-bottom:6px;border-radius:6px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+        <div style="width:28px;height:28px;background:#f8faf9;border:1px solid #dde3e0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;">📘</div>
+        <div style="font-weight:700;font-size:0.78rem;flex:1;">Facebook</div>
+        <div style="font-size:0.62rem;background:#fffbf0;color:#e07b00;padding:2px 8px;border-radius:20px;font-weight:700;">Generating…</div>
+        <div style="background:#f8faf9;border:1px solid #dde3e0;color:#ccc;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:4px;cursor:not-allowed;">Approve</div>
+        <div style="font-size:0.62rem;color:#ccc;">— pending —</div>
+        <div style="font-size:0.7rem;color:#ccc;">▸ expand</div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #dde3e0;margin-bottom:12px;border-radius:6px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+        <div style="width:28px;height:28px;background:#f8faf9;border:1px solid #dde3e0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;">📧</div>
+        <div style="font-weight:700;font-size:0.78rem;flex:1;">Substack</div>
+        <div style="font-size:0.62rem;background:#f0fdf8;color:#009e85;padding:2px 8px;border-radius:20px;font-weight:700;">Generated ✓</div>
+        <div style="font-size:0.62rem;color:#888;">Copy-only (no API)</div>
+        <div style="background:#f8faf9;border:1px solid #dde3e0;color:#1b3f30;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:4px;cursor:pointer;">📋 Copy</div>
+        <div style="font-size:0.7rem;color:#888;cursor:pointer;">▸ expand</div>
+      </div>
+    </div>
+
+    <!-- Deploy Kit button -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border:1px solid #dde3e0;border-radius:6px;">
+      <div style="font-size:0.75rem;color:#888;">1 of 6 approved · 5 pending · Auto-schedules across Mon–Sat</div>
+      <div style="display:flex;gap:8px;">
+        <div style="background:#f8faf9;border:1px solid #dde3e0;padding:8px 16px;font-size:0.72rem;font-weight:700;cursor:pointer;border-radius:4px;">Approve All</div>
+        <div style="background:linear-gradient(135deg,#00c9a7,#009e85);color:#fff;padding:8px 20px;font-size:0.72rem;font-weight:800;cursor:pointer;border-radius:4px;opacity:0.4;">🚀 Deploy Kit</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p class="subtitle">The Queue tab shows all scheduled posts in a timeline. Does this Kit Builder layout work for you, or would you like to adjust anything?</p>

@@ -1,0 +1,239 @@
+<h2>Social Tab — Kit Builder</h2>
+<p class="subtitle">Section 2 of 3: Official monotone logos. Approve and let's move to the Queue + data schema.</p>
+
+<style>
+.plat-icon { width:20px;height:20px;display:block; }
+.kit-row { background:#fff;border:1px solid #dde3e0;margin-bottom:6px;border-radius:6px;overflow:hidden; }
+.kit-row-head { display:flex;align-items:center;gap:10px;padding:10px 14px; }
+.kit-row-head.expanded { border-bottom:1px solid #f0f4f2; }
+.plat-icon-wrap { width:32px;height:32px;background:#f8faf9;border:1px solid #dde3e0;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.plat-name { font-weight:700;font-size:0.78rem;flex:1;color:#1b3f30; }
+.badge-gen { font-size:0.6rem;background:#f0fdf8;color:#009e85;padding:2px 8px;border-radius:20px;font-weight:700;white-space:nowrap; }
+.badge-gen-pending { font-size:0.6rem;background:#fffbf0;color:#e07b00;padding:2px 8px;border-radius:20px;font-weight:700;white-space:nowrap; }
+.badge-hook { font-size:0.6rem;color:#888;white-space:nowrap; }
+.badge-media { font-size:0.6rem;background:#e8f5f0;color:#1b3f30;padding:2px 8px;border-radius:4px;white-space:nowrap; }
+.btn-approve { background:#f8faf9;border:1px solid #dde3e0;color:#1b3f30;font-size:0.6rem;font-weight:800;padding:4px 11px;border-radius:4px;cursor:pointer;white-space:nowrap; }
+.btn-approved { background:#00c9a7;color:#fff;font-size:0.6rem;font-weight:800;padding:4px 11px;border-radius:4px;white-space:nowrap; }
+.btn-copy { background:#f8faf9;border:1px solid #dde3e0;color:#1b3f30;font-size:0.6rem;font-weight:800;padding:4px 11px;border-radius:4px;cursor:pointer;white-space:nowrap; }
+.sched-time { font-size:0.6rem;color:#888;white-space:nowrap; }
+.expand-caret { font-size:0.68rem;color:#aaa;cursor:pointer;user-select:none; }
+.kit-body { padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px; }
+.kit-col-label { font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#888;margin-bottom:5px; }
+.kit-text-box { font-size:0.7rem;line-height:1.55;color:#1b3f30;border:1px solid #dde3e0;padding:8px;border-radius:4px;min-height:68px; }
+.script-box { font-size:0.68rem;line-height:1.6;border:1px solid #dde3e0;padding:8px;border-radius:4px;background:#fffbf0; }
+.script-label { font-weight:800;font-size:0.58rem; }
+.script-label.hook { color:#e07b00; }
+.script-label.body { color:#1b3f30; }
+.script-label.cta { color:#00c9a7; }
+.media-tile { background:#f0fdf8;border:1px solid #c6eae2;border-radius:4px;padding:8px;font-size:0.68rem;text-align:center;margin-bottom:6px; }
+.media-tile-icon { font-size:1.3rem;margin-bottom:2px; }
+.media-tile-title { font-weight:700;font-size:0.62rem;color:#1b3f30; }
+.media-tile-sub { color:#888;font-size:0.56rem; }
+.media-tile-actions { margin-top:5px;display:flex;gap:4px;justify-content:center; }
+.media-btn { padding:2px 8px;border-radius:3px;font-size:0.58rem;cursor:pointer; }
+.media-btn.view { background:#00c9a7;color:#fff; }
+.media-btn.regen { background:#f8faf9;border:1px solid #dde3e0;color:#1b3f30; }
+</style>
+
+<!-- Top nav context -->
+<div style="background:#1b3f30;padding:6px 18px;border-radius:8px 8px 0 0;display:flex;gap:20px;font-size:0.62rem;font-weight:700;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;">
+  <span>Pipeline</span><span>Library</span><span style="color:#00c9a7;border-bottom:2px solid #00c9a7;padding-bottom:4px;">Social</span><span>Calendar</span><span>Automation</span>
+</div>
+
+<!-- Social sub-tab bar -->
+<div style="background:#fff;border:1px solid #dde3e0;border-top:none;display:flex;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;">
+  <div style="padding:9px 18px;color:#00c9a7;border-bottom:2px solid #00c9a7;">Kit Builder</div>
+  <div style="padding:9px 18px;color:#aaa;">Queue</div>
+  <div style="padding:9px 18px;color:#aaa;">Posted</div>
+  <div style="padding:9px 18px;color:#aaa;">Prompt Library</div>
+  <div style="padding:9px 18px;color:#aaa;">Connections</div>
+</div>
+
+<!-- KIT BUILDER -->
+<div style="background:#f8faf9;border:1px solid #dde3e0;border-top:none;padding:16px;border-radius:0 0 8px 8px;">
+
+  <!-- Configure bar -->
+  <div style="background:#fff;border:1px solid #dde3e0;border-left:4px solid #00c9a7;padding:14px 16px;margin-bottom:14px;border-radius:0 6px 6px 0;">
+    <div style="font-size:0.58rem;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1b3f30;margin-bottom:10px;">① Configure Kit</div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;">
+      <div>
+        <div style="font-size:0.55rem;font-weight:700;text-transform:uppercase;color:#aaa;margin-bottom:4px;">Article</div>
+        <div style="border:1px solid #dde3e0;padding:7px 10px;font-size:0.76rem;color:#1b3f30;font-weight:600;background:#f8faf9;border-radius:4px;">IBD Biologics Review 2026 — Clinical Update ▾</div>
+      </div>
+      <div>
+        <div style="font-size:0.55rem;font-weight:700;text-transform:uppercase;color:#aaa;margin-bottom:4px;">Content Pillar</div>
+        <div style="border:2px solid #00c9a7;padding:7px 10px;font-size:0.76rem;color:#1b3f30;font-weight:700;background:#f0fdf8;border-radius:4px;">Educate ▾</div>
+      </div>
+      <div>
+        <div style="font-size:0.55rem;font-weight:700;text-transform:uppercase;color:#aaa;margin-bottom:4px;">CTA Goal</div>
+        <div style="border:1px solid #dde3e0;padding:7px 10px;font-size:0.76rem;color:#1b3f30;font-weight:600;background:#f8faf9;border-radius:4px;">Grow ▾</div>
+      </div>
+      <div>
+        <div style="background:linear-gradient(135deg,#00c9a7,#009e85);color:#fff;padding:9px 18px;font-size:0.74rem;font-weight:800;cursor:pointer;border-radius:4px;white-space:nowrap;">⚡ Generate Kit</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:0.58rem;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1b3f30;margin-bottom:8px;">② Review &amp; Edit Kit</div>
+
+  <!-- INSTAGRAM — expanded -->
+  <div class="kit-row">
+    <div class="kit-row-head expanded">
+      <div class="plat-icon-wrap">
+        <svg class="plat-icon" viewBox="0 0 24 24" fill="none" stroke="#1b3f30" stroke-width="1.8">
+          <rect x="2" y="2" width="20" height="20" rx="5"/>
+          <circle cx="12" cy="12" r="5"/>
+          <circle cx="17.5" cy="6.5" r="1.2" fill="#1b3f30" stroke="none"/>
+        </svg>
+      </div>
+      <div class="plat-name">Instagram</div>
+      <span class="badge-gen">Generated ✓</span>
+      <span class="badge-hook">Curiosity Gap hook</span>
+      <span class="badge-media">Image ✓</span>
+      <span class="badge-media">Video ✓</span>
+      <span class="btn-approved">APPROVED</span>
+      <span class="sched-time">Fri 7:00am ▾</span>
+    </div>
+    <div class="kit-body">
+      <div>
+        <div class="kit-col-label">Caption + Hashtags</div>
+        <div class="kit-text-box">The one thing IBD patients aren't being told about biologic switching… 🧬
+
+New 2026 data shows 34% better outcomes when timing is optimised. Here's what the evidence says ↓
+
+Follow @slahealth for weekly clinical insights
+
+#IBD #Biologics #GastroHealth #ClinicalUpdate #IBDWarrior #GutHealth #SLAHealth</div>
+      </div>
+      <div>
+        <div class="kit-col-label">Reel Script (HOOK / BODY / CTA)</div>
+        <div class="script-box">
+          <div class="script-label hook">HOOK — 3s</div>
+          <div style="margin-bottom:8px;">"Did you know most IBD patients are being switched too late?"</div>
+          <div class="script-label body">BODY — 22s</div>
+          <div style="margin-bottom:8px;">[Hold up 3 fingers] Three signs the timing is wrong: One — symptom creep past 6 months. Two — CRP still elevated. Three — patient quality of life score dropping. [point to camera] If your patient has two of these, the data says act now.</div>
+          <div class="script-label cta">CTA — 5s</div>
+          <div>"Follow SLAHEALTH for clinical updates every week." · 30s est.</div>
+        </div>
+      </div>
+      <div>
+        <div class="kit-col-label">Media</div>
+        <div class="media-tile">
+          <div class="media-tile-icon">🖼</div>
+          <div class="media-tile-title">Static Image · 4:5</div>
+          <div class="media-tile-sub">Gemini Flash · ~$0.003</div>
+          <div class="media-tile-actions">
+            <span class="media-btn view">View</span>
+            <span class="media-btn regen">Regen</span>
+          </div>
+        </div>
+        <div class="media-tile">
+          <div class="media-tile-icon">🎬</div>
+          <div class="media-tile-title">Reel Video · 9:16 · 15s</div>
+          <div class="media-tile-sub">FAL Kling 3.0 · ~$0.44</div>
+          <div class="media-tile-actions">
+            <span class="media-btn view">View</span>
+            <span class="media-btn regen">Regen</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIKTOK — collapsed -->
+  <div class="kit-row">
+    <div class="kit-row-head">
+      <div class="plat-icon-wrap">
+        <svg class="plat-icon" viewBox="0 0 24 24" fill="#1b3f30">
+          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+        </svg>
+      </div>
+      <div class="plat-name">TikTok</div>
+      <span class="badge-gen">Generated ✓</span>
+      <span class="badge-hook">Bold Claim hook</span>
+      <span class="badge-media">Video ✓</span>
+      <span class="btn-approve">Approve</span>
+      <span class="sched-time">Sat 7:00am ▾</span>
+      <span class="expand-caret">▸</span>
+    </div>
+  </div>
+
+  <!-- LINKEDIN — collapsed -->
+  <div class="kit-row">
+    <div class="kit-row-head">
+      <div class="plat-icon-wrap">
+        <svg class="plat-icon" viewBox="0 0 24 24" fill="#1b3f30">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+      </div>
+      <div class="plat-name">LinkedIn</div>
+      <span class="badge-gen">Generated ✓</span>
+      <span class="badge-hook">List/Number hook</span>
+      <span class="badge-media">Image ✓</span>
+      <span class="btn-approve">Approve</span>
+      <span class="sched-time">Tue 9:00am ▾</span>
+      <span class="expand-caret">▸</span>
+    </div>
+  </div>
+
+  <!-- X / TWITTER — collapsed -->
+  <div class="kit-row">
+    <div class="kit-row-head">
+      <div class="plat-icon-wrap">
+        <svg class="plat-icon" viewBox="0 0 24 24" fill="none">
+          <path fill="#1b3f30" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+      </div>
+      <div class="plat-name">X / Twitter</div>
+      <span class="badge-gen">Generated ✓</span>
+      <span class="badge-hook">Curiosity Gap hook</span>
+      <span class="btn-approve">Approve</span>
+      <span class="sched-time">Mon 8:00am ▾</span>
+      <span class="expand-caret">▸</span>
+    </div>
+  </div>
+
+  <!-- FACEBOOK — generating -->
+  <div class="kit-row">
+    <div class="kit-row-head">
+      <div class="plat-icon-wrap">
+        <svg class="plat-icon" viewBox="0 0 24 24" fill="#1b3f30">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+      </div>
+      <div class="plat-name">Facebook</div>
+      <span class="badge-gen-pending">Generating…</span>
+      <span style="font-size:0.6rem;color:#ccc;font-weight:800;padding:4px 11px;background:#f8faf9;border:1px solid #eee;border-radius:4px;">Approve</span>
+      <span class="sched-time" style="color:#ccc;">— pending —</span>
+      <span class="expand-caret" style="color:#ddd;">▸</span>
+    </div>
+  </div>
+
+  <!-- SUBSTACK — copy only -->
+  <div class="kit-row" style="margin-bottom:14px;">
+    <div class="kit-row-head">
+      <div class="plat-icon-wrap">
+        <svg class="plat-icon" viewBox="0 0 24 24" fill="#1b3f30">
+          <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
+        </svg>
+      </div>
+      <div class="plat-name">Substack</div>
+      <span class="badge-gen">Generated ✓</span>
+      <span class="badge-hook" style="color:#aaa;">Copy-only · no API</span>
+      <span class="btn-copy">📋 Copy Teaser</span>
+      <span class="expand-caret">▸</span>
+    </div>
+  </div>
+
+  <!-- Deploy bar -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border:1px solid #dde3e0;border-radius:6px;">
+    <div style="font-size:0.72rem;color:#888;">1 of 6 approved · 5 pending · Will schedule across Mon–Sat at optimal times</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div style="background:#f8faf9;border:1px solid #dde3e0;padding:8px 16px;font-size:0.7rem;font-weight:700;cursor:pointer;border-radius:4px;">Approve All</div>
+      <div style="background:linear-gradient(135deg,#00c9a7,#009e85);color:#fff;padding:9px 22px;font-size:0.74rem;font-weight:800;cursor:pointer;border-radius:4px;opacity:0.35;">🚀 Deploy Kit</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">All platform icons are official SVGs rendered monotone in SLAHEALTH navy. Happy with this? Ready to move to the data schema + backend section.</p>

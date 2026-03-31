@@ -1,0 +1,100 @@
+<h2>Automations Wizard — Layout Style</h2>
+<p class="subtitle">How should the wizard walk through the 6 configuration steps?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Vertical Stepper</h3>
+      <p>Steps listed down the left (1→6). Clicking a step opens its panel on the right. Always see where you are in the flow. Best for complex multi-step configs.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <div style="width:90px;background:#1b3f30;border-radius:4px;padding:8px;font-size:10px;color:white;">
+          <div style="padding:4px 6px;background:rgba(244,121,32,0.3);border-left:2px solid #F47920;margin-bottom:4px;border-radius:2px;">① Category ✓</div>
+          <div style="padding:4px 6px;background:rgba(244,121,32,0.15);border-left:2px solid #F47920;margin-bottom:4px;border-radius:2px;">② Source →</div>
+          <div style="padding:4px 6px;opacity:0.5;margin-bottom:4px;">③ LLM</div>
+          <div style="padding:4px 6px;opacity:0.5;margin-bottom:4px;">④ Prompt</div>
+          <div style="padding:4px 6px;opacity:0.5;margin-bottom:4px;">⑤ Platforms</div>
+          <div style="padding:4px 6px;opacity:0.5;">⑥ Schedule</div>
+        </div>
+        <div style="flex:1;background:white;border:1px solid #dde3ea;border-radius:4px;padding:10px;font-size:10px;color:#1a2332;">
+          <div style="font-weight:800;font-size:9px;color:#1b3f30;text-transform:uppercase;margin-bottom:6px;">② Source Material</div>
+          <div style="background:#f5f7fa;border:1.5px dashed #ccc;border-radius:3px;padding:8px;text-align:center;color:#888;margin-bottom:6px;">Drop PDF / TXT or paste URL</div>
+          <div style="display:flex;gap:4px;justify-content:flex-end;">
+            <div style="background:#eee;padding:3px 8px;border-radius:2px;font-size:9px;">Back</div>
+            <div style="background:#F47920;color:white;padding:3px 8px;border-radius:2px;font-size:9px;">Next →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Full-page Scrolling Form</h3>
+      <p>All 6 steps on one long page — scroll down to configure. A sticky summary bar at top shows completion status. Familiar form pattern, easy to review everything at once.</p>
+      <div style="margin-top:12px;background:white;border:1px solid #dde3ea;border-radius:4px;padding:10px;font-size:10px;color:#1a2332;">
+        <div style="display:flex;gap:4px;margin-bottom:8px;">
+          <div style="flex:1;background:#00C9A7;height:3px;border-radius:1px;"></div>
+          <div style="flex:1;background:#00C9A7;height:3px;border-radius:1px;"></div>
+          <div style="flex:1;background:#dde3ea;height:3px;border-radius:1px;"></div>
+          <div style="flex:1;background:#dde3ea;height:3px;border-radius:1px;"></div>
+          <div style="flex:1;background:#dde3ea;height:3px;border-radius:1px;"></div>
+          <div style="flex:1;background:#dde3ea;height:3px;border-radius:1px;"></div>
+        </div>
+        <div style="margin-bottom:6px;padding:6px;border:1px solid #00C9A7;border-radius:3px;background:rgba(0,201,167,0.05);">
+          <div style="font-size:9px;font-weight:800;color:#1b3f30;">① CATEGORY ✓</div>
+          <div style="font-size:8px;color:#888;">Clinical Reviews</div>
+        </div>
+        <div style="margin-bottom:6px;padding:6px;border:1px solid #00C9A7;border-radius:3px;background:rgba(0,201,167,0.05);">
+          <div style="font-size:9px;font-weight:800;color:#1b3f30;">② SOURCE MATERIAL ✓</div>
+          <div style="font-size:8px;color:#888;">Auto-monitor GitHub</div>
+        </div>
+        <div style="margin-bottom:6px;padding:6px;border:1px solid #F47920;border-radius:3px;background:rgba(244,121,32,0.05);">
+          <div style="font-size:9px;font-weight:800;color:#F47920;">③ LLM — configuring…</div>
+          <div style="font-size:8px;color:#888;">Choose model ↓</div>
+        </div>
+        <div style="opacity:0.4;padding:6px;border:1px solid #dde3ea;border-radius:3px;margin-bottom:4px;font-size:9px;">④ PROMPT</div>
+        <div style="opacity:0.4;padding:6px;border:1px solid #dde3ea;border-radius:3px;margin-bottom:4px;font-size:9px;">⑤ PLATFORMS</div>
+        <div style="opacity:0.4;padding:6px;border:1px solid #dde3ea;border-radius:3px;font-size:9px;">⑥ SCHEDULE</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Slide-in Panel Wizard</h3>
+      <p>A wide right-side drawer slides in over the page (like editing a category). Steps shown as tabs across the top of the panel. Keeps the rest of the app visible.</p>
+      <div style="margin-top:12px;display:flex;gap:6px;align-items:flex-start;">
+        <div style="flex:1;background:#EEF7F3;border-radius:4px;padding:8px;font-size:9px;color:#888;min-height:80px;">
+          &lt; rest of app visible &gt;
+        </div>
+        <div style="width:160px;background:white;border:1px solid #dde3ea;border-radius:4px;overflow:hidden;box-shadow:-4px 0 12px rgba(0,0,0,0.1);">
+          <div style="background:#1b3f30;padding:8px;font-size:10px;color:white;font-weight:800;">New Automation</div>
+          <div style="display:flex;border-bottom:1px solid #dde3ea;overflow-x:auto;">
+            <div style="padding:5px 6px;font-size:8px;color:#F47920;border-bottom:2px solid #F47920;white-space:nowrap;">Cat</div>
+            <div style="padding:5px 6px;font-size:8px;color:#888;white-space:nowrap;">Source</div>
+            <div style="padding:5px 6px;font-size:8px;color:#888;white-space:nowrap;">LLM</div>
+            <div style="padding:5px 6px;font-size:8px;color:#888;white-space:nowrap;">Prompt</div>
+            <div style="padding:5px 6px;font-size:8px;color:#888;white-space:nowrap;">Plat</div>
+            <div style="padding:5px 6px;font-size:8px;color:#888;white-space:nowrap;">Sched</div>
+          </div>
+          <div style="padding:10px;font-size:9px;color:#1a2332;">
+            <div style="font-weight:800;margin-bottom:6px;font-size:8px;color:#1b3f30;text-transform:uppercase;">Category</div>
+            <div style="display:flex;gap:3px;flex-wrap:wrap;">
+              <div style="background:#1b3f30;color:white;padding:2px 5px;border-radius:2px;font-size:8px;">Clinical ✓</div>
+              <div style="background:#eee;padding:2px 5px;border-radius:2px;font-size:8px;">News</div>
+              <div style="background:#eee;padding:2px 5px;border-radius:2px;font-size:8px;">Op-Ed</div>
+            </div>
+          </div>
+          <div style="padding:5px 10px;display:flex;justify-content:flex-end;border-top:1px solid #dde3ea;">
+            <div style="background:#F47920;color:white;padding:3px 8px;border-radius:2px;font-size:8px;">Next →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

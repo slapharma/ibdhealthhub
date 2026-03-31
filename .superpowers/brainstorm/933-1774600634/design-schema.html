@@ -1,0 +1,118 @@
+<h2>Data Schema + Backend</h2>
+<p class="subtitle">Section 3 of 3: KV storage layout, API routes, cron schedule, and platform adapter pattern.</p>
+
+<div class="section">
+  <h3>KV Storage Keys</h3>
+  <div style="font-family:monospace;font-size:0.73rem;background:#1b3f30;color:#a7f3d0;padding:16px;border-radius:8px;line-height:2;">
+    <span style="color:#6ee7b7;">// Content Kit — one per article</span><br>
+    social:kit:{articleId}          → ContentKit object<br>
+    social:kits:index               → list of articleIds with kits<br><br>
+    <span style="color:#6ee7b7;">// Schedule queue — sorted by fire time</span><br>
+    social:queue                    → sorted set: score=epochMs, member=postRef<br>
+    social:postref:{id}             → { kitId, platform, scheduledAt, status }<br><br>
+    <span style="color:#6ee7b7;">// Posted history</span><br>
+    social:posted:index             → list of postRef IDs (newest first)<br><br>
+    <span style="color:#6ee7b7;">// Platform credentials (already exists in localStorage)</span><br>
+    <span style="color:#fcd34d;">→ keep in localStorage, not KV (client-side auth tokens)</span>
+  </div>
+</div>
+
+<div class="section">
+  <h3>ContentKit Object Shape</h3>
+  <div style="font-family:monospace;font-size:0.7rem;background:#1e293b;color:#e2e8f0;padding:16px;border-radius:8px;line-height:1.8;">
+    <span style="color:#94a3b8;">{</span><br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">id</span>: <span style="color:#86efac;">"kit_1774600634"</span>,<br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">articleId</span>: <span style="color:#86efac;">"art_abc123"</span>,<br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">articleTitle</span>: <span style="color:#86efac;">"IBD Biologics Review 2026"</span>,<br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">pillar</span>: <span style="color:#86efac;">"educate"</span>, <span style="color:#94a3b8;">// educate | entertain | sell</span><br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">ctaGoal</span>: <span style="color:#86efac;">"grow"</span>, <span style="color:#94a3b8;">// grow | engage | convert | save</span><br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">status</span>: <span style="color:#86efac;">"draft"</span>, <span style="color:#94a3b8;">// draft | approved | scheduled | posted</span><br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">createdAt</span>: <span style="color:#86efac;">"2026-03-27T09:00:00Z"</span>,<br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">platforms</span>: <span style="color:#94a3b8;">{</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#fbbf24;">instagram</span>: <span style="color:#94a3b8;">{</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7dd3fc;">caption</span>: <span style="color:#86efac;">"..."</span>, <span style="color:#7dd3fc;">hashtags</span>: <span style="color:#86efac;">["#IBD",...]</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7dd3fc;">hookArchetype</span>: <span style="color:#86efac;">"curiosity_gap"</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7dd3fc;">reelScript</span>: <span style="color:#94a3b8;">{ hook, body, cta, durationEst }</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7dd3fc;">image</span>: <span style="color:#94a3b8;">{ url, model, prompt, aspectRatio: "4:5" }</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7dd3fc;">video</span>: <span style="color:#94a3b8;">{ url, model: "kling-3.0", prompt, durationSec: 15 }</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7dd3fc;">approved</span>: <span style="color:#f87171;">false</span>, <span style="color:#7dd3fc;">scheduledAt</span>: <span style="color:#86efac;">"2026-03-28T07:00:00Z"</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7dd3fc;">postedAt</span>: <span style="color:#f87171;">null</span>, <span style="color:#7dd3fc;">platformPostId</span>: <span style="color:#f87171;">null</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#94a3b8;">},</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#fbbf24;">tiktok</span>: <span style="color:#94a3b8;">{ caption, reelScript, video, approved, scheduledAt, postedAt }</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#fbbf24;">linkedin</span>: <span style="color:#94a3b8;">{ caption, image, approved, scheduledAt, postedAt }</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#fbbf24;">twitter</span>: <span style="color:#94a3b8;">{ thread: [post1, post2, post3], approved, scheduledAt, postedAt }</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#fbbf24;">facebook</span>: <span style="color:#94a3b8;">{ caption, image, approved, scheduledAt, postedAt }</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#fbbf24;">substack</span>: <span style="color:#94a3b8;">{ teaser }</span> <span style="color:#64748b;">// no posting, copy only</span><br>
+    &nbsp;&nbsp;<span style="color:#94a3b8;">}</span><br>
+    <span style="color:#94a3b8;">}</span>
+  </div>
+</div>
+
+<div class="section">
+  <h3>API Routes — single catch-all <code style="font-size:0.8em;background:#f0fdf8;padding:2px 6px;border-radius:3px;">api/social/[...slug].js</code></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;font-size:0.72rem;">
+    <div style="border:1px solid #dde3e0;border-radius:6px;padding:10px 12px;background:#f8faf9;">
+      <div style="font-weight:800;color:#1b3f30;margin-bottom:6px;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;">Generation</div>
+      <div style="line-height:2;font-family:monospace;font-size:0.68rem;">
+        <span style="color:#00c9a7;">POST</span> /social/generate<br>
+        <span style="color:#888;font-family:sans-serif;font-size:0.65rem;">→ LLM all platforms + image + video in parallel<br>→ stores kit in KV, returns kitId</span>
+      </div>
+    </div>
+    <div style="border:1px solid #dde3e0;border-radius:6px;padding:10px 12px;background:#f8faf9;">
+      <div style="font-weight:800;color:#1b3f30;margin-bottom:6px;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;">Kit CRUD</div>
+      <div style="line-height:2;font-family:monospace;font-size:0.68rem;">
+        <span style="color:#60a5fa;">GET</span> /social/kits<br>
+        <span style="color:#60a5fa;">GET</span> /social/kits/:id<br>
+        <span style="color:#fbbf24;">PATCH</span> /social/kits/:id<br>
+        <span style="color:#888;font-family:sans-serif;font-size:0.65rem;">→ edit text, toggle approved, set scheduledAt</span>
+      </div>
+    </div>
+    <div style="border:1px solid #dde3e0;border-radius:6px;padding:10px 12px;background:#f8faf9;">
+      <div style="font-weight:800;color:#1b3f30;margin-bottom:6px;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;">Distribution</div>
+      <div style="line-height:2;font-family:monospace;font-size:0.68rem;">
+        <span style="color:#00c9a7;">POST</span> /social/post<br>
+        <span style="color:#888;font-family:sans-serif;font-size:0.65rem;">→ fires one platform post immediately<br>→ called by cron or manual "Post Now"</span>
+      </div>
+    </div>
+    <div style="border:1px solid #dde3e0;border-radius:6px;padding:10px 12px;background:#f8faf9;">
+      <div style="font-weight:800;color:#1b3f30;margin-bottom:6px;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;">Schedule</div>
+      <div style="line-height:2;font-family:monospace;font-size:0.68rem;">
+        <span style="color:#60a5fa;">GET</span> /social/schedule<br>
+        <span style="color:#00c9a7;">POST</span> /social/deploy<br>
+        <span style="color:#888;font-family:sans-serif;font-size:0.65rem;">→ deploy writes approved platforms to queue<br>→ cron reads queue every 5 min</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Platform Adapter Pattern</h3>
+  <div style="font-family:monospace;font-size:0.72rem;background:#1b3f30;color:#a7f3d0;padding:14px;border-radius:8px;line-height:1.9;">
+    lib/social/platforms/<br>
+    ├── instagram.js  <span style="color:#6ee7b7;">← Graph API: image POST, video Reel upload</span><br>
+    ├── tiktok.js     <span style="color:#6ee7b7;">← Content Posting API: video upload</span><br>
+    ├── linkedin.js   <span style="color:#6ee7b7;">← Posts API: text + image (UGC Post)</span><br>
+    ├── twitter.js    <span style="color:#6ee7b7;">← v2 API: tweet thread (3 posts chained)</span><br>
+    ├── facebook.js   <span style="color:#6ee7b7;">← Graph API: Page post text + photo</span><br>
+    └── index.js      <span style="color:#fcd34d;">← post(platform, kit) dispatcher</span><br><br>
+    lib/social/media.js      <span style="color:#6ee7b7;">← OpenRouter images + FAL.ai video</span><br>
+    lib/social/ava-prompts.js <span style="color:#6ee7b7;">← hooks, CTAs, pillar system prompts</span><br>
+    lib/social/scheduler.js  <span style="color:#6ee7b7;">← auto-schedule across 7 days</span>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Cron Job (vercel.json)</h3>
+  <div style="font-family:monospace;font-size:0.72rem;background:#1e293b;color:#e2e8f0;padding:14px;border-radius:8px;line-height:1.8;">
+    <span style="color:#94a3b8;">// vercel.json — runs every 5 minutes</span><br>
+    <span style="color:#7dd3fc;">"crons"</span>: [<span style="color:#94a3b8;">{</span><br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">"path"</span>: <span style="color:#86efac;">"/api/social/cron"</span>,<br>
+    &nbsp;&nbsp;<span style="color:#7dd3fc;">"schedule"</span>: <span style="color:#86efac;">"*/5 * * * *"</span><br>
+    <span style="color:#94a3b8;">}]</span><br><br>
+    <span style="color:#94a3b8;">// cron handler: reads social:queue sorted set,</span><br>
+    <span style="color:#94a3b8;">// fires any postRef where scheduledAt ≤ now,</span><br>
+    <span style="color:#94a3b8;">// calls platform adapter, marks postedAt</span>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px;">All three sections approved — ready to write the spec doc and start planning implementation?</p>

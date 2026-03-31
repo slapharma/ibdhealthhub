@@ -1,0 +1,135 @@
+<h2>Content Kit — System Design</h2>
+<p class="subtitle">Section 1 of 3: The full data flow and component map. Does this match your mental model?</p>
+
+<div class="section">
+  <h3>The Flow</h3>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:16px 0;font-size:0.72rem;text-align:center;">
+    <div style="background:#1b3f30;color:#fff;padding:12px 6px;border-radius:6px 0 0 6px;">
+      <div style="font-size:1.2rem;margin-bottom:4px;">📰</div>
+      <strong>Article</strong>
+      <div style="opacity:0.7;margin-top:3px;">Published or approved in pipeline</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;background:#e8f5f0;font-size:1.2rem;">→</div>
+    <div style="background:#00c9a7;color:#fff;padding:12px 6px;">
+      <div style="font-size:1.2rem;margin-bottom:4px;">⚡</div>
+      <strong>Generate Kit</strong>
+      <div style="opacity:0.85;margin-top:3px;">LLM writes all 6 platforms + images + Reel script in one batch</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;background:#e8f5f0;font-size:1.2rem;">→</div>
+    <div style="background:#1b3f30;color:#fff;padding:12px 6px;border-radius:0 6px 6px 0;">
+      <div style="font-size:1.2rem;margin-bottom:4px;">✅</div>
+      <strong>Review &amp; Deploy</strong>
+      <div style="opacity:0.7;margin-top:3px;">Edit, approve, auto-schedule across the week</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Content Kit — What Gets Generated</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:12px;background:var(--surface);">
+      <div style="font-weight:700;font-size:0.78rem;margin-bottom:8px;color:#E1306C;">📸 Instagram</div>
+      <ul style="font-size:0.72rem;margin:0;padding-left:14px;line-height:1.8;">
+        <li>Caption (2200 chars) + hashtags</li>
+        <li>Ava hook archetype applied</li>
+        <li>CTA (Grow/Engage/Convert/Save)</li>
+        <li>Reel script: HOOK / BODY / CTA</li>
+        <li>Static image (4:5) via Gemini Flash</li>
+        <li>15s video (9:16) via FAL Kling</li>
+      </ul>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:12px;background:var(--surface);">
+      <div style="font-weight:700;font-size:0.78rem;margin-bottom:8px;color:#000;">🎵 TikTok</div>
+      <ul style="font-size:0.72rem;margin:0;padding-left:14px;line-height:1.8;">
+        <li>Caption (300 chars) + 3-5 hashtags</li>
+        <li>Hook-first, casual tone</li>
+        <li>Reel script: HOOK / BODY / CTA</li>
+        <li>15s video (9:16) via FAL Kling</li>
+      </ul>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:12px;background:var(--surface);">
+      <div style="font-weight:700;font-size:0.78rem;margin-bottom:8px;color:#0077B5;">💼 LinkedIn</div>
+      <ul style="font-size:0.72rem;margin:0;padding-left:14px;line-height:1.8;">
+        <li>Post (1300 chars), professional tone</li>
+        <li>Data-backed insight lead</li>
+        <li>Cover image (1:1) via Riverflow</li>
+        <li>Posts API — text + image</li>
+      </ul>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:12px;background:var(--surface);">
+      <div style="font-weight:700;font-size:0.78rem;margin-bottom:8px;color:#000;">𝕏 X / Twitter</div>
+      <ul style="font-size:0.72rem;margin:0;padding-left:14px;line-height:1.8;">
+        <li>Thread of 3 posts (280 chars each)</li>
+        <li>Concise, punchy, 1-2 hashtags</li>
+        <li>Twitter v2 API</li>
+      </ul>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:12px;background:var(--surface);">
+      <div style="font-weight:700;font-size:0.78rem;margin-bottom:8px;color:#1877F2;">📘 Facebook</div>
+      <ul style="font-size:0.72rem;margin:0;padding-left:14px;line-height:1.8;">
+        <li>Post (2000 chars) + question CTA</li>
+        <li>Conversational, shareable</li>
+        <li>Cover image (1:1) via Gemini Flash</li>
+        <li>Graph API — text + image</li>
+      </ul>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:12px;background:var(--surface);">
+      <div style="font-weight:700;font-size:0.78rem;margin-bottom:8px;color:#FF6719;">📧 Substack</div>
+      <ul style="font-size:0.72rem;margin:0;padding-left:14px;line-height:1.8;">
+        <li>Newsletter teaser (600 chars)</li>
+        <li>Compelling summary + read-more CTA</li>
+        <li>Copy-to-clipboard only (no API)</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <h3>Ava's Framework — Baked Into Generation</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+    <div style="border-left:3px solid #00c9a7;padding:10px 14px;background:var(--surface);border-radius:0 8px 8px 0;">
+      <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#00c9a7;margin-bottom:6px;">Content Pillar (auto-tagged)</div>
+      <div style="font-size:0.78rem;line-height:1.8;">🎓 <strong>Educate</strong> — clinical insight, authority building<br>🎭 <strong>Entertain/Relate</strong> — human story, behind the scenes<br>💰 <strong>Sell</strong> — testimonial, result, offer reveal<br><span style="color:var(--text-muted);font-size:0.7rem;">70% Educate/Entertain → 30% Sell enforced by queue</span></div>
+    </div>
+    <div style="border-left:3px solid #1b3f30;padding:10px 14px;background:var(--surface);border-radius:0 8px 8px 0;">
+      <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#1b3f30;margin-bottom:6px;">Hook Archetype (per post)</div>
+      <div style="font-size:0.78rem;line-height:1.8;">🕳️ Curiosity Gap<br>💥 Bold Claim / Contrarian<br>🔢 List / Number<br>🤝 Relatability<br>👆 Direct Call-Out</div>
+    </div>
+    <div style="border-left:3px solid #e07b00;padding:10px 14px;background:var(--surface);border-radius:0 8px 8px 0;">
+      <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#e07b00;margin-bottom:6px;">CTA System (one per post)</div>
+      <div style="font-size:0.78rem;line-height:1.8;">📈 Grow — "Follow for more [value]"<br>💬 Engage — "Comment [word] below"<br>🔗 Convert — "DM me / link in bio"<br>🔖 Save/Share — "Save this for later"</div>
+    </div>
+    <div style="border-left:3px solid #7c3aed;padding:10px 14px;background:var(--surface);border-radius:0 8px 8px 0;">
+      <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#7c3aed;margin-bottom:6px;">Auto-Schedule (Ava's optimal times)</div>
+      <div style="font-size:0.78rem;line-height:1.8;">Instagram: 7am, 12pm, 7pm<br>LinkedIn: 9am Tue–Thu<br>X/Twitter: 8am, 12pm, 5pm<br>Facebook: 9am, 1pm<br><span style="color:var(--text-muted);font-size:0.7rem;">Distributed across next 7 days on approval</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Backend — Single Catch-All (stays within Vercel 12-function limit)</h3>
+  <div style="font-family:monospace;font-size:0.75rem;background:#1b3f30;color:#a7f3d0;padding:14px;border-radius:8px;line-height:1.9;">
+    api/social/[...slug].js  ← one function, routes internally<br>
+    ├── POST  /generate          ← LLM + image + video generation<br>
+    ├── GET   /kits              ← list all content kits<br>
+    ├── GET   /kits/:id          ← get one kit<br>
+    ├── PATCH /kits/:id          ← edit text, approve platform<br>
+    ├── POST  /post              ← fire a scheduled post to platform API<br>
+    └── GET   /schedule          ← pending scheduled posts<br>
+    <br>
+    lib/social/handlers/         ← handler files per route<br>
+    lib/social/platforms/        ← LinkedIn.js, Twitter.js, Instagram.js…<br>
+    lib/social/media.js          ← OpenRouter image + FAL.ai video<br>
+    lib/social/ava-prompts.js    ← Ava's hooks, CTAs, pillar prompts<br>
+    lib/social/scheduler.js      ← auto-schedule logic
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px;">Does this overall shape look right? Any section you'd like to adjust before we move to the UI layout?</p>
