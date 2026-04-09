@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+﻿import { kv } from '../../lib/kv.js';
 
 // Map app category IDs → WordPress category slugs
 const CATEGORY_SLUG_MAP = {

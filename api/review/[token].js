@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/kv.js';
 import { parseApprovalToken } from '../review/send.js';
 
 export function computeNewStatus(item) {

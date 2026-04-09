@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+﻿import { kv } from '../../lib/kv.js';
 import { SignJWT, jwtVerify } from 'jose';
 import { Resend } from 'resend';
 
