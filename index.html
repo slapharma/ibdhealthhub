@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SLA Health Content Generator</title>
+<title>IBD Health Hub Content Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Georgia:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
@@ -12,7 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════
-   DESIGN TOKENS — SLA Health Brand
+   DESIGN TOKENS — IBD Health Hub Brand
 ══════════════════════════════════════════════════ */
 :root {
   --sla-orange:   #6d28d9;
@@ -27,7 +27,7 @@
   --border:       #dde3ea;
   --text:         #1a2332;
   --text-muted:   #6b7a8d;
-  --success:      #00C9A7;
+  --success:      #c4b5fd;
   --error:        #e74c3c;
   --warning:      #f39c12;
   --radius:       0px;       /* square edges throughout */
@@ -1255,7 +1255,7 @@ textarea { resize: vertical; line-height: 1.6; min-height: 120px; }
 .pipeline-empty { text-align: center; padding: 20px 12px; color: var(--text-muted); font-size: 0.68rem; opacity: 0.6; }
 
 /* Kanban cards */
-.kcard { background: var(--card); border: 1px solid var(--border); border-radius: 0; padding: 10px 12px; box-shadow: 0 1px 3px rgba(109,40,217,0.06); cursor: default; }
+.kcard { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 0; padding: 10px 12px; box-shadow: 0 1px 3px rgba(109,40,217,0.06); cursor: default; }
 .kcard-cat { font-size: 0.55rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; background: var(--sla-orange); color: #fff; padding: 2px 7px; border-radius: 0; display: inline-block; margin-bottom: 6px; }
 .kcard-title { font-size: 0.75rem; font-weight: 700; color: var(--sla-navy); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
 .kcard-meta { display: flex; gap: 10px; font-size: 0.62rem; color: var(--text-muted); margin-bottom: 8px; }
@@ -2136,9 +2136,18 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 .inbox-action-row { display: flex; gap: 12px; margin-top: 20px; }
 
 /* ── Rule Wizard step indicators ── */
-.wiz-step { flex:1; text-align:center; padding:6px 4px; border-radius:6px; font-size:0.72rem; font-weight:600; background:var(--bg); border:1px solid var(--border); color:var(--text-muted); }
-.wiz-step.active { background:var(--sla-orange); color:#fff; border-color:var(--sla-orange); }
+.wiz-step { flex:1; text-align:center; padding:10px 6px; font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.6px; background:var(--card); border:1px solid var(--border); color:var(--text-muted); position:relative; transition:all 0.18s ease; }
+.wiz-step.active { background:var(--sla-orange); color:#fff; border-color:var(--sla-orange); box-shadow:0 4px 14px rgba(109,40,217,0.28); transform:translateY(-1px); }
 .wiz-step.done   { background:var(--sla-navy); color:#fff; border-color:var(--sla-navy); }
+.wiz-page { padding:0; max-width:880px; margin:0 auto; }
+.wiz-hero { background:linear-gradient(135deg,var(--sla-navy) 0%,#3b0764 100%); color:#fff; padding:24px 28px; display:flex; justify-content:space-between; align-items:center; margin-bottom:0; }
+.wiz-hero h2 { margin:0; font-family:'Montserrat',sans-serif; font-size:1.15rem; font-weight:800; letter-spacing:-0.01em; }
+.wiz-hero p { margin:4px 0 0; font-size:0.72rem; color:rgba(255,255,255,0.65); font-weight:500; }
+.wiz-cancel { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#fff; padding:8px 16px; font-size:0.72rem; font-weight:700; cursor:pointer; font-family:'Montserrat',sans-serif; text-transform:uppercase; letter-spacing:0.5px; transition:background 0.15s; }
+.wiz-cancel:hover { background:rgba(255,255,255,0.18); }
+.wiz-body { background:var(--card); border:1px solid var(--border); border-top:none; padding:24px 28px; }
+.wiz-steps-bar { display:flex; gap:0; padding:14px 28px; background:var(--bg); border-bottom:1px solid var(--border); border-left:1px solid var(--border); border-right:1px solid var(--border); }
+.wiz-steps-bar .wiz-step + .wiz-step { border-left:none; }
 
 /* ── Social Kit Builder ── */
 .kit-configure-bar { background:#fff; border:1px solid var(--border); border-left:4px solid var(--sla-teal); padding:1.25rem 1.5rem; margin-bottom:1rem; }
@@ -2211,15 +2220,20 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 .btn-trash-sm:hover { color: #e74c3c; }
 .kcard-trash-row { display: flex; justify-content: flex-end; margin-top: 4px; padding-top: 6px; border-top: 1px solid var(--border); }
 </style>
+<script>
+/* ── Per-domain branding override ──────────────────────────────────────────
+   Default branding = IBD Health Hub (ibdhealthhub.vercel.app).
+   Reserved for future domain overrides if needed.                         */
+</script>
 </head>
 <body>
 
 <!-- ══════════════════════════════ SIDEBAR NAV ══════════════════════════════ -->
 <aside class="sidebar">
   <a class="sidebar-logo" href="#">
-    <img class="sidebar-logo-img" src="logo.png" alt="SLA Health"/>
+    <img class="sidebar-logo-img" id="brandLogoImg" src="logo.png" alt="IBD Health Hub"/>
     <div class="sidebar-logo-text">
-      <div class="sidebar-logo-name">SLA Health<span> ■</span></div>
+      <div class="sidebar-logo-name" id="brandName">IBD Health Hub<span> ■</span></div>
       <div class="sidebar-logo-sub">Content Hub</div>
     </div>
   </a>
@@ -2530,13 +2544,13 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
       <div class="card-body">
         <div class="hero-mode-toggle" style="margin-bottom:10px;">
           <button class="hero-mode-btn active" id="heroModeSearchBtn" onclick="setHeroLeftMode('search')" title="Auto-extract keywords from source and search Pexels">🔍 Auto-Search</button>
-          <button class="hero-mode-btn" id="heroModeAiBtn" onclick="setHeroLeftMode('ai')" title="Auto-generate image from source context using AI">✨ Auto-Generate</button>
+          <button class="hero-mode-btn" id="heroModeAiBtn" onclick="setHeroLeftMode('ai')" title="Auto-generate image from article content using AI">✨ Auto-Generate</button>
         </div>
         <!-- AI model selector (visible only in AI mode) -->
         <div id="heroAiModelRow" style="display:none;margin-bottom:8px;">
           <label style="font-size:0.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px;">Image Model</label>
           <select id="heroAiModelSelect" style="width:100%;padding:5px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.75rem;font-family:'Montserrat',sans-serif;">
-            <option value="google/gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
+            <option value="google/gemini-3.1-flash-image-preview-20260226">Gemini 3.1 Flash Image (Nano Banana 2)</option>
             <option value="sourceful/riverflow-v2-fast">Riverflow v2 Fast</option>
           </select>
         </div>
@@ -2684,7 +2698,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
             </optgroup>
             <optgroup label="── Premium (key required) ──">
               <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-              <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+              <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
               <option value="gpt-4o">GPT-4o (OpenAI)</option>
               <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
               <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -2731,6 +2745,10 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         Edit
       </button>
+      <a class="btn btn-outline btn-xs" id="viewOnWpBtn" href="#" target="_blank" style="display:none;background:rgba(0,201,167,0.15);border-color:rgba(0,201,167,0.4);color:#00c9a7;text-decoration:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        View on WordPress ↗
+      </a>
     </div>
     <div class="progress-wrap hidden" id="progressWrap">
       <div style="padding:8px 14px 0;">
@@ -2745,6 +2763,14 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
       <p>Upload a source document and click <strong>Generate Content</strong> to begin.</p>
     </div>
     <div class="article-output" id="articleOutput">
+      <div id="articleHeroPreview" style="display:none;position:relative;margin-bottom:12px;">
+        <img id="articleHeroImg" src="" alt="Hero image" style="width:100%;max-height:220px;object-fit:cover;display:block;" />
+        <div style="position:absolute;bottom:8px;right:8px;display:flex;gap:4px;">
+          <button class="btn btn-outline btn-xs" onclick="removeArticleHero()" style="background:rgba(0,0,0,0.6);border-color:rgba(255,255,255,0.3);color:#fff;font-size:0.65rem;">✕ Remove</button>
+          <button class="btn btn-outline btn-xs" onclick="document.getElementById('heroLeftKeywordInput').focus();setHeroLeftMode('search');" style="background:rgba(0,0,0,0.6);border-color:rgba(255,255,255,0.3);color:#fff;font-size:0.65rem;">🔄 Change</button>
+        </div>
+      </div>
+      <h1 id="articleTitleDisplay" style="display:none;font-family:'Montserrat',sans-serif;font-size:1.4rem;font-weight:800;color:var(--sla-navy);margin:0 0 12px 0;line-height:1.25;"></h1>
       <div id="articleContent"></div>
       <textarea class="article-edit-textarea" id="articleEditTextarea" placeholder="Edit article text here…"></textarea>
       <div class="edit-mode-toolbar">
@@ -2811,6 +2837,10 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
         <div class="dash-kpi-card">
           <div class="dash-kpi-value" id="metricGenerated">0</div>
           <div class="dash-kpi-label">Articles Generated</div>
+          <div style="display:flex;gap:12px;margin-top:6px;justify-content:center;font-size:0.62rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">
+            <span>Manual <strong id="metricGeneratedManual" style="color:var(--sla-navy);font-size:0.85rem;display:block;">0</strong></span>
+            <span>Automated <strong id="metricGeneratedAuto" style="color:var(--sla-orange);font-size:0.85rem;display:block;">0</strong></span>
+          </div>
         </div>
         <div class="dash-kpi-card">
           <div class="dash-kpi-value" id="metricPublished">0</div>
@@ -3258,7 +3288,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
             <label style="font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--sla-navy);display:block;margin-bottom:4px;">Company Name</label>
-            <input type="text" id="godCompanyInput" placeholder="e.g. SLA Health" style="width:100%;box-sizing:border-box;padding:7px 10px;border:1px solid var(--border);font-family:'Montserrat',sans-serif;font-size:0.72rem;border-radius:0;" />
+            <input type="text" id="godCompanyInput" placeholder="e.g. IBD Health Hub" style="width:100%;box-sizing:border-box;padding:7px 10px;border:1px solid var(--border);font-family:'Montserrat',sans-serif;font-size:0.72rem;border-radius:0;" />
           </div>
           <div>
             <label style="font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--sla-navy);display:block;margin-bottom:4px;">Author Name(s)</label>
@@ -3408,7 +3438,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3437,7 +3467,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3466,7 +3496,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3495,7 +3525,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3524,7 +3554,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3553,7 +3583,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3597,7 +3627,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3627,7 +3657,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3657,7 +3687,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3687,7 +3717,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3717,7 +3747,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3747,7 +3777,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
               </optgroup>
               <optgroup label="── Premium (key required) ──">
                 <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-                <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+                <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
@@ -3820,13 +3850,13 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
     <div class="settings-section">
       <div class="settings-section-header">
         <h3>WordPress Publishing</h3>
-        <p>Auto-publish approved content to slahealth.co.uk</p>
+        <p>Auto-publish approved content to ibdhealthhub.com</p>
       </div>
       <div class="settings-section-body">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
             <label style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--sla-navy);margin-bottom:5px;display:block;">Site URL</label>
-            <input type="text" value="https://slahealth.co.uk" disabled style="width:100%;box-sizing:border-box;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;background:var(--bg);color:var(--text-muted);" />
+            <input type="text" value="https://ibdhealthhub.com" disabled style="width:100%;box-sizing:border-box;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.72rem;background:var(--bg);color:var(--text-muted);" />
           </div>
           <div>
             <label style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--sla-navy);margin-bottom:5px;display:block;">Status</label>
@@ -3850,6 +3880,71 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
       </div>
     </div>
 
+    <!-- Cloud Storage Integrations -->
+    <div class="settings-section" style="grid-column:1/-1;">
+      <div class="settings-section-header">
+        <h3>Cloud Storage Integrations</h3>
+        <p>Connect Google Drive or Dropbox to monitor folders and upload files as automation sources</p>
+      </div>
+      <div class="settings-section-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+          <!-- Google Drive card -->
+          <div style="border:1px solid var(--border);padding:16px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <svg viewBox="0 0 87.3 78" style="width:22px;height:22px;flex-shrink:0;" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 1.2C28.55.4 27 0 25.45 0L13.7 25z" fill="#00ac47"/><path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8L73.55 76.8z" fill="#ea4335"/><path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.95 0H34.35c-1.55 0-3.1.4-4.45 1.2z" fill="#00832d"/><path d="M59.8 53H87.3L73.55 28.2H43.65z" fill="#2684fc"/><path d="M43.65 25H13.7L0 53h27.5L43.65 25z" fill="#ffba00"/><path d="M43.65 25l13.75 3.2H87.3L57.4 1.2c-1.35-.8-2.9-1.2-4.45-1.2H34.35c-1.55 0-3.1.4-4.45 1.2z" fill="#00ac47"/><path d="M27.5 53H0l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.85-23.8z" fill="#0066da"/></svg>
+              <strong style="font-size:0.82rem;color:var(--text);">Google Drive</strong>
+              <div class="settings-gcal-status disconnected" id="googleDriveStatus" style="margin-left:auto;">Not connected</div>
+            </div>
+            <div style="margin-bottom:8px;">
+              <label style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--sla-navy);display:block;margin-bottom:4px;">Client ID</label>
+              <input id="googleClientId" type="text" placeholder="xxxx.apps.googleusercontent.com" style="width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.72rem;">
+            </div>
+            <div style="margin-bottom:12px;">
+              <label style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--sla-navy);display:block;margin-bottom:4px;">Client Secret</label>
+              <input id="googleClientSecret" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.72rem;">
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="saveCloudCreds('google')">Save credentials</button>
+              <button class="btn btn-outline btn-sm" id="googleConnectBtn" onclick="connectCloudService('google')" style="display:none;">Connect Drive</button>
+              <button class="btn btn-outline btn-sm" id="googleDisconnectBtn" onclick="disconnectCloudService('google')" style="display:none;color:#ef4444;border-color:#ef4444;">Disconnect</button>
+            </div>
+            <p style="font-size:0.63rem;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">
+              Create OAuth credentials at <strong>console.cloud.google.com</strong> → APIs &amp; Services → Credentials. Enable the <strong>Google Drive API</strong>. Set the authorised redirect URI to:<br>
+              <code style="font-size:0.6rem;word-break:break-all;">https://ibdhealthhub.vercel.app/api/automation/auth/google/callback</code>
+            </p>
+          </div>
+
+          <!-- Dropbox card -->
+          <div style="border:1px solid var(--border);padding:16px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <svg viewBox="0 0 32 32" style="width:22px;height:22px;flex-shrink:0;" xmlns="http://www.w3.org/2000/svg"><path d="M8 2L0 7l8 5-8 5 8 5 8-5-8-5 8-5zm16 0l-8 5 8 5-8 5 8 5 8-5-8-5 8-5zM8 24l8 5 8-5-8-5z" fill="#0061FF"/></svg>
+              <strong style="font-size:0.82rem;color:var(--text);">Dropbox</strong>
+              <div class="settings-gcal-status disconnected" id="dropboxStatus" style="margin-left:auto;">Not connected</div>
+            </div>
+            <div style="margin-bottom:8px;">
+              <label style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--sla-navy);display:block;margin-bottom:4px;">App Key</label>
+              <input id="dropboxAppKey" type="text" placeholder="your app key" style="width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.72rem;">
+            </div>
+            <div style="margin-bottom:12px;">
+              <label style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--sla-navy);display:block;margin-bottom:4px;">App Secret</label>
+              <input id="dropboxAppSecret" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.72rem;">
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="saveCloudCreds('dropbox')">Save credentials</button>
+              <button class="btn btn-outline btn-sm" id="dropboxConnectBtn" onclick="connectCloudService('dropbox')" style="display:none;">Connect Dropbox</button>
+              <button class="btn btn-outline btn-sm" id="dropboxDisconnectBtn" onclick="disconnectCloudService('dropbox')" style="display:none;color:#ef4444;border-color:#ef4444;">Disconnect</button>
+            </div>
+            <p style="font-size:0.63rem;color:var(--text-muted);margin:10px 0 0;line-height:1.5;">
+              Create an app at <strong>dropbox.com/developers/apps</strong>. Choose <strong>Full Dropbox</strong> access. Set the OAuth redirect URI to:<br>
+              <code style="font-size:0.6rem;word-break:break-all;">https://ibdhealthhub.vercel.app/api/automation/auth/dropbox/callback</code>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </div>
 </div><!-- /tab-view settings -->
 
@@ -3857,20 +3952,25 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
 
 <!-- Automation: Create New -->
 <div class="tab-view" id="view-automation-new">
-  <div style="padding:24px; max-width:700px; overflow-y:auto;">
-    <!-- Header -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <h2 id="ruleWizardTitle" style="margin:0; font-size:1.1rem; color:var(--text);">New Automation Rule</h2>
-      <button onclick="closeRuleWizard()" style="background:none; border:none; font-size:0.875rem; cursor:pointer; color:var(--text-muted); padding:6px 12px; border:1px solid var(--border);">Cancel</button>
+  <div style="padding:24px; overflow-y:auto;">
+   <div class="wiz-page">
+    <!-- Hero header -->
+    <div class="wiz-hero">
+      <div>
+        <h2 id="ruleWizardTitle">New Automation Rule</h2>
+        <p>Configure sources, triggers, generation, review and notifications.</p>
+      </div>
+      <button onclick="closeRuleWizard()" class="wiz-cancel">Cancel</button>
     </div>
     <!-- Step indicator -->
-    <div style="display:flex; gap:4px; margin-bottom:24px;" id="wizardSteps">
+    <div class="wiz-steps-bar" id="wizardSteps">
       <div class="wiz-step active" id="wizStep1">&#9312; Sources</div>
       <div class="wiz-step" id="wizStep2">&#9313; Trigger</div>
       <div class="wiz-step" id="wizStep3">&#9314; Generation</div>
       <div class="wiz-step" id="wizStep4">&#9315; Review</div>
       <div class="wiz-step" id="wizStep5">&#9316; Notify</div>
     </div>
+    <div class="wiz-body">
     <!-- Step 1: Sources -->
     <div id="wizPanel1">
       <div style="margin-bottom:16px;">
@@ -3889,8 +3989,8 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
           <button onclick="wizAddSource('url')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ URL</button>
           <button onclick="wizAddSource('github')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ GitHub</button>
           <button onclick="wizAddSource('upload')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ Upload</button>
-          <button disabled style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Google Drive</button>
-          <button disabled style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;opacity:0.4;cursor:not-allowed;" title="Coming soon">+ Dropbox</button>
+          <button onclick="wizAddSource('google_drive')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ Google Drive</button>
+          <button onclick="wizAddSource('dropbox')" style="padding:5px 12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;cursor:pointer;">+ Dropbox</button>
         </div>
       </div>
     </div>
@@ -3958,7 +4058,7 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
           </optgroup>
           <optgroup label="── Premium (key required) ──">
             <option value="claude-opus-4-5">Claude Opus (Anthropic)</option>
-            <option value="claude-sonnet-4-5">Claude Sonnet (Anthropic)</option>
+            <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 (Anthropic)</option>
             <option value="gpt-4o">GPT-4o (OpenAI)</option>
             <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
           </optgroup>
@@ -3968,12 +4068,19 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
         <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text);">Custom prompt <span style="color:var(--text-muted);font-weight:400;">(optional override)</span></label>
         <textarea id="wizPrompt" maxlength="2000" rows="4"style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.875rem;resize:vertical;"></textarea>
       </div>
-      <div>
+      <div style="margin-bottom:16px;">
         <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text);">Source handling</label>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizCombine" value="one-per-item" checked> One article per source item</label>
           <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;"><input type="radio" name="wizCombine" value="combine"> Summarise all into one article</label>
         </div>
+      </div>
+      <div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.875rem;cursor:pointer;">
+          <input type="checkbox" id="wizHeroImage" checked>
+          <span style="font-weight:600;">Auto-generate AI hero image</span>
+        </label>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin:4px 0 0 26px;">Generate a hero image from the article content using AI. Uses OpenRouter credits.</p>
       </div>
     </div>
     <!-- Step 4: Review -->
@@ -4040,6 +4147,8 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
       <span></span>
       <button id="wizBtnNext" onclick="wizNext()" style="padding:8px 20px;border:none;background:var(--sla-orange);color:#fff;font-size:0.875rem;font-weight:600;cursor:pointer;">Next &#8594;</button>
     </div>
+    </div><!-- /wiz-body -->
+   </div><!-- /wiz-page -->
   </div>
 </div><!-- /view-automation-new -->
 
@@ -4068,8 +4177,8 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
     </div>
     <!-- Sub-tab bar -->
     <div style="display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:16px; flex-shrink:0;">
-      <button id="inboxSubtab-pending" onclick="switchInboxTab('pending')" style="padding:6px 16px; font-size:0.72rem; font-weight:700; font-family:'Montserrat',sans-serif; border:none; background:none; cursor:pointer; color:var(--sla-navy); border-bottom:2px solid var(--sla-orange); margin-bottom:-2px;">Pending</button>
-      <button id="inboxSubtab-history" onclick="switchInboxTab('history')" style="padding:6px 16px; font-size:0.72rem; font-weight:700; font-family:'Montserrat',sans-serif; border:none; background:none; cursor:pointer; color:var(--text-muted); border-bottom:2px solid transparent; margin-bottom:-2px;">History</button>
+      <button id="inboxSubtab-pending" onclick="switchInboxTab('pending')" style="padding:6px 16px; font-size:0.72rem; font-weight:700; font-family:'Montserrat',sans-serif; border:none; background:none; cursor:pointer; color:var(--sla-navy); border-bottom:2px solid var(--sla-orange); margin-bottom:-2px;">Generations</button>
+<button id="inboxSubtab-log" onclick="switchInboxTab('log')" style="padding:6px 16px; font-size:0.72rem; font-weight:700; font-family:'Montserrat',sans-serif; border:none; background:none; cursor:pointer; color:var(--text-muted); border-bottom:2px solid transparent; margin-bottom:-2px;">Operation Logs</button>
     </div>
     <!-- Pending sub-view -->
     <div id="autoSubInbox" style="flex:1; min-height:0;">
@@ -4088,6 +4197,19 @@ body.sidebar-collapsed .nav-item-child { padding-left: 10px; }
     <div id="autoSubHistory" style="flex:1; min-height:0; overflow-y:auto; display:none; border:1px solid var(--border); background:var(--card);">
       <div id="autoHistoryList">
         <p style="color:var(--text-muted); padding:16px;">No history yet.</p>
+      </div>
+    </div>
+    <!-- Log sub-view -->
+    <div id="autoSubLog" style="flex:1; min-height:0; overflow-y:auto; display:none; border:1px solid var(--border); background:var(--card);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);">
+        <span style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.6px;">Run Log</span>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-outline btn-xs" onclick="loadAutoLog()">Refresh</button>
+          <button class="btn btn-outline btn-xs" onclick="clearAutoLog()" style="color:#ef4444;border-color:#ef4444;">Clear</button>
+        </div>
+      </div>
+      <div id="autoLogList">
+        <p style="color:var(--text-muted); padding:16px;">No log entries yet.</p>
       </div>
     </div>
   </div>
@@ -4393,7 +4515,7 @@ const INFOGRAPHIC_MODELS = [
 const PEXELS_API_KEY = '61644jNcCg5JfspIckM3rGG4lDwaNuUVmbIXCjbxYZDeqGiaNBftxKdJ';
 
 const GH_API    = 'https://api.github.com';
-const GH_REPO   = 'slapharma/SLAHealth_Content_Generator';
+const GH_REPO   = 'slapharma/IBDHealthHub_Content_Generator';
 const GH_BRANCH = 'main';
 const GH_TOKEN  = String.fromCharCode(103,104,112,95,98,73,65,98,55,90,69,88,51,69,84,108,117,70,80,51,114,100,57,122,121,114,110,74,102,55,100,57,85,87,50,99,86,97,75,114);
 
@@ -4406,118 +4528,54 @@ const CATEGORIES = [
   { id: 'ibd-living',       label: 'IBD Living' }
 ];
 
-const DEFAULT_PROMPT = `You are a medical writer creating a Scientific Publication Summary for the purpose of an IBD content hub website (SLA Health) — a structured, objective summary of a single published clinical trial intended for a physician audience (specialist or general practitioner level). Your role is purely curatorial: you present what the paper reports, nothing more. You do not add clinical commentary, personal opinion, practice recommendations, or conclusions beyond those stated by the authors.
+const DEFAULT_PROMPT = `You are a medical writer creating a curated clinical paper review for publication on an IBD content hub website (SLAHealth.co.uk). a structured, objective summary of a single published clinical trial intended for a physician audience. Your role is purely curatorial: you present what the paper reports, nothing more. You do not add clinical commentary, personal opinion, practice recommendations, or conclusions beyond those stated by the authors.
 
 TONE & STYLE
-
-Write in clear, precise clinical language appropriate for a practicing physician. Use correct medical and pharmacological terminology throughout. The tone is neutral, factual, and authoritative — like a well written abstract expanded into a readable narrative. Avoid advocacy language, hedging phrases like "interestingly" or "remarkably," and any framing that implies editorial judgment. Do not use bullet points in the body of the article. Write in continuous prose with section headers. Active voice is preferred where natural.
+Write in clear, precise clinical language appropriate for a practicing physician. Use correct medical and pharmacological terminology throughout. The tone is neutral, factual, and authoritative — like a well-written abstract expanded into a readable narrative. Avoid advocacy language, hedging phrases like "interestingly" or "remarkably," and any framing that implies editorial judgment. Use bullet points rarely in the body of the article. Write in continuous prose with section headers. Active voice is preferred where natural.
 
 STRUCTURE
-
 Produce the article in the following sections, in this order:
+1. Title (~5–12 words) title formatted as: Clinical Review [curated version of the original paper title]. Article subheader; Authors, journal, year, volume, # pages (as listed in the paper). DOI if available, if unavailable, don't mention DOI
+2. Subtitle (~5–12 words) sub-title constructed as a statement related to the conclusion of the source document.
+3. Background & Rationale (~100–150 words) Summarise the clinical problem or therapeutic question the study was designed to address. Include relevant disease context, the gap in evidence or unmet need identified by the authors, and the stated scientific rationale for the intervention being tested.
+4. Study Design (~100–150 words) Describe the trial design, setting, and timeline. State the study type (e.g., randomised, double-blind, placebo-controlled), the number of sites, duration of follow-up, and the treatment arms. Describe the patient population including key inclusion and exclusion criteria. State the primary and secondary endpoints exactly as the authors defined them. Note how randomisation and blinding were handled. Note the statistical approach used.
+5. Patient Population (~75–100 words) Summarise baseline demographics and key clinical characteristics of the enrolled population as reported. Note any relevant imbalances between groups if reported by the authors.
+6. Key Findings (~150–250 words) Report the results for primary and secondary endpoints, but avoid using technical statistical reporting e.g. confidence intervals, odds ratios, and p-values as presented in the paper; instead alter the wording to support the interpretation of the findings. Include simple numerical values e.g. percentages, numerical differences between groups. Report both the active and comparator arm results. Where the authors report a null result, state it clearly. Do not interpret results beyond what the paper states. If subgroup analyses or post-hoc analyses are reported, present them with that label.
+7. Discussion (150-200 words) Summarise the discussion and include any real world implications of the findings as mentioned by the authors, e.g. what do the findings mean for disease management or lifestyle management. Report the safety and tolerability briefly, including adverse events and tolerability data as described. Note whether serious adverse events were reported and their nature.
+8. Authors' Conclusions (~75–100 words) Reproduce the authors' own stated conclusions from the paper — do not paraphrase in a way that adds meaning. These should be clearly attributed to the authors of the study. Note any limitations the authors themselves acknowledged.
+9. Reference Full citation in Vancouver format.
 
-1. Title Block
-
-Article title formatted as:
-
-Header: Scientific Publication Summary:
-Title: [Full title of the original paper]
-
-Authors, journal, year, volume, pages (as listed in the paper)
-DOI if available. If unavailable, do not mention DOI.
-
-2. Background & Rationale (~100–150 words)
-
-Summarise the clinical problem or therapeutic question the study was designed to address. Include relevant disease context, the gap in evidence or unmet need identified by the authors, and the stated scientific rationale for the intervention being tested.
-
-3. Study Design (~100–150 words)
-
-Describe the trial design, setting, and timeline. State the study type, for example randomised, double blind, placebo controlled, the number of sites, duration of follow up, and the treatment arms. Describe the patient population including key inclusion and exclusion criteria. State the primary and secondary endpoints exactly as the authors defined them. Note how randomisation and blinding were handled. Note the statistical approach used.
-
-4. Patient Population (~75–100 words)
-
-Summarise baseline demographics and key clinical characteristics of the enrolled population as reported. Note any relevant imbalances between groups if reported by the authors.
-
-5. Key Findings (~150–250 words)
-
-Report the results for primary and secondary endpoints, but avoid using technical statistical reporting such as confidence intervals, odds ratios, and p values as presented in the paper. Instead, alter the wording to support interpretation of the findings while preserving the exact meaning. Include simple numerical values such as percentages and numerical differences between groups. Report both the active and comparator arm results. Where the authors report a null result, state it clearly. Do not interpret results beyond what the paper states. If subgroup analyses or post hoc analyses are reported, present them with that label.
-
-6. Discussion (150–200 words)
-
-Summarise the discussion and include any real world implications of the findings as mentioned by the authors, for example what the findings may mean for disease management or lifestyle management. Report safety and tolerability briefly, including adverse events and tolerability data as described. Note whether serious adverse events were reported and their nature.
-
-7. Authors' Conclusions (~75–100 words)
-
-Reproduce the authors' own stated conclusions from the paper and keep them clearly attributed to the authors of the study. Do not add meaning, interpretation, or extrapolation. Note any limitations the authors themselves acknowledged. If no limitations are explicitly acknowledged, write: Not reported in the source publication.
-
-8. Reference
-
-Full citation in Vancouver format.
+OUTPUT FORMAT
+Output the article in markdown. The very first line MUST be the title prefixed with "# " (e.g. "# Clinical Review: ..."). The very next non-empty line MUST be the subtitle prefixed with "# " (a single statement related to the conclusion). All other section headers (Background & Rationale, Study Design, etc.) MUST use "## ".
 
 FORMATTING RULES
-
-Total article length: 800–1000 words depending on the complexity and volume of data in the source paper. Do not exceed 1000 words total.
-
-Use UK British English.
-
-Use the section headers exactly as listed above.
-
-All numerical results must match the paper exactly. Do not round or alter numerical values.
-
-If a section's content is not reported in the paper, write: Not reported in the source publication.
-
-Do not speculate about clinical implications.
-
-Do not compare the findings to other studies unless the authors themselves do so within the paper.
-
-Do not use hyphens as punctuation or to join phrases. Only use hyphens as part of a word or compound term, for example: well established, double blind, COX-2, Omega-3.
-
-Do not use bolded words mid sentence or mid paragraph, only in titles or subheadings.
-
-Add a disclaimer in small italic writing, in this colour, at the very bottom of the paper to say:
-This Scientific Publication Summary is an objective summary of the published trial for personal and educational use. It does not constitute clinical advice, endorsement of the intervention, or a recommendation to alter clinical practice.
+Total article length: 800–1000 words depending on the complexity and volume of data in the source paper. DO NOT EXCEED 1000 WORDS TOTAL. Do not pad.
+UK British English
+Use the section structure exactly as listed above.
+All data points must match the paper exactly, do not round or paraphrase statistics.
+Do not speculate about clinical implications. Do not compare the findings to other studies unless the authors themselves do so within the paper.
+Do not use hyphens or ems as punctuation or to join phrases. Only use hyphens as part of a word or compound term (for example: well-established, double-blind, COX-2, Omega-3).
+Do not use bolded words mid sentence or mid paragraph, only in titles or subheadings
+Terminology and abbreviation handling must be fully standardised. References to omega-3 must always be written as "omega-3" regardless of whether the source uses n-3, omega 3, or omega3 LC n-3 PUFAs). This rule applies broadly to all comparable terminology inconsistencies.
+Commonly abbreviated medical and scientific terms must always be introduced in full at first mention followed by the abbreviation in brackets. After first mention, the abbreviated form must be used consistently throughout. This includes widely recognised terms such as inflammatory bowel disease (IBD), eicosapentaenoic acid (EPA), and docosahexaenoic acid (DHA), among others. If a term is not clearly standardised or may introduce ambiguity, it must not be abbreviated.
+The original paper title must remain unchanged and must not be standardised or modified.
+Add a disclaimer in small italic writing, in this colour at the very bottom of the paper to say: This Scientific Publication Summary is an objective summary of the published trial for personal and educational use. It does not constitute clinical advice, endorsement of the intervention, or a recommendation to alter clinical practice.
 
 COPYRIGHT & REUSE COMPLIANCE RULES
-
 To avoid copyright issues, the following rules must always be followed:
-
 The summary must be written entirely in original wording. Do not copy or closely mirror sentences from the abstract, main text, discussion, or conclusions.
-
 Do not reproduce large verbatim excerpts from the source paper.
-
-Do not quote more than a very short phrase or sentence from the paper unless the article is clearly licensed for broader reuse.
-
-Prefer paraphrasing over direct quotation at all times.
-
+Must paraphrase over direct quotation at all times.
 Do not reproduce or recreate figures, graphs, tables, diagrams, study schemas, or article screenshots from the original publication unless the article is confirmed to be open access under a licence that permits reuse.
-
-Do not paste the abstract in full, even if it is publicly visible online.
-
-Do not reproduce publisher formatted text, layout, boxed summaries, or visual elements.
-
-Do not include copied captions, figure legends, or table notes.
-
 Facts, study design details, endpoint definitions, and numerical results may be reported, but they must still be presented in newly written language.
-
 Always attribute findings and conclusions clearly to the study authors.
-
-Always include the full citation and DOI where available.
-
-If the article is paywalled or free to read without an open licence, treat it as copyright protected and summarise only.
-
-Only reproduce larger excerpts, figures, or tables if the paper is explicitly open access under a licence that permits reuse, such as CC-BY, and attribution requirements are met.
-
-If reuse rights are unclear, assume standard copyright applies and do not reproduce protected content.
-
-FINAL INSTRUCTION
-
-Produce a physician facing scientific publication summary that is accurate, balanced, compliant with copyright restrictions, and strictly limited to what is reported in the source publication.`;
+Always include the full citation and DOI where available.`;
 
 // ─── Category-specific default prompts ───────────────────────────────────────
 
-const DEFAULT_PROMPT_INDUSTRY_NEWS = `You are a medical journalist writing for SLA Health — a UK-based IBD and gastrointestinal health digital research platform. Transform the source material (a clinical paper, research summary, or healthcare press release) into a clear, engaging Industry News article for slahealth.co.uk.
+const DEFAULT_PROMPT_INDUSTRY_NEWS = `You are a medical journalist writing for IBD Health Hub — a UK-based IBD and gastrointestinal health digital research platform. Transform the source material (a clinical paper, research summary, or healthcare press release) into a clear, engaging Industry News article for ibdhealthhub.com.
 
-SLA Health's focus is IBD (Crohn's disease, ulcerative colitis), gastrointestinal nutrition, and longevity science. Readers include UK-based gastroenterologists, IBD nurses, dietitians, and GPs, as well as well-informed patients living with IBD and gastrointestinal conditions.
+IBD Health Hub's focus is IBD (Crohn's disease, ulcerative colitis), gastrointestinal nutrition, and longevity science. Readers include UK-based gastroenterologists, IBD nurses, dietitians, and GPs, as well as well-informed patients living with IBD and gastrointestinal conditions.
 
 TONE & STYLE
 Write in clear, engaging journalistic prose — authoritative but accessible. Use correct clinical terminology with brief contextual explanation where needed. Active voice throughout. Convey genuine clinical relevance without sensationalism. Avoid phrases like "groundbreaking" or "revolutionary." Do not speculate beyond what the source states.
@@ -4533,9 +4591,9 @@ STRUCTURE
 FORMATTING RULES
 Total length: 450–600 words. UK British English. Paraphrase throughout — do not reproduce verbatim text from the source. Attribute all findings clearly. Do not include advice to change clinical practice or medication. Add a disclaimer in small italic text at the bottom: This article is a journalistic summary for informational purposes only. It does not constitute clinical advice or a recommendation to alter treatment decisions.`;
 
-const DEFAULT_PROMPT_OP_EDS = `You are a clinical commentator writing for SLA Health — a UK-based IBD and gastrointestinal health platform. Produce a professional Op-Ed: an evidence-informed opinion or commentary piece based on one or more published clinical papers, research findings, or healthcare policy developments.
+const DEFAULT_PROMPT_OP_EDS = `You are a clinical commentator writing for IBD Health Hub — a UK-based IBD and gastrointestinal health platform. Produce a professional Op-Ed: an evidence-informed opinion or commentary piece based on one or more published clinical papers, research findings, or healthcare policy developments.
 
-SLA Health Op-Eds offer expert perspective on IBD research findings, clinical debates, treatment controversies, dietary interventions, and emerging science in gastrointestinal medicine. They are grounded in evidence but written with a clear, considered point of view.
+IBD Health Hub Op-Eds offer expert perspective on IBD research findings, clinical debates, treatment controversies, dietary interventions, and emerging science in gastrointestinal medicine. They are grounded in evidence but written with a clear, considered point of view.
 
 TARGET AUDIENCE
 UK-based gastroenterologists, IBD nurses, dietitians, and GPs — and engaged patients who want a more nuanced perspective on evolving clinical evidence.
@@ -4555,9 +4613,9 @@ STRUCTURE
 FORMATTING RULES
 Total length: 700–900 words. UK British English. Write in continuous prose. Do not reproduce verbatim text from source papers. Attribute evidence clearly. Add a disclaimer in small italic text at the bottom: The views expressed in this Op-Ed reflect a commentary on published evidence and do not constitute clinical advice or treatment recommendations.`;
 
-const DEFAULT_PROMPT_WHITE_PAPERS = `You are a scientific medical writer producing a White Paper for SLA Health — a UK-based IBD and gastrointestinal health research platform. Synthesise multiple clinical papers and published evidence sources into a comprehensive, structured white paper on a specific topic in IBD, gastrointestinal nutrition, or gastrointestinal medicine.
+const DEFAULT_PROMPT_WHITE_PAPERS = `You are a scientific medical writer producing a White Paper for IBD Health Hub — a UK-based IBD and gastrointestinal health research platform. Synthesise multiple clinical papers and published evidence sources into a comprehensive, structured white paper on a specific topic in IBD, gastrointestinal nutrition, or gastrointestinal medicine.
 
-White Papers on SLA Health are substantive, evidence-based documents used by healthcare professionals, researchers, and healthcare organisations to understand the current state of evidence on a topic and its clinical implications.
+White Papers on IBD Health Hub are substantive, evidence-based documents used by healthcare professionals, researchers, and healthcare organisations to understand the current state of evidence on a topic and its clinical implications.
 
 TARGET AUDIENCE
 Primary: UK-based gastroenterologists, IBD specialists, dietitians, GPs, and clinical researchers. Secondary: Informed patients and patient advocacy groups.
@@ -4566,7 +4624,7 @@ TONE & STYLE
 Formal, systematic, and evidence-led. Comprehensive scholarship without being inaccessible. Use correct clinical and scientific terminology. Clearly structured with informative section headers. Continuous prose — use lists only where they genuinely serve clarity. Active voice where natural.
 
 STRUCTURE
-1. Title Block — full title, subtitle (if applicable), prepared for: SLA Health, date.
+1. Title Block — full title, subtitle (if applicable), prepared for: IBD Health Hub, date.
 2. Executive Summary (150–200 words) — topic, key evidence reviewed, and headline conclusions. Must stand alone as a brief overview.
 3. Background & Clinical Context (200–300 words) — the condition, relevant patient populations, current UK standard of care, and the unmet clinical need this white paper addresses.
 4. Evidence Review (400–600 words) — systematically summarise key evidence from the source papers. Organise by theme or chronology as appropriate. Report study designs, populations, interventions, and key findings. Attribute all data to source authors. Note study limitations where authors report them.
@@ -4576,11 +4634,11 @@ STRUCTURE
 8. References — full citations in Vancouver format with DOIs where available.
 
 FORMATTING RULES
-Total length: 1,400–2,000 words. UK British English. All numerical data must match source papers exactly — do not round or alter figures. Do not speculate beyond what the evidence supports. Do not reproduce verbatim text from source papers. Add a disclaimer in small italic text at the end: This White Paper has been prepared by SLA Health for educational and informational purposes only. It does not constitute clinical guidelines or a recommendation to alter clinical practice. Healthcare professionals should exercise independent clinical judgement in applying this information.`;
+Total length: 1,400–2,000 words. UK British English. All numerical data must match source papers exactly — do not round or alter figures. Do not speculate beyond what the evidence supports. Do not reproduce verbatim text from source papers. Add a disclaimer in small italic text at the end: This White Paper has been prepared by IBD Health Hub for educational and informational purposes only. It does not constitute clinical guidelines or a recommendation to alter clinical practice. Healthcare professionals should exercise independent clinical judgement in applying this information.`;
 
-const DEFAULT_PROMPT_INFOGRAPHICS = `You are a medical content designer producing infographic copy for SLA Health — a UK-based IBD and gastrointestinal health digital platform. Transform the source clinical paper or research summary into structured, visually optimised copy for an infographic.
+const DEFAULT_PROMPT_INFOGRAPHICS = `You are a medical content designer producing infographic copy for IBD Health Hub — a UK-based IBD and gastrointestinal health digital platform. Transform the source clinical paper or research summary into structured, visually optimised copy for an infographic.
 
-Infographics on SLA Health distil complex clinical findings into clear, visual-first content for both healthcare professionals and patients. The output you produce will be handed directly to a visual designer — write for the eye, not the paragraph.
+Infographics on IBD Health Hub distil complex clinical findings into clear, visual-first content for both healthcare professionals and patients. The output you produce will be handed directly to a visual designer — write for the eye, not the paragraph.
 
 TARGET AUDIENCE
 Dual audience: UK-based healthcare professionals (gastroenterologists, IBD nurses, dietitians) and patients with IBD (Crohn's disease, ulcerative colitis, IBS).
@@ -4619,9 +4677,9 @@ Total copy length: 150–300 words maximum. UK British English. All statistics m
 
 const DEFAULT_SOCIAL_PROMPTS = {
 
-twitter: `You are a social media copywriter for SLA Health — a UK-based IBD and gastrointestinal health platform. Write X / Twitter posts promoting a clinical article from slahealth.co.uk.
+twitter: `You are a social media copywriter for IBD Health Hub — a UK-based IBD and gastrointestinal health platform. Write X / Twitter posts promoting a clinical article from ibdhealthhub.com.
 
-SLA Health's X audience includes gastroenterologists, IBD nurses, dietitians, GPs, researchers, and patients living with Crohn's disease, ulcerative colitis, and IBS.
+IBD Health Hub's X audience includes gastroenterologists, IBD nurses, dietitians, GPs, researchers, and patients living with Crohn's disease, ulcerative colitis, and IBS.
 
 RULES FOR EVERY POST
 - Strictly maximum 280 characters — count carefully before finalising
@@ -4632,22 +4690,22 @@ RULES FOR EVERY POST
 - UK British English. 0–1 emoji per post maximum.
 - Do not fabricate statistics not present in the source article`,
 
-linkedin: `You are a social media copywriter for SLA Health — a UK-based IBD and gastrointestinal health platform. Write LinkedIn posts promoting a clinical article from slahealth.co.uk.
+linkedin: `You are a social media copywriter for IBD Health Hub — a UK-based IBD and gastrointestinal health platform. Write LinkedIn posts promoting a clinical article from ibdhealthhub.com.
 
-SLA Health's LinkedIn audience is primarily professional: gastroenterologists, IBD specialists, dietitians, GPs, clinical researchers, and healthcare executives in the UK.
+IBD Health Hub's LinkedIn audience is primarily professional: gastroenterologists, IBD specialists, dietitians, GPs, clinical researchers, and healthcare executives in the UK.
 
 RULES FOR EVERY POST
 - Maximum 1,300 characters
 - Write ONLY the post text — no label, no preamble
 - Each post must take a meaningfully different angle (e.g. post 1: HCP clinical insight; post 2: broader scientific or policy implication)
-- Structure: compelling hook (1–2 lines) → clinical insight (2–4 lines) → implication or reflection → call to action ending with "Read the full article at SLA Health"
+- Structure: compelling hook (1–2 lines) → clinical insight (2–4 lines) → implication or reflection → call to action ending with "Read the full article at ibdhealthhub.com"
 - Professional but conversational — not a press release. Short paragraphs with line breaks.
 - 1–3 hashtags at the end: #IBD #Gastroenterology #ClinicalResearch #GutHealth #IBDResearch #MedicalNutrition
 - UK British English. Do not fabricate content not in the source article.`,
 
-facebook: `You are a social media copywriter for SLA Health — a UK-based IBD and gastrointestinal health platform. Write Facebook posts promoting a clinical article from slahealth.co.uk.
+facebook: `You are a social media copywriter for IBD Health Hub — a UK-based IBD and gastrointestinal health platform. Write Facebook posts promoting a clinical article from ibdhealthhub.com.
 
-SLA Health's Facebook audience is primarily patient-facing: people living with Crohn's disease, ulcerative colitis, and IBS, their families, carers, and the broader UK IBD community.
+IBD Health Hub's Facebook audience is primarily patient-facing: people living with Crohn's disease, ulcerative colitis, and IBS, their families, carers, and the broader UK IBD community.
 
 RULES FOR EVERY POST
 - Maximum 2,000 characters
@@ -4656,25 +4714,25 @@ RULES FOR EVERY POST
 - Warm, conversational, and empathetic tone — never condescending or alarmist
 - End every post with an open question to encourage comments
 - Plain English — define any clinical terms used
-- Include: "Read the full article at slahealth.co.uk"
+- Include: "Read the full article at ibdhealthhub.com"
 - 2–4 hashtags: #IBD #CrohnsDisease #UlcerativeColitis #GutHealth #IBDWarrior
 - Emojis welcome but sparingly (1–3 per post). UK British English.
 - Do not give clinical or dietary advice — report what the research says.`,
 
-substack: `You are a newsletter writer for SLA Health — a UK-based IBD and gastrointestinal health platform. Write a Substack teaser post promoting a clinical article to drive readers to slahealth.co.uk.
+substack: `You are a newsletter writer for IBD Health Hub — a UK-based IBD and gastrointestinal health platform. Write a Substack teaser post promoting a clinical article to drive readers to ibdhealthhub.com.
 
-SLA Health's Substack audience is engaged, health-literate, and opted-in: a mix of IBD patients, healthcare professionals, and researchers who want clinical content updates.
+IBD Health Hub's Substack audience is engaged, health-literate, and opted-in: a mix of IBD patients, healthcare professionals, and researchers who want clinical content updates.
 
 RULES FOR THIS POST
 - Maximum 600 characters
 - Write ONLY the post text — no label, no preamble
-- Structure: (1) compelling hook in italics marked with asterisks: *Hook sentence here* (2) 2–3 bullet points with key findings (3) read-more CTA ending with "→ Read the full article at slahealth.co.uk"
+- Structure: (1) compelling hook in italics marked with asterisks: *Hook sentence here* (2) 2–3 bullet points with key findings (3) read-more CTA ending with "→ Read the full article at ibdhealthhub.com"
 - Editorial voice — thoughtful and insight-led. No hashtags.
 - UK British English. Do not fabricate content not in the source article.`,
 
-tiktok: `You are a short-form video scriptwriter for SLA Health — a UK-based IBD and gastrointestinal health platform. Write TikTok video scripts or captions promoting a clinical article from slahealth.co.uk.
+tiktok: `You are a short-form video scriptwriter for IBD Health Hub — a UK-based IBD and gastrointestinal health platform. Write TikTok video scripts or captions promoting a clinical article from ibdhealthhub.com.
 
-SLA Health's TikTok content targets a younger patient-facing audience: people with IBD, chronic health advocates, and health-curious individuals. Content must feel authentic and energetic — not like a medical brochure.
+IBD Health Hub's TikTok content targets a younger patient-facing audience: people with IBD, chronic health advocates, and health-curious individuals. Content must feel authentic and energetic — not like a medical brochure.
 
 RULES FOR EVERY SCRIPT
 - Maximum 300 characters
@@ -4687,9 +4745,9 @@ RULES FOR EVERY SCRIPT
 - Casual, energetic. Emojis welcome (2–4). UK British English but informal register.
 - Do not give clinical advice.`,
 
-instagram: `You are a social media copywriter for SLA Health — a UK-based IBD and gastrointestinal health platform. Write Instagram captions accompanying a visual post promoting a clinical article from slahealth.co.uk.
+instagram: `You are a social media copywriter for IBD Health Hub — a UK-based IBD and gastrointestinal health platform. Write Instagram captions accompanying a visual post promoting a clinical article from ibdhealthhub.com.
 
-SLA Health's Instagram audience spans IBD patients, chronic illness advocates, health-conscious individuals, and some healthcare professionals. Content should be engaging and share-worthy.
+IBD Health Hub's Instagram audience spans IBD patients, chronic illness advocates, health-conscious individuals, and some healthcare professionals. Content should be engaging and share-worthy.
 
 RULES FOR EVERY CAPTION
 - Maximum 2,200 characters
@@ -4726,6 +4784,24 @@ let selectedDesign    = 'Executive Summary';
 let wpSourceLinks     = [];
 let heroImageUrl      = null; // currently selected hero image URL
 let heroImageType     = null; // 'ai' or 'unsplash'
+
+function updateArticleHeroPreview() {
+  var wrap = document.getElementById('articleHeroPreview');
+  var img  = document.getElementById('articleHeroImg');
+  if (!wrap || !img) return;
+  if (heroImageUrl) {
+    img.src = heroImageUrl;
+    wrap.style.display = '';
+  } else {
+    wrap.style.display = 'none';
+    img.src = '';
+  }
+}
+function removeArticleHero() {
+  heroImageUrl = null;
+  heroImageType = null;
+  updateArticleHeroPreview();
+}
 let unsplashResults   = [];
 let selectedUnsplashIdx = -1;
 let extractedText   = '';
@@ -4906,6 +4982,7 @@ function switchCategory(catId) {
   currentFile    = null;
   heroImageUrl   = null;
   heroImageType  = null;
+  updateArticleHeroPreview();
   document.getElementById('articleOutput').classList.remove('visible');
   document.getElementById('emptyState').style.display = '';
   hideAlert('extractionStatus');
@@ -4914,6 +4991,8 @@ function switchCategory(catId) {
   document.getElementById('retryInfo').classList.remove('visible');
   document.getElementById('wordCount').textContent = '';
   document.getElementById('modelUsedBadge').style.display = 'none';
+  var wpBtn = document.getElementById('viewOnWpBtn');
+  if (wpBtn) { wpBtn.style.display = 'none'; wpBtn.href = '#'; }
 
   // Update model dropdown for infographics
   updateModelSelectForCategory(catId);
@@ -5987,12 +6066,23 @@ function renderRuleCard(rule) {
     '<div class="auto-rule-dot ' + (rule.enabled ? 'enabled' : 'disabled') + '" title="' + (rule.enabled ? 'Active' : 'Paused') + '"></div>' +
     '<div class="auto-rule-info">' +
       '<div class="auto-rule-name">' + escHtml(rule.name) + '</div>' +
-      '<div class="auto-rule-meta">' + escHtml(rule.category) + ' &middot; ' + triggerLabel + ' &middot; ' + sources.length + ' source' + (sources.length !== 1 ? 's' : '') + ' &middot; ' + reviewLabel + ' &middot; ' + notifLabel + '</div>' +
-      '<div class="auto-rule-meta" style="margin-top:2px;">' + lastRun + ' &middot; ' + ((rule.stats && rule.stats.articlesGenerated) || 0) + ' generated &middot; ' + ((rule.stats && rule.stats.articlesPublished) || 0) + ' published</div>' +
+      '<div class="auto-rule-meta">' + escHtml(rule.category) + ' &middot; ' + triggerLabel + ' &middot; ' +
+        '<a href="#" onclick="event.preventDefault();openSourcesFilesModal(\'' + escHtml(rule.id) + '\',\'' + escHtml(rule.name) + '\');" style="color:var(--sla-navy);font-weight:700;text-decoration:underline;">' +
+          sources.length + ' source' + (sources.length !== 1 ? 's' : '') +
+        '</a>' +
+        ' &middot; ' + reviewLabel + ' &middot; ' + notifLabel + '</div>' +
+      '<div class="auto-rule-meta" style="margin-top:2px;">' + lastRun + ' &middot; ' +
+        '<a href="#" onclick="event.preventDefault();viewRuleGenerated(\'' + escHtml(rule.id) + '\',\'' + escHtml(rule.name) + '\');" style="color:var(--sla-navy);font-weight:700;text-decoration:underline;">' +
+          ((rule.stats && rule.stats.articlesGenerated) || 0) + ' generated' +
+        '</a> &middot; ' +
+        '<a href="#" onclick="event.preventDefault();viewRulePublished(\'' + escHtml(rule.id) + '\',\'' + escHtml(rule.name) + '\');" style="color:var(--sla-navy);font-weight:700;text-decoration:underline;">' +
+          ((rule.stats && rule.stats.articlesPublished) || 0) + ' published' +
+        '</a></div>' +
     '</div>' +
     '<div class="auto-rule-actions">' +
       '<button style="' + btnStyle + '" title="' + (rule.enabled ? 'Pause rule' : 'Resume rule') + '" onclick="toggleAutoRule(\'' + escHtml(rule.id) + '\',' + (!rule.enabled) + ')">' + (rule.enabled ? '&#9646;&#9646;' : '&#9654;') + '</button>' +
       '<button style="' + btnStyle + 'color:var(--sla-orange);border-color:var(--sla-orange);" title="Run now" onclick="runRuleNow(\'' + escHtml(rule.id) + '\')">&#9654; Run</button>' +
+      '<button style="' + btnStyle + 'color:var(--sla-navy);border-color:var(--sla-navy);" title="View generated articles" onclick="viewRuleGenerated(\'' + escHtml(rule.id) + '\',\'' + escHtml(rule.name) + '\')">&#128203; Generated</button>' +
       '<button style="' + btnStyle + '" title="Clone rule" onclick="cloneAutoRule(\'' + escHtml(rule.id) + '\')">&#10697;</button>' +
       '<button style="' + btnStyle + '" title="Edit rule" onclick="openRuleWizard(\'' + escHtml(rule.id) + '\')">&#9998;</button>' +
       '<button style="' + btnStyle + 'color:#ef4444;border-color:#ef4444;" title="Delete rule" onclick="deleteAutoRuleConfirm(\'' + escHtml(rule.id) + '\',\'' + escHtml(rule.name) + '\')">&#128465;</button>' +
@@ -6028,16 +6118,295 @@ function deleteAutoRuleConfirm(id, name) {
     .catch(function(err) { showToast('Delete failed: ' + err.message); });
 }
 
-async function runRuleNow(id) {
-  if (!confirm('Trigger this rule now?\n\nIt will fetch sources and create new content jobs immediately, bypassing the schedule.')) return;
+// ── Sources files modal (Task 6) ────────────────────────────────────────────
+async function openSourcesFilesModal(ruleId, ruleName) {
+  var existing = document.getElementById('sourcesFilesModal');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'sourcesFilesModal';
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(10,20,35,0.6);backdrop-filter:blur(3px);z-index:1000;display:flex;align-items:center;justify-content:center;';
+  el.innerHTML =
+    '<div style="background:var(--card);width:640px;max-width:96vw;max-height:84vh;display:flex;flex-direction:column;font-family:\'Montserrat\',sans-serif;box-shadow:0 8px 40px rgba(10,20,35,0.3);">' +
+      '<div style="background:var(--sla-navy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">' +
+        '<div>' +
+          '<div style="color:#fff;font-size:0.85rem;font-weight:800;">Source Files</div>' +
+          '<div style="color:rgba(255,255,255,0.55);font-size:0.65rem;margin-top:2px;">' + escHtml(ruleName) + '</div>' +
+        '</div>' +
+        '<button onclick="document.getElementById(\'sourcesFilesModal\').remove()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:1rem;cursor:pointer;padding:4px 10px;">&times;</button>' +
+      '</div>' +
+      '<div id="sourcesFilesBody" style="overflow-y:auto;flex:1;padding:16px 18px;font-size:0.78rem;">' +
+        '<div style="color:var(--text-muted);">Loading files…</div>' +
+      '</div>' +
+      '<div style="padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--border);flex-shrink:0;">' +
+        '<span id="sourcesFilesSelCount" style="font-size:0.7rem;color:var(--text-muted);">0 selected</span>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button class="btn btn-outline btn-sm" onclick="document.getElementById(\'sourcesFilesModal\').remove()">Close</button>' +
+          '<button class="btn btn-orange btn-sm" id="sourcesFilesRunBtn" onclick="runRuleWithSelectedFiles(\'' + ruleId + '\')">▶ Re-process selected</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(el);
+  el.addEventListener('click', function(e) { if (e.target === el) el.remove(); });
+  // Fetch file groups
+  try {
+    var data = await apiFetch('/api/automation/sources-list', { method: 'POST', body: JSON.stringify({ ruleId: ruleId }) });
+    renderSourcesFilesBody(data);
+  } catch (err) {
+    document.getElementById('sourcesFilesBody').innerHTML = '<div style="color:#ef4444;">Failed to load: ' + escHtml(err.message) + '</div>';
+  }
+}
+
+function renderSourcesFilesBody(data) {
+  var body = document.getElementById('sourcesFilesBody');
+  if (!body) return;
+  var groups = (data && data.groups) || [];
+  if (!groups.length) { body.innerHTML = '<div style="color:var(--text-muted);">No sources configured for this rule.</div>'; return; }
+  var html = '';
+  groups.forEach(function(g, gi) {
+    var typeLabel = g.source.type === 'google_drive' ? 'Google Drive' : (g.source.type === 'dropbox' ? 'Dropbox' : g.source.type);
+    html += '<div style="margin-bottom:18px;">' +
+      '<div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--sla-navy);margin-bottom:6px;">' + escHtml(typeLabel) + ' &middot; ' + escHtml(g.source.folderPath || g.source.folderId || '') + '</div>';
+    if (g.error) {
+      html += '<div style="color:#ef4444;font-size:0.72rem;padding:8px;border:1px solid #fecaca;background:#fef2f2;">' + escHtml(g.error) + '</div>';
+    } else if (!g.files.length) {
+      html += '<div style="color:var(--text-muted);font-size:0.72rem;padding:6px 0;">No files in this folder.</div>';
+    } else {
+      g.files.forEach(function(f, fi) {
+        var safeName = escHtml(f.name);
+        html += '<label style="display:flex;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid var(--border);cursor:pointer;">' +
+          '<input type="checkbox" class="src-file-cb" data-name="' + safeName + '" onchange="updateSourceFilesSelCount()" />' +
+          '<span style="flex:1;font-size:0.74rem;color:var(--text);">' + safeName + '</span>' +
+          (f.url ? '<a href="' + escHtml(f.url) + '" target="_blank" style="font-size:0.65rem;color:var(--sla-navy);text-decoration:underline;">open ↗</a>' : '') +
+        '</label>';
+      });
+    }
+    html += '</div>';
+  });
+  body.innerHTML = html;
+}
+
+function updateSourceFilesSelCount() {
+  var n = document.querySelectorAll('#sourcesFilesBody .src-file-cb:checked').length;
+  var el = document.getElementById('sourcesFilesSelCount');
+  if (el) el.textContent = n + ' selected';
+}
+
+async function runRuleWithSelectedFiles(ruleId) {
+  var checked = Array.prototype.slice.call(document.querySelectorAll('#sourcesFilesBody .src-file-cb:checked'));
+  var names = checked.map(function(cb) { return cb.dataset.name; });
+  if (!names.length) { showAutoMessage('Pick at least one file to re-process.', 'warn'); return; }
+  document.getElementById('sourcesFilesModal').remove();
+  showAutoMessage('Re-processing ' + names.length + ' file(s)…', 'info');
+  try {
+    var result = await apiFetch('/api/automation/run', { method:'POST', body: JSON.stringify({ ruleId: ruleId, forceFiles: names }) });
+    var msg = result && result.processed > 0
+      ? 'Re-processed ' + result.processed + ' file(s).'
+      : 'No matching files were re-processed.';
+    showAutoMessage(msg, result && result.processed > 0 ? 'success' : 'warn');
+    if (result && result.errors && result.errors.length) result.errors.slice(0, 5).forEach(function(e) { showAutoMessage(e, 'error'); });
+    loadAutoRules();
+  } catch (err) {
+    showAutoMessage('Re-process failed: ' + err.message, 'error');
+  }
+}
+
+// ── Custom confirm modal for "Run rule now" ─────────────────────────────────
+function runRuleNow(id) {
+  // Find the rule name for nicer copy
+  var card = document.getElementById('ruleCard-' + id);
+  var ruleName = card ? (card.querySelector('.auto-rule-name')?.textContent || 'this rule') : 'this rule';
+  showRunConfirmModal(id, ruleName);
+}
+
+function showRunConfirmModal(ruleId, ruleName) {
+  var existing = document.getElementById('runConfirmModal');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'runConfirmModal';
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(10,20,35,0.6);backdrop-filter:blur(3px);z-index:1000;display:flex;align-items:center;justify-content:center;';
+  el.innerHTML =
+    '<div style="background:var(--card);width:440px;max-width:96vw;box-shadow:0 8px 40px rgba(10,20,35,0.3);overflow:hidden;font-family:\'Montserrat\',sans-serif;">' +
+      '<div style="background:var(--sla-navy);padding:14px 18px;display:flex;align-items:center;gap:12px;">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="#ff7a1a" stroke-width="2" style="width:22px;height:22px;flex-shrink:0;"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+        '<div>' +
+          '<div style="color:#fff;font-size:0.85rem;font-weight:800;">Run Rule Now</div>' +
+          '<div style="color:rgba(255,255,255,0.55);font-size:0.65rem;margin-top:2px;">Bypass schedule and trigger immediately</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="padding:18px;font-size:0.78rem;color:var(--text);line-height:1.55;">' +
+        'Trigger <strong>' + escHtml(ruleName) + '</strong> now? It will fetch sources and create new content jobs, bypassing the schedule.' +
+      '</div>' +
+      '<div style="padding:12px 18px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);">' +
+        '<button class="btn btn-outline btn-sm" onclick="document.getElementById(\'runConfirmModal\').remove()">Cancel</button>' +
+        '<button class="btn btn-orange btn-sm" onclick="confirmRunRuleNow(\'' + ruleId + '\')">▶ Run Now</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(el);
+  el.addEventListener('click', function(e) { if (e.target === el) el.remove(); });
+}
+
+async function confirmRunRuleNow(id) {
+  var modal = document.getElementById('runConfirmModal');
+  if (modal) modal.remove();
+  showAutoMessage('Running rule…', 'info');
   try {
     var result = await apiFetch('/api/automation/run', { method: 'POST', body: JSON.stringify({ ruleId: id }) });
     var msg = result && result.processed > 0
       ? 'Rule triggered — ' + result.processed + ' job' + (result.processed !== 1 ? 's' : '') + ' created. Check Notifications.'
       : 'Rule ran — no new items found in sources.';
-    showToast(msg);
+    showAutoMessage(msg, result && result.processed > 0 ? 'success' : 'info');
+    if (result && result.errors && result.errors.length) {
+      result.errors.slice(0, 5).forEach(function(e) { showAutoMessage(e, 'error'); });
+    }
     loadAutoRules();
-  } catch (err) { showToast('Run failed: ' + err.message); }
+  } catch (err) {
+    showAutoMessage('Run failed: ' + err.message, 'error');
+  }
+}
+
+// ── Persistent dismissible message bar (Task 11) ────────────────────────────
+function ensureAutoMessageContainer() {
+  var c = document.getElementById('autoMessageStack');
+  if (c) return c;
+  c = document.createElement('div');
+  c.id = 'autoMessageStack';
+  c.style.cssText = 'position:fixed;top:70px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:950;max-width:420px;font-family:\'Montserrat\',sans-serif;';
+  document.body.appendChild(c);
+  return c;
+}
+function showAutoMessage(text, type) {
+  var c = ensureAutoMessageContainer();
+  var colors = {
+    success: { bg:'#16a34a', fg:'#fff' },
+    error:   { bg:'#ef4444', fg:'#fff' },
+    info:    { bg:'var(--sla-navy)', fg:'#fff' },
+    warn:    { bg:'#f59e0b', fg:'#fff' },
+  };
+  var t = colors[type || 'info'] || colors.info;
+  var msg = document.createElement('div');
+  msg.style.cssText = 'background:' + t.bg + ';color:' + t.fg + ';padding:10px 14px;font-size:0.74rem;font-weight:600;display:flex;align-items:flex-start;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.2);min-width:260px;';
+  msg.innerHTML =
+    '<span style="flex:1;line-height:1.45;">' + escHtml(text) + '</span>' +
+    '<button style="background:transparent;border:none;color:' + t.fg + ';font-size:1rem;cursor:pointer;padding:0 0 0 8px;line-height:1;flex-shrink:0;font-weight:700;">&times;</button>';
+  var timer = setTimeout(function() { msg.remove(); }, 10000);
+  msg.querySelector('button').onclick = function() { clearTimeout(timer); msg.remove(); };
+  c.appendChild(msg);
+  // Mirror into the log endpoint so the Log tab also shows it
+  try {
+    apiFetch('/api/automation/logs', { method:'POST', body: JSON.stringify({ level: type || 'info', message: text }) });
+  } catch(e) {}
+}
+
+// ── View Generated Articles modal ─────────────────────────────────────────────
+async function viewRuleGenerated(ruleId, ruleName) {
+  // Build or reuse the modal
+  var existing = document.getElementById('generatedModal');
+  if (!existing) {
+    var el = document.createElement('div');
+    el.id = 'generatedModal';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:900;display:flex;align-items:center;justify-content:center;';
+    el.innerHTML =
+      '<div style="background:var(--card);width:680px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);">' +
+        '<div style="background:var(--sla-navy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">' +
+          '<div><div id="generatedModalTitle" style="color:#fff;font-family:\'Montserrat\',sans-serif;font-size:0.85rem;font-weight:800;"></div>' +
+          '<div style="color:rgba(255,255,255,0.5);font-size:0.65rem;margin-top:2px;">Articles generated by this rule</div></div>' +
+          '<button onclick="document.getElementById(\'generatedModal\').remove()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:1rem;cursor:pointer;padding:4px 8px;">&times;</button>' +
+        '</div>' +
+        '<div id="generatedModalBody" style="overflow-y:auto;flex:1;padding:16px;"></div>' +
+      '</div>';
+    document.body.appendChild(el);
+    el.addEventListener('click', function(e) { if (e.target === el) el.remove(); });
+  }
+
+  var modal = document.getElementById('generatedModal');
+  var body = document.getElementById('generatedModalBody');
+  var titleEl = document.getElementById('generatedModalTitle');
+  titleEl.textContent = ruleName || ruleId;
+  body.innerHTML = '<p style="color:var(--text-muted);padding:8px;">Loading...</p>';
+  modal.style.display = 'flex';
+
+  try {
+    var jobs = await apiFetch('/api/automation/jobs?ruleId=' + encodeURIComponent(ruleId));
+    if (!jobs || !jobs.length) {
+      body.innerHTML = '<p style="color:var(--text-muted);padding:8px;">No articles generated yet by this rule.</p>';
+      return;
+    }
+    // Fetch content for each job (capped at 30)
+    var slice = jobs.slice(0, 30);
+    var contents = await Promise.all(slice.map(function(j) {
+      return apiFetch('/api/content/' + j.contentId).catch(function() { return null; });
+    }));
+
+    var statusColor = { pending_review:'var(--sla-orange)', auto_published:'#22c55e', approved:'#22c55e', rejected:'#ef4444', timed_out:'#94a3b8' };
+    var rows = slice.map(function(job, i) {
+      var c = contents[i];
+      var title = (c && c.title) || job.contentId;
+      var words = c && c.body ? c.body.trim().split(/\s+/).filter(Boolean).length : 0;
+      var model = (c && c.model) ? c.model.split('/').pop() : '—';
+      var status = job.status || 'unknown';
+      var color = statusColor[status] || 'var(--text-muted)';
+      var age = job.createdAt ? timeAgo(job.createdAt) : '';
+      return '<div style="border:1px solid var(--border);margin-bottom:8px;padding:12px 14px;">' +
+        '<div style="font-weight:700;font-size:0.85rem;color:var(--text);margin-bottom:6px;">' + escHtml(title) + '</div>' +
+        '<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:0.72rem;color:var(--text-muted);align-items:center;">' +
+          '<span>&#128337; ' + escHtml(age) + '</span>' +
+          '<span style="color:' + color + ';font-weight:700;text-transform:uppercase;">' + escHtml(status.replace(/_/g,' ')) + '</span>' +
+          (words ? '<span>&#128221; ' + words.toLocaleString() + ' words</span>' : '') +
+          '<span>&#129302; ' + escHtml(model) + '</span>' +
+          (c ? '<button class="btn btn-outline btn-xs" onclick="document.getElementById(\'generatedModal\').remove();viewArticleFromPipeline(\'' + escHtml(c.id) + '\')">View Article</button>' : '') +
+        '</div>' +
+      '</div>';
+    });
+    body.innerHTML = rows.join('') + (jobs.length > 30 ? '<p style="color:var(--text-muted);font-size:0.75rem;text-align:center;">Showing first 30 of ' + jobs.length + ' articles.</p>' : '');
+  } catch (err) {
+    body.innerHTML = '<p style="color:#ef4444;padding:8px;">' + escHtml(err.message) + '</p>';
+  }
+}
+
+async function viewRulePublished(ruleId, ruleName) {
+  var existing = document.getElementById('publishedModal');
+  if (!existing) {
+    var el = document.createElement('div');
+    el.id = 'publishedModal';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:900;display:flex;align-items:center;justify-content:center;';
+    el.innerHTML =
+      '<div style="background:var(--card);width:680px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);">' +
+        '<div style="background:var(--sla-navy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">' +
+          '<div><div id="publishedModalTitle" style="color:#fff;font-family:\'Montserrat\',sans-serif;font-size:0.85rem;font-weight:800;"></div>' +
+          '<div style="color:rgba(255,255,255,0.5);font-size:0.65rem;margin-top:2px;">Articles published to WordPress by this rule</div></div>' +
+          '<button onclick="document.getElementById(\'publishedModal\').remove()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:1rem;cursor:pointer;padding:4px 8px;">&times;</button>' +
+        '</div>' +
+        '<div id="publishedModalBody" style="overflow-y:auto;flex:1;padding:16px;"></div>' +
+      '</div>';
+    document.body.appendChild(el);
+    el.addEventListener('click', function(e) { if (e.target === el) el.remove(); });
+  }
+  var modal = document.getElementById('publishedModal');
+  var body = document.getElementById('publishedModalBody');
+  document.getElementById('publishedModalTitle').textContent = ruleName || ruleId;
+  body.innerHTML = '<p style="color:var(--text-muted);padding:8px;">Loading...</p>';
+  modal.style.display = 'flex';
+  try {
+    var jobs = await apiFetch('/api/automation/jobs?ruleId=' + encodeURIComponent(ruleId));
+    if (!jobs || !jobs.length) { body.innerHTML = '<p style="color:var(--text-muted);padding:8px;">No articles yet.</p>'; return; }
+    var slice = jobs.slice(0, 50);
+    var contents = await Promise.all(slice.map(function(j) { return apiFetch('/api/content/' + j.contentId).catch(function() { return null; }); }));
+    var published = contents.filter(function(c) { return c && (c.status === 'published' || c.wpPostUrl); });
+    if (!published.length) { body.innerHTML = '<p style="color:var(--text-muted);padding:8px;">No articles published to WordPress yet.</p>'; return; }
+    body.innerHTML = published.map(function(c) {
+      var when = c.publishedAt ? timeAgo(c.publishedAt) : '';
+      return '<div style="border:1px solid var(--border);margin-bottom:8px;padding:12px 14px;">' +
+        '<div style="font-weight:700;font-size:0.85rem;color:var(--text);margin-bottom:6px;">' + escHtml(c.title || c.id) + '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+          '<span style="font-size:0.7rem;color:var(--text-muted);">&#128337; ' + escHtml(when) + '</span>' +
+          '<button class="btn btn-outline btn-xs" onclick="document.getElementById(\'publishedModal\').remove();viewArticleFromPipeline(\'' + escHtml(c.id) + '\')">View Article</button>' +
+          (c.wpPostUrl ? '<a class="btn btn-outline btn-xs" href="' + escHtml(c.wpPostUrl) + '" target="_blank" rel="noopener" style="text-decoration:none;">View on WordPress &#8599;</a>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch (err) {
+    body.innerHTML = '<p style="color:#ef4444;padding:8px;">' + escHtml(err.message) + '</p>';
+  }
 }
 
 // ── Rule Wizard ───────────────────────────────────────────────────────────────
@@ -6052,6 +6421,8 @@ async function openRuleWizard(editId) {
   _wizEditId = editId || null;
   _wizSources = [];
   _wizEmails = [];
+  // Refresh cloud status so Drive/Dropbox "⚠ Not connected" warnings are current
+  loadCloudIntegrationStatus();
 
   switchTab('automation-new');
 
@@ -6088,7 +6459,7 @@ async function openRuleWizard(editId) {
       // Sources
       if (rule.sources && rule.sources.length) {
         _wizSources = rule.sources.map(function(s, i) {
-          return { id: 'src_' + Date.now() + '_' + i, type: s.type || 'rss', url: s.url || '', repo: s.repo || '', path: s.path || '', branch: s.branch || 'main' };
+          return { id: 'src_' + Date.now() + '_' + i, type: s.type || 'rss', url: s.url || '', repo: s.repo || '', path: s.path || '', branch: s.branch || 'main', folderId: s.folderId || '', folderPath: s.folderPath || '' };
         });
         _wizRenderSources();
       }
@@ -6126,6 +6497,8 @@ async function openRuleWizard(editId) {
           var combineRadio = document.querySelector('input[name="wizCombine"][value="' + rule.generation.combineMode + '"]');
           if (combineRadio) combineRadio.checked = true;
         }
+        var heroImgEl = document.getElementById('wizHeroImage');
+        if (heroImgEl) heroImgEl.checked = rule.generation.heroImage !== false;
       }
 
       // Review
@@ -6225,20 +6598,30 @@ function wizRemoveSource(id) {
 function _wizRenderSources() {
   var list = document.getElementById('wizSourcesList');
   var html = _wizSources.map(function(s) {
-    var label = s.type === 'rss' ? 'RSS' : s.type === 'url' ? 'URL' : s.type === 'upload' ? 'Upload' : 'GitHub';
-    var ph = s.type === 'rss' ? 'https://feeds.bmj.com/bmj/recent' : s.type === 'url' ? 'https://www.nice.org.uk/news' : '';
+    var labelMap = { rss:'RSS', url:'URL', upload:'Upload', github:'GitHub', google_drive:'Drive', dropbox:'Dropbox' };
+    var label = labelMap[s.type] || s.type;
     var inputHtml;
     if (s.type === 'github') {
-      inputHtml = '<input placeholder="owner/repo" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.repo=el.value;})(this)" value="' + escHtml(s.repo) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;"> <input placeholder="path (optional)" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.path=el.value;})(this)" value="' + escHtml(s.path) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">';
+      inputHtml = '<input placeholder="owner/repo" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.repo=el.value;})(this)" value="' + escHtml(s.repo||'') + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;"> <input placeholder="path (optional)" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.path=el.value;})(this)" value="' + escHtml(s.path||'') + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;">';
     } else if (s.type === 'upload') {
-      inputHtml = '<input type="file" accept=".pdf,.doc,.docx,.txt,.html" onchange="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src&&el.files[0])src.url=el.files[0].name;})(this)" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">';
+      inputHtml = '<input type="file" accept=".pdf,.doc,.docx,.txt,.html" onchange="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src&&el.files[0])src.url=el.files[0].name;})(this)" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;">';
+    } else if (s.type === 'google_drive') {
+      inputHtml = '<input placeholder="Google Drive folder ID (from URL)" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.folderId=el.value.trim();})(this)" value="' + escHtml(s.folderId||'') + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;" title="Paste the folder ID from the Drive URL: drive.google.com/drive/folders/FOLDER_ID">';
+    } else if (s.type === 'dropbox') {
+      inputHtml = '<input placeholder="Dropbox folder path e.g. /IBD Articles" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.folderPath=el.value.trim();})(this)" value="' + escHtml(s.folderPath||'') + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;">';
     } else {
-      inputHtml = '<input type="url" placeholder="' + ph + '" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.url=el.value;})(this)" value="' + escHtml(s.url) + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.82rem;">';
+      var ph = s.type === 'rss' ? 'https://feeds.bmj.com/bmj/recent' : 'https://www.nice.org.uk/news';
+      inputHtml = '<input type="url" placeholder="' + ph + '" oninput="(function(el){var src=_wizSources.find(function(x){return x.id===\'' + s.id + '\'});if(src)src.url=el.value;})(this)" value="' + escHtml(s.url||'') + '" style="flex:1;padding:6px 10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.82rem;">';
+    }
+    var connectWarning = '';
+    if ((s.type === 'google_drive' || s.type === 'dropbox') && !_cloudStatus[s.type === 'google_drive' ? 'google' : 'dropbox']) {
+      connectWarning = '<span style="font-size:0.7rem;color:#f59e0b;white-space:nowrap;">⚠ Not connected</span>';
     }
     return '<div style="display:flex;align-items:center;gap:8px;">'
       + '<span style="min-width:52px;font-size:0.75rem;font-weight:600;color:var(--text-muted);">' + label + '</span>'
       + inputHtml
-      + '<button onclick="wizRemoveSource(\'' + s.id + '\')" style="padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:#ef4444;cursor:pointer;font-size:0.8rem;">&#x2715;</button>'
+      + connectWarning
+      + '<button onclick="wizRemoveSource(\'' + s.id + '\')" style="padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:#ef4444;cursor:pointer;font-size:0.8rem;">&#x2715;</button>'
       + '</div>';
   }).join('');
   if (list) list.innerHTML = html;
@@ -6340,7 +6723,7 @@ async function _wizSubmit() {
   var payload = {
     name: document.getElementById('wizName').value.trim(),
     category: document.getElementById('wizCategory').value,
-    sources: _wizSources.map(function(s) { var o = {type:s.type}; if(s.url)o.url=s.url; if(s.repo)o.repo=s.repo; if(s.path)o.path=s.path; if(s.branch)o.branch=s.branch; return o; }),
+    sources: _wizSources.map(function(s) { var o = {type:s.type}; if(s.url)o.url=s.url; if(s.repo)o.repo=s.repo; if(s.path)o.path=s.path; if(s.branch)o.branch=s.branch; if(s.folderId)o.folderId=s.folderId; if(s.folderPath!==undefined)o.folderPath=s.folderPath; return o; }),
     trigger: {
       type: trigType,
       cron: trigType === 'schedule' ? cronExpr : null,
@@ -6352,6 +6735,7 @@ async function _wizSubmit() {
       prompt: document.getElementById('wizPrompt').value.trim(),
       combineMode: combineEl ? combineEl.value : 'one-per-item',
       model: document.getElementById('wizModel').value || null,
+      heroImage: document.getElementById('wizHeroImage').checked,
     },
     review: {
       required: reviewReq,
@@ -6405,16 +6789,27 @@ async function updateInboxBadge() {
   } catch (e) { /* non-fatal */ }
 }
 
+// Cache: jobId -> { title, contentItem } so renderInboxCard / openAutoInboxJob can show titles
+var __inboxContentCache = {};
+
 async function loadAutoInbox() {
   var list = document.getElementById('autoInboxList');
   if (!list) return;
   list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">Loading...</p>';
   try {
-    var jobs = await apiFetch('/api/automation/jobs?status=pending_review');
+    var jobs = await apiFetch('/api/automation/jobs');
     if (!jobs || !jobs.length) {
-      list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">No items pending review.</p>';
+      list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">No automation events yet.</p>';
       return;
     }
+    jobs.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+    // Resolve titles from /api/content (one batched fetch) instead of N round-trips
+    try {
+      var allContent = await contentApi.getAll();
+      var byId = {};
+      (allContent || []).forEach(function(c) { byId[c.id] = c; });
+      jobs.forEach(function(j) { if (byId[j.contentId]) __inboxContentCache[j.id] = byId[j.contentId]; });
+    } catch (e) { /* non-fatal — will fall back to contentId */ }
     list.innerHTML = jobs.map(function(j) { return renderInboxCard(j); }).join('');
   } catch (err) {
     list.innerHTML = '<p style="color:#ef4444;padding:16px;">' + escHtml(err.message) + '</p>';
@@ -6423,10 +6818,22 @@ async function loadAutoInbox() {
 
 function renderInboxCard(job) {
   var age = job.createdAt ? timeAgo(job.createdAt) : '';
+  var statusMap = {
+    pending_review:  { label: 'Pending Review',  color: 'var(--sla-orange)' },
+    auto_published:  { label: 'Auto-published',   color: '#22c55e' },
+    approved:        { label: 'Approved',          color: '#22c55e' },
+    published:       { label: 'Published',         color: '#22c55e' },
+    rejected:        { label: 'Rejected',          color: '#ef4444' },
+    timed_out:       { label: 'Timed Out',         color: '#94a3b8' },
+  };
+  var s = statusMap[job.status] || { label: job.status || 'Unknown', color: 'var(--text-muted)' };
+  var content = __inboxContentCache[job.id];
+  var title = (content && content.title) || 'Article';
   return '<div style="padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;" id="autoInboxCard-' + escHtml(job.id) + '" onclick="openAutoInboxJob(\'' + escHtml(job.id) + '\')">' +
-    '<div style="font-size:0.7rem;color:var(--sla-orange);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Pending Review</div>' +
-    '<div style="font-weight:600;font-size:0.85rem;color:var(--text);margin-bottom:3px;">' + escHtml(job.contentId || 'Article') + '</div>' +
-    '<div style="font-size:0.75rem;color:var(--text-muted);">' + escHtml(age) + '</div>' +
+    '<div style="font-size:0.7rem;color:' + s.color + ';font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">' + s.label + '</div>' +
+    '<div style="font-weight:600;font-size:0.85rem;color:var(--text);margin-bottom:3px;line-height:1.3;">' + escHtml(title) + '</div>' +
+    '<div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;">' + escHtml(age) + '</div>' +
+    (content ? '<button class="btn btn-outline btn-xs" style="font-size:0.65rem;padding:3px 8px;" onclick="event.stopPropagation();viewArticleFromPipeline(\'' + escHtml(content.id) + '\');">View Article</button>' : '') +
   '</div>';
 }
 
@@ -6450,15 +6857,38 @@ function renderAutoInboxDetail(job, content, rule) {
   var title = (content && content.title) || job.contentId || 'Article';
   var body = (content && content.body) || '';
   var ruleName = (rule && rule.name) || job.ruleId || '';
+  var words = body ? body.trim().split(/\s+/).filter(Boolean).length : 0;
+  var model = (content && content.model) ? content.model.split('/').pop() : null;
+
+  var statusMap = {
+    pending_review: { label: 'Pending Review',  color: 'var(--sla-orange)' },
+    auto_published:  { label: 'Auto-published',  color: '#22c55e' },
+    approved:        { label: 'Approved',         color: '#22c55e' },
+    rejected:        { label: 'Rejected',         color: '#ef4444' },
+    timed_out:       { label: 'Timed Out',        color: '#94a3b8' },
+  };
+  var s = statusMap[job.status] || { label: job.status || 'Unknown', color: 'var(--text-muted)' };
+
+  var metaItems = [
+    'Rule: ' + escHtml(ruleName),
+    '<span style="color:' + s.color + ';font-weight:700;">' + s.label + '</span>',
+    job.createdAt ? timeAgo(job.createdAt) : '',
+    words ? words.toLocaleString() + ' words' : '',
+    model ? '&#129302; ' + escHtml(model) : '',
+  ].filter(Boolean).join(' &middot; ');
+
+  var actions = job.status === 'pending_review'
+    ? '<div class="inbox-action-row">' +
+        '<button class="btn btn-orange btn-sm" onclick="approveAutoJob(\'' + escHtml(job.id) + '\')">Approve &amp; Publish</button>' +
+        '<button style="padding:6px 14px;border-radius:6px;border:1px solid #ef4444;background:transparent;color:#ef4444;font-weight:600;cursor:pointer;font-family:\'Montserrat\',sans-serif;font-size:0.8rem;" onclick="rejectAutoJob(\'' + escHtml(job.id) + '\')">Reject</button>' +
+      '</div>'
+    : '';
 
   return '<div class="inbox-detail-wrap">' +
-    '<div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:8px;">Rule: ' + escHtml(ruleName) + '</div>' +
+    '<div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;">' + metaItems + '</div>' +
     '<h2>' + escHtml(title) + '</h2>' +
     (body ? '<div style="font-size:0.85rem;color:var(--text);line-height:1.7;max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;">' + escHtml(body.substring(0, 2000)) + (body.length > 2000 ? '&hellip;' : '') + '</div>' : '') +
-    '<div class="inbox-action-row">' +
-      '<button class="btn btn-orange btn-sm" onclick="approveAutoJob(\'' + escHtml(job.id) + '\')">Approve &amp; Publish</button>' +
-      '<button style="padding:6px 14px;border-radius:6px;border:1px solid #ef4444;background:transparent;color:#ef4444;font-weight:600;cursor:pointer;font-family:\'Montserrat\',sans-serif;font-size:0.8rem;" onclick="rejectAutoJob(\'' + escHtml(job.id) + '\')">Reject</button>' +
-    '</div>' +
+    actions +
   '</div>';
 }
 
@@ -6489,17 +6919,49 @@ async function rejectAutoJob(jobId) {
 }
 
 function switchInboxTab(tab) {
-  ['pending', 'history'].forEach(function(t) {
+  var viewMap = { pending:'autoSubInbox', history:'autoSubHistory', log:'autoSubLog' };
+  ['pending', 'history', 'log'].forEach(function(t) {
     var btn = document.getElementById('inboxSubtab-' + t);
-    var view = document.getElementById(t === 'pending' ? 'autoSubInbox' : 'autoSubHistory');
+    var view = document.getElementById(viewMap[t]);
     var isActive = t === tab;
     if (btn) {
       btn.style.color = isActive ? 'var(--sla-navy)' : 'var(--text-muted)';
       btn.style.borderBottomColor = isActive ? 'var(--sla-orange)' : 'transparent';
     }
-    if (view) view.style.display = isActive ? (t === 'pending' ? 'block' : 'block') : 'none';
+    if (view) view.style.display = isActive ? 'block' : 'none';
   });
   if (tab === 'history') loadAutoHistory();
+  if (tab === 'log')     loadAutoLog();
+}
+
+async function loadAutoLog() {
+  var list = document.getElementById('autoLogList');
+  if (!list) return;
+  list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">Loading…</p>';
+  try {
+    var logs = await apiFetch('/api/automation/logs?limit=200');
+    if (!logs || !logs.length) { list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">No log entries yet.</p>'; return; }
+    var levelColor = { success:'#16a34a', error:'#ef4444', warn:'#f59e0b', info:'var(--sla-navy)' };
+    list.innerHTML = logs.map(function(l) {
+      var c = levelColor[l.level] || 'var(--text-muted)';
+      var when = l.at ? new Date(l.at).toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+      return '<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;">' +
+        '<span style="display:inline-block;min-width:60px;font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:' + c + ';">' + escHtml(l.level || 'info') + '</span>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:0.75rem;color:var(--text);line-height:1.4;">' + escHtml(l.message || '') + '</div>' +
+          '<div style="font-size:0.62rem;color:var(--text-muted);margin-top:3px;">' + escHtml(when) + (l.ruleName ? ' &middot; ' + escHtml(l.ruleName) : '') + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch (err) {
+    list.innerHTML = '<p style="color:#ef4444;padding:16px;">' + escHtml(err.message) + '</p>';
+  }
+}
+
+async function clearAutoLog() {
+  if (!confirm('Clear all log entries? This cannot be undone.')) return;
+  try { await apiFetch('/api/automation/logs', { method:'DELETE' }); loadAutoLog(); }
+  catch (err) { showAutoMessage('Clear failed: ' + err.message, 'error'); }
 }
 
 async function loadAutoHistory() {
@@ -6520,6 +6982,13 @@ async function loadAutoHistory() {
       list.innerHTML = '<p style="color:var(--text-muted);padding:16px;">No history yet.</p>';
       return;
     }
+    // Hydrate title cache for history cards
+    try {
+      var allContent = await contentApi.getAll();
+      var byId = {};
+      (allContent || []).forEach(function(c) { byId[c.id] = c; });
+      jobs.forEach(function(j) { if (byId[j.contentId]) __inboxContentCache[j.id] = byId[j.contentId]; });
+    } catch (e) { /* non-fatal */ }
     list.innerHTML = jobs.map(renderHistoryCard).join('');
   } catch (err) {
     list.innerHTML = '<p style="color:#ef4444;padding:16px;">' + escHtml(err.message) + '</p>';
@@ -6527,17 +6996,19 @@ async function loadAutoHistory() {
 }
 
 function renderHistoryCard(job) {
-  var isCompleted = job.status === 'completed';
-  var statusColor = isCompleted ? '#16a34a' : '#ef4444';
-  var statusLabel = isCompleted ? 'Published' : 'Rejected';
+  var isPublished = job.status === 'completed' || job.status === 'published' || job.status === 'auto_published';
+  var statusColor = isPublished ? '#16a34a' : '#ef4444';
+  var statusLabel = isPublished ? 'Published' : (job.status === 'rejected' ? 'Rejected' : (job.status || 'Done'));
   var age = job.updatedAt ? timeAgo(job.updatedAt) : (job.createdAt ? timeAgo(job.createdAt) : '');
+  var content = __inboxContentCache[job.id];
+  var title = (content && content.title) || 'Article';
   return '<div style="padding:12px 16px;border-bottom:1px solid var(--border);">' +
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
       '<span style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:' + statusColor + ';">' + statusLabel + '</span>' +
       '<span style="font-size:0.62rem;color:var(--text-muted);">' + escHtml(age) + '</span>' +
     '</div>' +
-    '<div style="font-weight:600;font-size:0.82rem;color:var(--text);">' + escHtml(job.contentId || 'Article') + '</div>' +
-    (job.ruleId ? '<div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px;">Rule: ' + escHtml(job.ruleId) + '</div>' : '') +
+    '<div style="font-weight:600;font-size:0.82rem;color:var(--text);margin-bottom:6px;">' + escHtml(title) + '</div>' +
+    (content ? '<button class="btn btn-outline btn-xs" style="font-size:0.65rem;padding:3px 8px;" onclick="viewArticleFromPipeline(\'' + escHtml(content.id) + '\');">View Article</button>' : '') +
   '</div>';
 }
 
@@ -6784,7 +7255,7 @@ async function attemptGeneration(model, systemPrompt, sourceText) {
   const truncatedText = (sourceText || extractedText).length > 60000 ? (sourceText || extractedText).substring(0, 60000) + '\n\n[Text truncated due to length]' : (sourceText || extractedText);
   const response = await fetch(API_URL, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${getApiKey()}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'SLA Health Content Generator' },
+    headers: { 'Authorization': `Bearer ${getApiKey()}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'IBD Health Hub Content Generator' },
     body: JSON.stringify({ model, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Please generate content based on the following source material:\n\n---\n${truncatedText}\n---` }], stream: true, max_tokens: 4000, temperature: 0.3 })
   });
   if (!response.ok) {
@@ -7162,6 +7633,19 @@ async function viewArticleFromPipeline(itemId) {
 
   const text = item.body || item.content || item.text || '';
   rawArticleText = text;
+  // Clear residual alerts from prior article views (e.g. "Published to WordPress!")
+  if (typeof hideAlert === 'function') hideAlert('generateAlert');
+  // Title display
+  const titleEl = document.getElementById('articleTitleDisplay');
+  if (titleEl) {
+    titleEl.textContent = item.title || 'Untitled article';
+    titleEl.style.display = 'block';
+  }
+  // Hero image: restore from saved item so it shows on view
+  heroImageUrl  = item.heroImageUrl || null;
+  heroImageType = item.heroImageType || null;
+  if (typeof updateArticleHeroPreview === 'function') updateArticleHeroPreview();
+  // Article body
   document.getElementById('articleContent').innerHTML = formatArticleHTML(text);
   document.getElementById('articleOutput').classList.add('visible');
   const emptyEl = document.getElementById('emptyState');
@@ -7173,6 +7657,15 @@ async function viewArticleFromPipeline(itemId) {
   if (badge) { badge.textContent = '✓ ' + (item.model || 'Pipeline article').replace(':free',''); badge.style.display = 'inline-flex'; }
   const queueBtn = document.getElementById('queueForPublishBtn');
   if (queueBtn) queueBtn.disabled = false;
+  // Enable Edit button (was disabled by default in toolbar markup)
+  const editBtn = document.getElementById('editArticleBtn');
+  if (editBtn) editBtn.disabled = false;
+  // If WP-published, show "View on WordPress" button
+  const wpBtn = document.getElementById('viewOnWpBtn');
+  if (wpBtn) {
+    if (item.wpPostUrl) { wpBtn.href = item.wpPostUrl; wpBtn.style.display = ''; }
+    else { wpBtn.style.display = 'none'; }
+  }
 
   // Link the pipeline record so the Review Requests card can load
   currentContentId = item.id;
@@ -7280,7 +7773,7 @@ async function executeComparison(ids, model) {
     `=== ITEM ${i+1}: "${r.title}" (generated by ${r.model || 'Unknown'}) ===\n\n${r.text.slice(0, 8000)}`
   ).join('\n\n---\n\n');
 
-  const comparisonPrompt = `You are a senior medical editor and clinical writing expert at SLA Health. You have been given ${reviews.length} content pieces. Your task is to compare them rigorously across two dimensions: (1) accuracy and completeness, and (2) writing style and quality.
+  const comparisonPrompt = `You are a senior medical editor and clinical writing expert at IBD Health Hub. You have been given ${reviews.length} content pieces. Your task is to compare them rigorously across two dimensions: (1) accuracy and completeness, and (2) writing style and quality.
 
 Provide a structured analysis with the following sections:
 
@@ -7335,7 +7828,7 @@ Specific, actionable improvements for the weaker item(s).`;
 async function attemptAnalysis(model, systemPrompt, reviewsText) {
   const response = await fetch(API_URL, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${getApiKey()}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'SLA Health Content Comparison' },
+    headers: { 'Authorization': `Bearer ${getApiKey()}`, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href, 'X-Title': 'IBD Health Hub Content Comparison' },
     body: JSON.stringify({ model, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Please analyse and compare the following ${reviewsText.split('=== ITEM').length - 1} content items:\n\n${reviewsText}` }], stream: true, max_tokens: 2500, temperature: 0.2 })
   });
   if (!response.ok) {
@@ -7600,24 +8093,60 @@ function copyArticle() {
 // ═══════════════════════════════════════════════════════════
 function formatArticleHTML(text) {
   const lines = text.split('\n');
-  let html = '', inMetaBlock = false, titleDone = false;
+  let html = '', inMetaBlock = false, titleDone = false, subtitleDone = false;
+  const sectionHeaders = /^(\*{0,2})(Background|Study Design|Patient Population|Key Findings|Discussion|Safety|Authors|Reference|Clinical Relevance|Conclusions|Disclaimer|Industry|Op-Ed|White Paper|Infographic)/i;
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmed = line.trim();
     if (!trimmed) { html += '<br>'; continue; }
-    if (!titleDone && !trimmed.startsWith('#')) {
-      html += `<h1>${escapeHtml(trimmed)}</h1>`;
-      titleDone = true; inMetaBlock = true; continue;
+
+    // Strip ** wrappers from standalone bold lines for heading detection
+    const stripped = trimmed.replace(/^\*\*(.+?)\*\*$/, '$1').trim();
+
+    // Title: first non-heading line or first # line
+    if (!titleDone) {
+      if (trimmed.startsWith('# ')) {
+        html += `<h1>${escapeHtml(trimmed.slice(2).replace(/\*\*/g, ''))}</h1>`;
+        titleDone = true; inMetaBlock = true; continue;
+      }
+      if (!trimmed.startsWith('#')) {
+        html += `<h1>${escapeHtml(stripped)}</h1>`;
+        titleDone = true; inMetaBlock = true; continue;
+      }
     }
-    if (inMetaBlock && !trimmed.startsWith('#') && titleDone) {
-      const sectionHeaders = /^(Background|Study Design|Patient Population|Key Findings|Safety|Authors|Reference|Industry|Op-Ed|White Paper|Infographic)/i;
-      if (sectionHeaders.test(trimmed)) { inMetaBlock = false; }
-      else { html += `<div class="meta-block">${escapeHtml(trimmed)}</div>`; continue; }
+
+    // Meta block (authors, journal, DOI — lines after title, before first section header)
+    if (inMetaBlock && titleDone) {
+      if (sectionHeaders.test(stripped) || trimmed.startsWith('## ') || trimmed.startsWith('### ')) {
+        inMetaBlock = false;
+      } else {
+        html += `<div class="meta-block">${escapeHtml(stripped)}</div>`;
+        continue;
+      }
     }
-    if (trimmed.startsWith('### ')) { html += `<h2>${escapeHtml(trimmed.slice(4))}</h2>`; }
-    else if (trimmed.startsWith('## ')) { html += `<h2>${escapeHtml(trimmed.slice(3))}</h2>`; }
-    else if (trimmed.startsWith('# ')) { html += `<h2>${escapeHtml(trimmed.slice(2))}</h2>`; }
-    else { html += `<p>${escapeHtml(trimmed)}</p>`; }
+
+    // Markdown headings: first body "# " is the subtitle (→ h1), all others → h2
+    if (trimmed.startsWith('### '))     { html += `<h2>${escapeHtml(trimmed.slice(4).replace(/\*\*/g, ''))}</h2>`; continue; }
+    if (trimmed.startsWith('## '))      { html += `<h2>${escapeHtml(trimmed.slice(3).replace(/\*\*/g, ''))}</h2>`; continue; }
+    if (trimmed.startsWith('# '))       {
+      const txt = escapeHtml(trimmed.slice(2).replace(/\*\*/g, ''));
+      if (!subtitleDone) { subtitleDone = true; html += `<h1>${txt}</h1>`; continue; }
+      html += `<h2>${txt}</h2>`; continue;
+    }
+
+    // Bold-only lines matching known section headers → <h2>
+    const boldMatch = trimmed.match(/^\*\*(.+?)\*\*$/);
+    if (boldMatch && sectionHeaders.test(boldMatch[1])) {
+      html += `<h2>${escapeHtml(boldMatch[1])}</h2>`;
+      continue;
+    }
+
+    // Regular paragraph with inline bold/italic rendering
+    let p = escapeHtml(trimmed);
+    p = p.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    p = p.replace(/(?<!\w)\*([^*]+?)\*(?!\w)/g, '<em>$1</em>');
+    html += `<p>${p}</p>`;
   }
   return html;
 }
@@ -8099,6 +8628,7 @@ async function generateHeroImage() {
     document.getElementById('heroDownloadBtn').style.display = 'inline-flex';
     heroImageUrl = imageUrl;
     heroImageType = 'ai';
+    updateArticleHeroPreview();
     statusEl.textContent = '✓ Image generated';
   } catch (e) {
     alertEl.className = 'alert alert-error';
@@ -8163,6 +8693,7 @@ function useSelectedUnsplashImage() {
   selectedImg.style.display = 'block';
   heroImageUrl = fullUrl;
   heroImageType = 'pexels';
+  updateArticleHeroPreview();
   document.getElementById('unsplashDownloadBtn').style.display = 'inline-flex';
 }
 
@@ -8705,7 +9236,7 @@ async function testWpCategorySlug() {
   if (!slug) { statusEl.textContent = 'Enter a slug first.'; statusEl.style.color = 'var(--text-muted)'; return; }
   statusEl.textContent = 'Verifying…'; statusEl.style.color = 'var(--text-muted)';
   try {
-    const resp = await fetch('https://slahealth.co.uk/wp-json/wp/v2/categories?slug=' + encodeURIComponent(slug) + '&per_page=1');
+    const resp = await fetch('https://ibdhealthhub.com/wp-json/wp/v2/categories?slug=' + encodeURIComponent(slug) + '&per_page=1');
     if (!resp.ok) throw new Error('WP API error ' + resp.status);
     const data = await resp.json();
     if (data.length > 0) {
@@ -8763,7 +9294,7 @@ function renderCatPromptPanel(catId) {
   var el = document.getElementById('catEditorPromptPanel');
   if (!el || !catId) return;
 
-  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: getCatDefaultPrompt(catId) };
+  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: getCatDefaultPrompt(catId) };
   var prompts = getPromptsForCat(catId) || [DEFAULT_OBJ];
 
   // Update tab badge count
@@ -8773,7 +9304,7 @@ function renderCatPromptPanel(catId) {
   var active = prompts[0];
   var aText  = typeof active === 'string' ? active : (active.text || '');
   var aName  = typeof active === 'string' ? 'Default Prompt' : (active.name || 'Default Prompt');
-  var aBy    = typeof active === 'string' ? 'SLA Health' : (active.createdBy || '');
+  var aBy    = typeof active === 'string' ? 'IBD Health Hub' : (active.createdBy || '');
 
   var activeEditor =
     '<div class="ced-prompt-active">' +
@@ -8835,7 +9366,7 @@ function cedSavePromptItem(catId, idx) {
   var byEl   = document.getElementById('cedp-by-'   + catId + '-' + idx);
   var textEl = document.getElementById('cedp-text-' + catId + '-' + idx);
   if (!textEl) return;
-  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: getCatDefaultPrompt(catId) };
+  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: getCatDefaultPrompt(catId) };
   var prompts = getPromptsForCat(catId) || [DEFAULT_OBJ];
   prompts[idx] = {
     name:      nameEl ? nameEl.value.trim() : (prompts[idx] && prompts[idx].name ? prompts[idx].name : ''),
@@ -8881,7 +9412,7 @@ function cedAddPromptToCat(catId) {
   var nameEl = document.getElementById('cedp-new-name-' + catId);
   var byEl   = document.getElementById('cedp-new-by-' + catId);
   if (!textEl || !textEl.value.trim()) { alert('Please enter prompt text.'); return; }
-  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: getCatDefaultPrompt(catId) };
+  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: getCatDefaultPrompt(catId) };
   var prompts = getPromptsForCat(catId) || [DEFAULT_OBJ];
   prompts.push({
     name:      nameEl ? nameEl.value.trim() || 'Alternate Prompt' : 'Alternate Prompt',
@@ -8925,10 +9456,13 @@ window.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('sla_sidebar_collapsed') === '1') {
     document.body.classList.add('sidebar-collapsed');
   }
-  document.getElementById('promptTextarea').value = DEFAULT_PROMPT;
+  // Load saved prompt for initial category, falling back to default
+  document.getElementById('promptTextarea').value = getEffectivePrompt('clinical-reviews');
   // Seed the default prompt preview shown in the Prompt card
   var _initPreview = document.getElementById('genPromptDefaultPreview');
-  if (_initPreview) _initPreview.textContent = DEFAULT_PROMPT;
+  if (_initPreview) _initPreview.textContent = getCatDefaultPrompt('clinical-reviews');
+  // Auto-save prompt textarea edits to localStorage
+  initPromptAutoSave();
   loadApiKeyUI();
   loadCustomCategories();
   activateCustomCategories();
@@ -9182,7 +9716,7 @@ async function callOpenRouter(prompt, apiKey, model) {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.href,
-      'X-Title': 'SLA Health Content Generator',
+      'X-Title': 'IBD Health Hub Content Generator',
     },
     body: JSON.stringify({
       model,
@@ -9746,8 +10280,8 @@ function setHeroLeftMode(mode) {
   if (aiBtn)     aiBtn.classList.toggle('active', mode === 'ai');
   if (actionBtn) actionBtn.textContent = mode === 'search' ? 'Search' : 'Generate';
   if (hint)      hint.textContent = mode === 'search'
-    ? 'Keywords extracted from source (max 6):'
-    : 'Image will be auto-generated using source document context:';
+    ? 'Keywords extracted from generated article (max 6):'
+    : 'Image will be auto-generated from the article content:';
   if (modelRow)  modelRow.style.display = mode === 'ai' ? '' : 'none';
 }
 
@@ -9778,7 +10312,10 @@ function extractKeywordsFromText(text, max) {
 }
 
 function heroLeftPopulateKeywords() {
-  const text = extractedText || '';
+  // Prefer the generated article text over the source document
+  const articleEl = document.getElementById('articleContent');
+  const articleText = articleEl ? (articleEl.innerText || articleEl.textContent || '').trim() : '';
+  const text = articleText || extractedText || '';
   const chips = document.getElementById('heroLeftKeywordChips');
   const input = document.getElementById('heroLeftKeywordInput');
   if (!text) return;
@@ -9836,14 +10373,17 @@ async function heroLeftSearch() {
 }
 
 async function heroLeftGenerate() {
-  const text = extractedText || '';
-  if (!text) { showHeroLeftStatus('error', 'Upload a source document first.'); return; }
+  // Prefer the generated article over the source document
+  const articleEl = document.getElementById('articleContent');
+  const articleText = articleEl ? (articleEl.innerText || articleEl.textContent || '').trim() : '';
+  const text = articleText || extractedText || '';
+  if (!text) { showHeroLeftStatus('error', 'Generate an article first, or upload a source document.'); return; }
   const btn = document.getElementById('heroLeftActionBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
-  const model = (document.getElementById('heroAiModelSelect') || {}).value || 'google/gemini-2.5-flash-image';
+  const model = (document.getElementById('heroAiModelSelect') || {}).value || 'google/gemini-3.1-flash-image-preview-20260226';
   showHeroLeftStatus('info', 'Generating image with AI… this can take 15–30 seconds');
   const kws = extractKeywordsFromText(text, 6);
-  const prompt = kws.join(', ') + ', medical healthcare professional, clinical setting, high quality, SLAHEALTH brand navy and teal';
+  const prompt = kws.join(', ') + ', medical healthcare professional, clinical setting, high quality, IBD Health Hub brand navy and teal. Absolutely no text, words, letters, numbers, or typography anywhere in the image.';
   try {
     const resp = await fetch('/api/social/image', {
       method: 'POST',
@@ -9859,6 +10399,7 @@ async function heroLeftGenerate() {
     if (!url) throw new Error('No image returned from API');
     heroImageUrl  = url;
     heroImageType = 'ai';
+    updateArticleHeroPreview();
     heroLeftSelectImageDirect(url, 'AI Generated (' + model.split('/').pop() + ')', null);
     showHeroLeftStatus('', '');
     // Sync to right panel AI pane if present
@@ -9881,6 +10422,7 @@ function heroLeftSelectImage(idx) {
   const img = heroLeftResults[idx];
   heroImageUrl  = img.full;
   heroImageType = 'pexels';
+  updateArticleHeroPreview();
   const credit = img.author ? ('Photo by ' + img.author + ' on Pexels') : 'Photo from Pexels';
   heroLeftSelectImageDirect(img.small, credit, img.link);
   // Sync to right panel Pexels pane
@@ -9964,10 +10506,16 @@ function loadDashboard() {
   if (document.getElementById('metricPublished')) document.getElementById('metricPublished').textContent = published;
   if (document.getElementById('metricCategories')) document.getElementById('metricCategories').textContent = allDashCats.length;
 
-  // Load automation count
+  // Load automation count + automated-generation tally
   fetch('/api/automation/rules').then(r => r.ok ? r.json() : []).then(rules => {
+    var list = Array.isArray(rules) ? rules : [];
     var el = document.getElementById('metricAutomations');
-    if (el) el.textContent = Array.isArray(rules) ? rules.length : 0;
+    if (el) el.textContent = list.length;
+    var autoGen = list.reduce(function(s, r) { return s + ((r.stats && r.stats.articlesGenerated) || 0); }, 0);
+    var manualGen = Math.max(0, written - autoGen);
+    if (document.getElementById('metricGenerated')) document.getElementById('metricGenerated').textContent = (manualGen + autoGen);
+    if (document.getElementById('metricGeneratedManual')) document.getElementById('metricGeneratedManual').textContent = manualGen;
+    if (document.getElementById('metricGeneratedAuto'))   document.getElementById('metricGeneratedAuto').textContent = autoGen;
   }).catch(() => {});
 
   // Load automation sequences summary
@@ -10333,10 +10881,53 @@ function togglePipelineListGroup(colId) {
   if (el) el.classList.toggle('collapsed');
 }
 
+// Pipeline bulk selection
+const selectedPipelineIds = new Set();
+function togglePipelineSelect(id, checked) {
+  if (checked) selectedPipelineIds.add(id); else selectedPipelineIds.delete(id);
+  updatePipelineBulkBar();
+}
+function updatePipelineBulkBar() {
+  let bar = document.getElementById('pipelineBulkBar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'pipelineBulkBar';
+    bar.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--sla-navy);color:#fff;padding:10px 18px;display:none;align-items:center;gap:14px;z-index:850;box-shadow:0 6px 24px rgba(0,0,0,0.25);font-family:\'Montserrat\',sans-serif;font-size:0.78rem;font-weight:700;';
+    bar.innerHTML = '<span id="pipelineBulkCount">0 selected</span>' +
+      '<button onclick="bulkDeletePipeline()" style="background:#ef4444;color:#fff;border:none;padding:6px 14px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit;">Delete selected</button>' +
+      '<button onclick="clearPipelineSelection()" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.4);padding:6px 12px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit;">Cancel</button>';
+    document.body.appendChild(bar);
+  }
+  document.getElementById('pipelineBulkCount').textContent = selectedPipelineIds.size + ' selected';
+  bar.style.display = selectedPipelineIds.size > 0 ? 'flex' : 'none';
+}
+function clearPipelineSelection() {
+  selectedPipelineIds.clear();
+  document.querySelectorAll('.pipeline-bulk-cb').forEach(function(cb) { cb.checked = false; });
+  updatePipelineBulkBar();
+}
+async function bulkDeletePipeline() {
+  if (!selectedPipelineIds.size) return;
+  if (!confirm('Move ' + selectedPipelineIds.size + ' article(s) to Trash?')) return;
+  const ids = Array.from(selectedPipelineIds);
+  // Use the same path movePipelineToTrash uses, so the canonical status string
+  // ('trash', not 'trashed') is applied and the Trash page picks them up.
+  for (const id of ids) {
+    try { await contentApi.update(id, { status: 'trash' }); } catch(e){}
+  }
+  selectedPipelineIds.clear();
+  updatePipelineBulkBar();
+  loadPipeline();
+  if (typeof updateTrashBadge === 'function') updateTrashBadge();
+  showToast('Moved ' + ids.length + ' to trash');
+}
+
 function renderListRow(item) {
   const catLabel = CATEGORY_LABELS[item.category] || item.category;
-  const dateStr  = item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'2-digit' }) : '—';
+  const dateStr  = item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'2-digit' }) + ' ' + new Date(item.createdAt).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) : '—';
+  const checked  = selectedPipelineIds.has(item.id) ? 'checked' : '';
   return `<div class="pipeline-list-row">
+    <input type="checkbox" class="pipeline-bulk-cb" ${checked} onchange="togglePipelineSelect('${item.id}', this.checked)" style="margin-right:8px;flex-shrink:0;cursor:pointer;" />
     <span class="pipeline-list-cat">${escapeHtml(catLabel)}</span>
     <span class="pipeline-list-title" title="${escapeHtml(item.title || '')}">${escapeHtml(item.title || 'Untitled')}</span>
     <span class="pipeline-list-date">${dateStr}</span>
@@ -10349,7 +10940,7 @@ function renderListRow(item) {
 
 function renderKanbanCard(item) {
   const catLabel = CATEGORY_LABELS[item.category] || item.category;
-  const dateStr  = item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'2-digit' }) : '';
+  const dateStr  = item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'2-digit' }) + ' ' + new Date(item.createdAt).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) : '';
   const wordCount = item.body ? item.body.split(/\s+/).filter(Boolean).length : 0;
 
   let badge = '';
@@ -10422,8 +11013,10 @@ function renderKanbanCard(item) {
       </button>`;
   }
 
+  const cbChecked = selectedPipelineIds.has(item.id) ? 'checked' : '';
   return `
     <div class="kcard">
+      <input type="checkbox" class="pipeline-bulk-cb" ${cbChecked} onchange="togglePipelineSelect('${item.id}', this.checked)" style="position:absolute;top:8px;right:8px;cursor:pointer;z-index:2;" />
       <span class="kcard-cat">${escapeHtml(catLabel)}</span>
       <div class="kcard-title">${escapeHtml(item.title || 'Untitled')}</div>
       ${badge}
@@ -10505,15 +11098,18 @@ async function saveArticleEdits(replace) {
   document.getElementById('wordCount').textContent =
     rawArticleText.split(/\s+/).filter(function(w){return w;}).length.toLocaleString() + ' words';
   exitEditMode();
-  if (replace && currentContentId) {
+  if (currentContentId) {
     try {
+      const payload = {
+        body: newText,
+        excerpt: newText.replace(/<[^>]+>/g,'').split(/\s+/).slice(0, 30).join(' ') + '…'
+      };
+      if (typeof heroImageUrl !== 'undefined' && heroImageUrl) payload.heroImageUrl = heroImageUrl;
+      if (typeof heroImageType !== 'undefined' && heroImageType) payload.heroImageType = heroImageType;
       const r = await fetch('/api/content/' + currentContentId, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          body: newText,
-          excerpt: newText.replace(/<[^>]+>/g,'').split(/\s+/).slice(0, 30).join(' ') + '…'
-        }),
+        body: JSON.stringify(payload),
       });
       if (!r.ok) throw new Error((await r.json()).error || r.statusText);
       showAlert('generateAlert', '✓ Article updated in pipeline', 'success');
@@ -10671,6 +11267,12 @@ async function publishNow(contentId) {
     const idx = (publishingQueue || []).findIndex(function(i) { return i.id === contentId; });
     if (idx >= 0) Object.assign(publishingQueue[idx], updates);
 
+    // Show View on WordPress button in toolbar
+    if (data.wpPostUrl) {
+      var wpBtn = document.getElementById('viewOnWpBtn');
+      if (wpBtn) { wpBtn.href = data.wpPostUrl; wpBtn.style.display = ''; }
+    }
+
     showAlert('generateAlert',
       '✓ Published to WordPress!' +
       (scheduleSocial ? ' Social posts scheduled over 5 days.' : '') +
@@ -10796,6 +11398,82 @@ async function loadSettings() {
   await loadReviewers();
   checkGcalStatus();
   renderSocialConnections();
+  loadCloudIntegrationStatus();
+}
+
+// ── Cloud Storage Integration ──────────────────────────────────────────────────
+
+var _cloudStatus = { google: false, dropbox: false };
+
+async function loadCloudIntegrationStatus() {
+  try {
+    var data = await apiFetch('/api/automation/auth/status');
+    _cloudStatus.google  = data.google?.connected  || false;
+    _cloudStatus.dropbox = data.dropbox?.connected || false;
+    _renderCloudStatus('google',  data.google);
+    _renderCloudStatus('dropbox', data.dropbox);
+  } catch (e) { /* non-fatal */ }
+}
+
+function _renderCloudStatus(service, info) {
+  var statusEl      = document.getElementById(service === 'google' ? 'googleDriveStatus' : 'dropboxStatus');
+  var connectBtn    = document.getElementById(service === 'google' ? 'googleConnectBtn'  : 'dropboxConnectBtn');
+  var disconnectBtn = document.getElementById(service === 'google' ? 'googleDisconnectBtn' : 'dropboxDisconnectBtn');
+  if (!statusEl) return;
+  var connected = info?.connected;
+  statusEl.className = 'settings-gcal-status ' + (connected ? 'connected' : 'disconnected');
+  statusEl.textContent = connected ? 'Connected' : 'Not connected';
+  if (connectBtn)    connectBtn.style.display    = info?.credsSaved && !connected ? '' : 'none';
+  if (disconnectBtn) disconnectBtn.style.display = connected ? '' : 'none';
+}
+
+async function saveCloudCreds(service) {
+  var clientId, clientSecret;
+  if (service === 'google') {
+    clientId     = document.getElementById('googleClientId').value.trim();
+    clientSecret = document.getElementById('googleClientSecret').value.trim();
+  } else {
+    clientId     = document.getElementById('dropboxAppKey').value.trim();
+    clientSecret = document.getElementById('dropboxAppSecret').value.trim();
+  }
+  if (!clientId || !clientSecret) { showToast('Both fields are required'); return; }
+  try {
+    await apiFetch('/api/automation/auth/config', {
+      method: 'POST',
+      body: JSON.stringify({ service, clientId, clientSecret }),
+    });
+    showToast('Credentials saved — click Connect to authorise');
+    var connectBtn = document.getElementById(service === 'google' ? 'googleConnectBtn' : 'dropboxConnectBtn');
+    if (connectBtn) connectBtn.style.display = '';
+  } catch (err) { showToast('Failed to save: ' + err.message); }
+}
+
+function connectCloudService(service) {
+  var url = '/api/automation/auth/' + service;
+  var popup = window.open(url, 'oauth_' + service, 'width=520,height=620,left=200,top=100');
+  var handler = function(e) {
+    if (e.data && e.data.type === 'oauth-complete') {
+      window.removeEventListener('message', handler);
+      if (e.data.success) {
+        showToast((service === 'google' ? 'Google Drive' : 'Dropbox') + ' connected!');
+        loadCloudIntegrationStatus();
+      } else {
+        showToast('Connection failed — check credentials and try again');
+      }
+      if (popup && !popup.closed) popup.close();
+    }
+  };
+  window.addEventListener('message', handler);
+}
+
+async function disconnectCloudService(service) {
+  if (!confirm('Disconnect ' + (service === 'google' ? 'Google Drive' : 'Dropbox') + '? Existing automation rules using this source will stop fetching new files.')) return;
+  try {
+    await apiFetch('/api/automation/auth/' + service, { method: 'DELETE' });
+    _cloudStatus[service] = false;
+    showToast('Disconnected');
+    loadCloudIntegrationStatus();
+  } catch (err) { showToast('Failed: ' + err.message); }
 }
 
 async function loadReviewers() {
@@ -11017,9 +11695,15 @@ function getPromptsForCat(catId) {
   try {
     const raw = JSON.parse(localStorage.getItem('sla_prompts_' + catId) || 'null');
     if (!raw) return null;
-    // Migrate legacy plain strings to objects
+    // Migrate legacy plain strings to objects + auto-refresh the SLA-shipped
+    // default prompt so the latest in-code version always wins (fixes stale
+    // prompts cached in localStorage from earlier deploys).
+    var fresh = (typeof getCatDefaultPrompt === 'function') ? getCatDefaultPrompt(catId) : null;
     return raw.map(function(p) {
-      if (typeof p === 'string') return { name: 'Default Prompt', createdBy: 'SLA Health', text: p };
+      if (typeof p === 'string') return { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: p };
+      if (fresh && p && p.name === 'Default Prompt' && p.createdBy === 'IBD Health Hub' && !/OUTPUT FORMAT/.test(p.text || '')) {
+        return Object.assign({}, p, { text: fresh });
+      }
       return p;
     });
   } catch(_) { return null; }
@@ -11027,6 +11711,30 @@ function getPromptsForCat(catId) {
 
 function savePromptsForCat(catId, arr) {
   localStorage.setItem('sla_prompts_' + catId, JSON.stringify(arr));
+}
+
+// ── Auto-save: persist prompt textarea edits so they survive reloads ─────────
+var _promptAutoSaveTimer = null;
+function initPromptAutoSave() {
+  var ta = document.getElementById('promptTextarea');
+  if (!ta || ta._autoSaveBound) return;
+  ta._autoSaveBound = true;
+  ta.addEventListener('input', function() {
+    clearTimeout(_promptAutoSaveTimer);
+    _promptAutoSaveTimer = setTimeout(function() {
+      var text = ta.value.trim();
+      if (!text || !currentCategory) return;
+      var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: getCatDefaultPrompt(currentCategory) };
+      var prompts = getPromptsForCat(currentCategory) || [DEFAULT_OBJ];
+      // Update the active prompt (index 0) with the current textarea value
+      if (typeof prompts[0] === 'string') {
+        prompts[0] = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: text };
+      } else {
+        prompts[0] = Object.assign({}, prompts[0], { text: text });
+      }
+      savePromptsForCat(currentCategory, prompts);
+    }, 1500); // debounce 1.5s
+  });
 }
 
 function getEffectivePrompt(catId) {
@@ -11051,14 +11759,14 @@ function loadPromptsTab_articleOnly() {
   if (!el) return;
 
   el.innerHTML = CATEGORIES.map(function(cat) {
-    var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: getCatDefaultPrompt(cat.id) };
+    var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: getCatDefaultPrompt(cat.id) };
     var prompts = getPromptsForCat(cat.id) || [DEFAULT_OBJ];
 
     // Active (index 0) — full editor
     var active = prompts[0];
     var aText  = typeof active === 'string' ? active : (active.text || '');
     var aName  = typeof active === 'string' ? 'Default Prompt' : (active.name || '');
-    var aBy    = typeof active === 'string' ? 'SLA Health' : (active.createdBy || '');
+    var aBy    = typeof active === 'string' ? 'IBD Health Hub' : (active.createdBy || '');
     var aId    = cat.id + '-0';
 
     var activeEditor = '<div class="prompt-active-editor">' +
@@ -11127,7 +11835,7 @@ function getSocialPromptsForPlat(platId) {
     var raw = JSON.parse(localStorage.getItem('sla_social_prompts_' + platId) || 'null');
     if (!raw) return null;
     return raw.map(function(p) {
-      if (typeof p === 'string') return { name: 'Default Prompt', createdBy: 'SLA Health', text: p };
+      if (typeof p === 'string') return { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: p };
       return p;
     });
   } catch(_) { return null; }
@@ -11150,13 +11858,13 @@ function loadSocialPromptsTab() {
   if (!el) return;
 
   el.innerHTML = SOCIAL_PLATFORMS.map(function(plat) {
-    var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: DEFAULT_SOCIAL_PROMPTS[plat.id] || '' };
+    var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: DEFAULT_SOCIAL_PROMPTS[plat.id] || '' };
     var prompts = getSocialPromptsForPlat(plat.id) || [DEFAULT_OBJ];
 
     var active = prompts[0];
     var aText  = typeof active === 'string' ? active : (active.text || '');
     var aName  = typeof active === 'string' ? 'Default Prompt' : (active.name || '');
-    var aBy    = typeof active === 'string' ? 'SLA Health' : (active.createdBy || '');
+    var aBy    = typeof active === 'string' ? 'IBD Health Hub' : (active.createdBy || '');
     var aId    = 'sp-' + plat.id + '-0';
 
     var smallSvg = (PLAT_SVG[plat.id] || '').replace(/width:20px;height:20px/g, 'width:14px;height:14px');
@@ -11226,7 +11934,7 @@ function saveSocialPromptItem(platId, idx) {
   var textEl = document.getElementById('prompt-text-' + aId);
   if (!textEl) return;
   var platDefaultText = (function() { var p = SOCIAL_PLATFORMS.find(function(x){return x.id===platId;}); return p ? ('Write a ' + p.label + ' post. Tone: ' + p.tone) : ''; })();
-  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: platDefaultText };
+  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: platDefaultText };
   var prompts = getSocialPromptsForPlat(platId) || [DEFAULT_OBJ];
   prompts[idx] = {
     name:      nameEl ? nameEl.value.trim() : (prompts[idx].name || ''),
@@ -11261,7 +11969,7 @@ function addSocialPromptToPlat(platId) {
   var byEl   = document.getElementById('prompt-new-by-sp-' + platId);
   if (!textEl || !textEl.value.trim()) return;
   var platDefaultText = (function() { var p = SOCIAL_PLATFORMS.find(function(x){return x.id===platId;}); return p ? ('Write a ' + p.label + ' post. Tone: ' + p.tone) : ''; })();
-  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: platDefaultText };
+  var DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: platDefaultText };
   var prompts = getSocialPromptsForPlat(platId) || [DEFAULT_OBJ];
   prompts.push({
     name:      (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : ('Prompt ' + (prompts.length + 1)),
@@ -11328,7 +12036,7 @@ function savePromptItem(catId, idx) {
   const textEl = document.getElementById('prompt-text-' + catId + '-' + idx);
   if (!textEl) return;
 
-  const DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: DEFAULT_PROMPT };
+  const DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: DEFAULT_PROMPT };
   const prompts = getPromptsForCat(catId) || [DEFAULT_OBJ];
 
   prompts[idx] = {
@@ -11383,7 +12091,7 @@ function addPromptToCat(catId) {
   const byEl   = document.getElementById('prompt-new-by-'   + catId);
   if (!textEl || !textEl.value.trim()) return;
 
-  const DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'SLA Health', text: DEFAULT_PROMPT };
+  const DEFAULT_OBJ = { name: 'Default Prompt', createdBy: 'IBD Health Hub', text: DEFAULT_PROMPT };
   const prompts = getPromptsForCat(catId) || [DEFAULT_OBJ];
 
   prompts.push({
